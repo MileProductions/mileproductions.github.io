@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MileProductions – kontakt</title>
+  <meta name="description" content="MileProductions – kontakt. Zadzwoń, napisz na WhatsApp lub wyślij e-mail.">
+  <meta name="theme-color" content="#F3F1EC" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+  <meta property="og:title" content="MileProductions – kontakt">
+  <meta property="og:description" content="Zadzwoń, napisz na WhatsApp lub wyślij e-mail.">
+  <meta property="og:image" content="https://mileproductions.github.io/assets/og-image.png">
+  <link rel="icon" href="assets/sygnet-kolor.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap">
+  <style>
+    :root {
+      --red: #FF2E4D;      /* On-Air Red */
+      --black: #121212;    /* Studio Black */
+      --paper: #F3F1EC;    /* Nordic Paper */
+      --bg: var(--paper);
+      --fg: var(--black);
+      --muted: #5c5a56;
+      --line: rgba(18, 18, 18, .14);
+      --btn-bg: var(--black);
+      --btn-fg: #fff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: var(--black);
+        --fg: #fff;
+        --muted: #b3b0a9;
+        --line: rgba(255, 255, 255, .18);
+        --btn-bg: #fff;
+        --btn-fg: var(--black);
+      }
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 20px;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: "Outfit", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      font-size: 18px;
+      line-height: 1.5;
+      text-align: center;
+    }
+    main { width: 100%; max-width: 420px; }
+    h1 { margin: 0 0 40px; }
+    .logo { display: block; width: 100%; max-width: 280px; height: auto; margin: 0 auto; }
+    .lead { margin: 0 0 32px; color: var(--muted); }
+    .lead::after {
+      content: "";
+      display: block;
+      width: 10px;
+      height: 10px;
+      margin: 20px auto 0;
+      border-radius: 50%;
+      background: var(--red);
+    }
+    .actions { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+    .btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 64px;
+      padding: 12px 20px;
+      border-radius: 16px;
+      border: 2px solid var(--btn-bg);
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-decoration: none;
+      transition: transform .15s ease, background-color .15s ease, border-color .15s ease;
+    }
+    .btn small { font-weight: 400; font-size: .9rem; opacity: .8; }
+    .btn--accent { background: var(--red); border-color: var(--red); color: #fff; }
+    .btn--outline { background: transparent; color: var(--fg); border-color: var(--line); }
+    .btn:hover { transform: translateY(-2px); }
+    .btn--outline:hover { border-color: var(--fg); }
+    .btn:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+    footer { margin-top: 48px; font-size: .85rem; color: var(--muted); }
+    @media (prefers-reduced-motion: reduce) { .btn { transition: none; } .btn:hover { transform: none; } }
+    @media (min-width: 600px) {
+      .logo { max-width: 340px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>
+      <picture>
+        <source srcset="assets/logo-pionowe-negatyw.svg" media="(prefers-color-scheme: dark)">
+        <img class="logo" src="assets/logo-pionowe-kolor.svg" alt="MileProductions" width="782" height="414">
+      </picture>
+    </h1>
+
+    <p class="lead">Masz pomysł na projekt? Skontaktuj się ze mną.</p>
+
+    <ul class="actions">
+      <li>
+        <a class="btn" href="tel:+48888222582">
+          Zadzwoń
+          <small>+48 888-222-582</small>
+        </a>
+      </li>
+      <li>
+        <a class="btn btn--accent" href="https://wa.me/48888222582">
+          Napisz na WhatsApp
+          <small>+48 888-222-582</small>
+        </a>
+      </li>
+      <li>
+        <a class="btn btn--outline" href="mailto:janmilewski@gmail.com">
+          Wyślij e-mail
+          <small>janmilewski@gmail.com</small>
+        </a>
+      </li>
+    </ul>
+  </main>
+
+  <footer>© MileProductions</footer>
+</body>
+</html>
