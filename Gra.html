@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sówka i literka Ó – gra</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap&subset=latin-ext" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff6e5; --ink:#2b2140; --ó:#ff5d8f; --u:#3aa6ff; --ok:#2ec27e; --bad:#ff6b4a;
+  --card:#ffffff; --yellow:#ffd23f; --purple:#7b5cff;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:'Baloo 2',system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;
+  background-image:radial-gradient(circle at 10% 10%,#ffe3a3 0 60px,transparent 61px),radial-gradient(circle at 90% 30%,#ffd6e5 0 80px,transparent 81px),radial-gradient(circle at 20% 90%,#d6ecff 0 90px,transparent 91px);}
+.wrap{max-width:520px;margin:0 auto;padding:18px 16px 40px}
+.screen{display:none;animation:pop .35s ease}
+.screen.on{display:block}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:none;opacity:1}}
+h1{font-size:34px;line-height:1.05;margin:6px 0 4px;text-align:center}
+h1 .o{color:var(--ó)}
+.sub{text-align:center;margin:0 0 14px;font-size:18px;opacity:.8}
+.owl{font-size:84px;text-align:center;line-height:1;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px) rotate(-4deg)}}
+.bubble{background:var(--card);border-radius:18px;padding:10px 14px;margin:8px auto 18px;max-width:380px;text-align:center;font-size:17px;box-shadow:0 4px 0 #0001;position:relative}
+.bubble:before{content:"";position:absolute;top:-10px;left:50%;margin-left:-10px;border:10px solid transparent;border-top:0;border-bottom-color:var(--card)}
+.btn{display:block;width:100%;border:0;border-radius:18px;padding:14px 16px;margin:10px 0;font:inherit;font-size:21px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 5px 0 #0003;transition:transform .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #0003}
+.btn small{display:block;font-size:15px;font-weight:500;opacity:.9}
+.b1{background:var(--ó)}.b2{background:var(--purple)}.b3{background:#ffb703;color:var(--ink)}.b4{background:var(--u)}
+.ghost{background:transparent;color:var(--ink);box-shadow:none;font-size:17px;text-decoration:underline}
+.best{text-align:center;font-size:15px;opacity:.75;margin-top:6px}
+.top{display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:700;margin-bottom:8px}
+.home{background:#fff;border:0;border-radius:12px;padding:4px 10px;font:inherit;font-size:16px;cursor:pointer;box-shadow:0 3px 0 #0002}
+.bar{height:12px;background:#0001;border-radius:10px;overflow:hidden;margin-bottom:14px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ó),var(--yellow));transition:width .4s}
+.card{background:var(--card);border-radius:24px;padding:22px 16px;text-align:center;box-shadow:0 6px 0 #0001;margin-bottom:14px}
+.q{font-size:16px;opacity:.7;margin-bottom:4px}
+.word{font-size:46px;font-weight:800;letter-spacing:1px;word-break:break-word;line-height:1.15}
+.gap{display:inline-block;min-width:44px;border-bottom:5px solid var(--purple);color:var(--purple)}
+.hl{color:var(--ó)}
+.hlu{color:var(--u)}
+.choices{display:flex;gap:12px}
+.choices .btn{font-size:44px;padding:10px;margin:0}
+.rules .btn{font-size:17px;text-align:left;padding:11px 14px;margin:8px 0}
+.rules .btn b{display:inline-block;width:26px}
+.fb{border-radius:20px;padding:12px 14px;margin:12px 0 0;font-size:18px;display:none;text-align:left}
+.fb.ok{display:block;background:#dff7ea;border:3px solid var(--ok)}
+.fb.bad{display:block;background:#ffe6df;border:3px solid var(--bad)}
+.fb b{font-size:21px}
+.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.streak{color:#ff8c00}
+.stars{font-size:56px;text-align:center;letter-spacing:6px}
+.big{font-size:40px;font-weight:800;text-align:center;margin:0}
+.review{background:#fff;border-radius:18px;padding:10px 14px;margin:12px 0;font-size:17px}
+.review li{margin:4px 0}
+.rulecard{background:#fff;border-radius:18px;padding:12px 14px;margin:10px 0;box-shadow:0 4px 0 #0001;font-size:17px;border-left:8px solid var(--c)}
+.rulecard h3{margin:0 0 2px;font-size:20px}
+.rulecard p{margin:0}
+.conf{position:fixed;top:-40px;font-size:28px;pointer-events:none;animation:fall linear forwards;z-index:9}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+.tip{font-size:15px;opacity:.75;text-align:center;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- MENU -->
+<section id="menu" class="screen on">
+  <div class="owl">🦉</div>
+  <h1>Sówka i literka <span class="o">Ó</span></h1>
+  <div class="bubble">Cześć! Jestem <b>Sówka</b> – piszę się przez <b class="hl">ó</b>, bo jestem małą <b>sową</b>! 😉 Pomożesz mi przed kartkówką?</div>
+  <button class="btn b1" onclick="start('ou')">✏️ Ó czy U?<small>Wstaw brakującą literę</small></button>
+  <button class="btn b2" onclick="start('rule')">🔍 Detektyw zasad<small>Która zasada pasuje?</small></button>
+  <button class="btn b3" onclick="start('mix')">⚡ Wielki finał<small>Wszystko naraz – 15 pytań</small></button>
+  <button class="btn b4" onclick="show('sciaga')">📒 Ściąga<small>Przypomnij sobie zasady</small></button>
+  <div class="best" id="bestTxt"></div>
+</section>
+
+<!-- GAME -->
+<section id="game" class="screen">
+  <div class="top">
+    <button class="home" onclick="show('menu')">🏠</button>
+    <span id="count">1/10</span>
+    <span>⭐ <span id="score">0</span> <span class="streak" id="streak"></span></span>
+  </div>
+  <div class="bar"><i id="prog"></i></div>
+  <div class="card" id="qcard">
+    <div class="q" id="qtext"></div>
+    <div class="word" id="word"></div>
+  </div>
+  <div id="answers"></div>
+  <div class="fb" id="fb"></div>
+  <button class="btn b2" id="next" style="display:none" onclick="nextQ()">Dalej ➜</button>
+</section>
+
+<!-- END -->
+<section id="end" class="screen">
+  <div class="owl" id="endOwl">🦉</div>
+  <div class="stars" id="stars"></div>
+  <p class="big" id="endScore"></p>
+  <div class="bubble" id="endMsg"></div>
+  <div id="reviewBox"></div>
+  <button class="btn b1" onclick="start(mode)">🔁 Zagraj jeszcze raz</button>
+  <button class="btn ghost" onclick="show('menu')">Wróć do menu</button>
+</section>
+
+<!-- ŚCIĄGA -->
+<section id="sciaga" class="screen">
+  <div class="top"><button class="home" onclick="show('menu')">🏠</button><span>📒 Ściąga</span><span></span></div>
+  <h1 style="font-size:28px">„<span class="o">Ó</span>” piszemy:</h1>
+  <div id="rulesList"></div>
+  <button class="btn b1" onclick="show('menu')">Umiem! Gramy ➜</button>
+</section>
+
+</div>
+
+<script>
+const RULES = {
+  1:{t:"Wymiana na o, a, e", d:"W innej formie wyrazu ó zamienia się na o, a lub e.", ex:"wrócić – wracać, kółko – koło, plótł – plecie", c:"#ff5d8f"},
+  2:{t:"Końcówka -ów, -ówka, -ówna", d:"W wyrazach zakończonych na -ów, -ówka, -ówna.", ex:"królów, żarówka, Sienkiewiczówna", c:"#7b5cff"},
+  3:{t:"Ó niewymienne", d:"Ó się nie wymienia – te wyrazy trzeba zapamiętać.", ex:"żółty, różowy, król, królestwo, góra", c:"#ffb703"},
+  4:{t:"Na początku wyrazu", d:"Na początku wyrazów.", ex:"ósmy, ówdzie, ówczesny, ów", c:"#2ec27e"},
+  5:{t:"Wyjątki – piszemy U!", d:"Choć kończą się na -uwka, piszemy u.", ex:"skuwka, zasuwka, wsuwka", c:"#3aa6ff"}
+};
+
+// w: wyraz z "_" w miejscu luki, a: poprawna litera, r: zasada (0 = zwykłe u), h: podpowiedź, alt: inne pasujące zasady
+const WORDS = [
+  // zasada 1
+  {w:"wr_cić",a:"ó",r:1,h:"wracać"},{w:"k_łko",a:"ó",r:1,h:"koło"},{w:"st_ł",a:"ó",r:1,h:"stoły"},
+  {w:"m_wić",a:"ó",r:1,h:"mowa"},{w:"n_żka",a:"ó",r:1,h:"noga"},{w:"r_g",a:"ó",r:1,h:"rogi"},
+  {w:"l_d",a:"ó",r:1,h:"lody"},{w:"s_l",a:"ó",r:1,h:"solić"},{w:"d_ł",a:"ó",r:1,h:"doły"},
+  {w:"szk_łka",a:"ó",r:1,h:"szkoła"},{w:"pszcz_łka",a:"ó",r:1,h:"pszczoła"},{w:"ogr_d",a:"ó",r:1,h:"ogrody"},
+  {w:"samoch_d",a:"ó",r:1,h:"samochody"},{w:"gł_wka",a:"ó",r:1,h:"głowa"},{w:"ni_sł",a:"ó",r:1,h:"niesie"},
+  {w:"pi_ro",a:"ó",r:1,h:"pierze"},{w:"pl_tł",a:"ó",r:1,h:"plecie"},{w:"zr_b",a:"ó",r:1,h:"robić"},
+  {w:"w_z",a:"ó",r:1,h:"wozy"},{w:"mr_z",a:"ó",r:1,h:"mrozy"},{w:"s_wka",a:"ó",r:1,h:"sowa"},
+  // zasada 2
+  {w:"król_w",a:"ó",r:2},{w:"kot_w",a:"ó",r:2},{w:"dom_w",a:"ó",r:2},{w:"ptak_w",a:"ó",r:2},
+  {w:"Krak_w",a:"ó",r:2,alt:[1]},{w:"żar_wka",a:"ó",r:2},{w:"lod_wka",a:"ó",r:2},{w:"kresk_wka",a:"ó",r:2},
+  {w:"poczt_wka",a:"ó",r:2},{w:"ciężar_wka",a:"ó",r:2},{w:"złot_wka",a:"ó",r:2},
+  {w:"Nowak_wna",a:"ó",r:2},{w:"Sienkiewicz_wna",a:"ó",r:2},
+  // zasada 3
+  {w:"ż_łty",a:"ó",r:3},{w:"r_żowy",a:"ó",r:3},{w:"kr_l",a:"ó",r:3},{w:"kr_lestwo",a:"ó",r:3},
+  {w:"g_ra",a:"ó",r:3},{w:"c_rka",a:"ó",r:3},{w:"og_rek",a:"ó",r:3},{w:"jask_łka",a:"ó",r:3},
+  {w:"wiewi_rka",a:"ó",r:3},{w:"ż_łw",a:"ó",r:3},{w:"p_źno",a:"ó",r:3},{w:"m_zg",a:"ó",r:3},
+  // zasada 4
+  {w:"_smy",a:"ó",r:4,alt:[1]},{w:"_wdzie",a:"ó",r:4},{w:"_wczesny",a:"ó",r:4},{w:"_w",a:"ó",r:4},
+  // zasada 5 – wyjątki
+  {w:"sk_wka",a:"u",r:5},{w:"zas_wka",a:"u",r:5},{w:"ws_wka",a:"u",r:5},
+  // zwykłe u (tylko w „Ó czy U?”)
+  {w:"k_ra",a:"u",r:0},{w:"chm_ra",a:"u",r:0},{w:"dzi_ra",a:"u",r:0},{w:"m_cha",a:"u",r:0},
+  {w:"d_ży",a:"u",r:0},{w:"b_t",a:"u",r:0},{w:"s_fit",a:"u",r:0},{w:"dr_t",a:"u",r:0},{w:"k_chnia",a:"u",r:0}
+];
+
+const PRAISE = ["Brawo!","Super!","Ekstra!","Mistrz!","Tak jest!","Sówka jest dumna!","Rewelacja!"];
+const OOPS = ["Ups!","Prawie!","Nie tym razem!","Ojej!"];
+let mode, list, i, score, streak, mistakes, answered;
+
+function shuffle(a){a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]];}return a;}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function $(id){return document.getElementById(id)}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');window.scrollTo(0,0);if(id==='menu')loadBest();}
+
+function start(m){
+  mode=m;
+  if(m==='ou'){
+    const o=shuffle(WORDS.filter(w=>w.a==='ó')).slice(0,7);
+    const u=shuffle(WORDS.filter(w=>w.a==='u')).slice(0,3);
+    list=shuffle(o.concat(u)).map(w=>({...w,type:'ou'}));
+  } else if(m==='rule'){
+    // po 2 z każdej zasady
+    list=[];
+    [1,2,3,4,5].forEach(r=>list.push(...shuffle(WORDS.filter(w=>w.r===r)).slice(0,2)));
+    list=shuffle(list).map(w=>({...w,type:'rule'}));
+  } else {
+    const ou=shuffle(WORDS).slice(0,8).map(w=>({...w,type:'ou'}));
+    const used=new Set(ou.map(w=>w.w));
+    const ru=shuffle(WORDS.filter(w=>w.r>0&&!used.has(w.w))).slice(0,7).map(w=>({...w,type:'rule'}));
+    list=shuffle(ou.concat(ru));
+  }
+  i=0;score=0;streak=0;mistakes=[];
+  show('game');render();
+}
+
+function full(w){return w.w.replace('_',w.a)}
+function render(){
+  const q=list[i];answered=false;
+  $('count').textContent=(i+1)+'/'+list.length;
+  $('score').textContent=score;
+  $('streak').textContent=streak>=3?('🔥'+streak):'';
+  $('prog').style.width=(i/list.length*100)+'%';
+  $('fb').className='fb';$('fb').innerHTML='';$('next').style.display='none';
+  const A=$('answers');
+  if(q.type==='ou'){
+    $('qtext').textContent='Jaka litera pasuje?';
+    $('word').innerHTML=q.w.replace('_','<span class="gap">?</span>');
+    A.innerHTML='<div class="choices"><button class="btn b1" data-v="ó">ó</button><button class="btn b4" data-v="u">u</button></div>';
+  } else {
+    $('qtext').textContent='Dlaczego tak piszemy?';
+    $('word').innerHTML=q.w.replace('_','<span class="'+(q.a==='ó'?'hl':'hlu')+'">'+q.a+'</span>');
+    A.innerHTML='<div class="rules">'+[1,2,3,4,5].map(r=>'<button class="btn" style="background:'+RULES[r].c+(r===3?';color:#2b2140':'')+'" data-v="'+r+'"><b>'+r+'.</b> '+RULES[r].t+'</button>').join('')+'</div>';
+  }
+  A.querySelectorAll('button').forEach(b=>b.onclick=()=>answer(b.dataset.v,b));
+}
+
+function explain(q){
+  if(q.r===0) return 'Piszemy <b>'+full(q)+'</b> przez zwykłe <b class="hlu">u</b>. To słowo nie pasuje do żadnej zasady dla ó – warto je zapamiętać.';
+  const R=RULES[q.r];
+  let s='<b>'+full(q)+'</b> – zasada '+q.r+': '+R.d;
+  if(q.h) s+=' <br>👉 <b>'+full(q)+' – '+q.h+'</b>';
+  if(q.alt&&q.alt.includes(1)&&q.r===4) s+=' <br>(Pasuje też zasada 1: ósmy – osiem 😉)';
+  if(q.alt&&q.alt.includes(1)&&q.r===2) s+=' <br>(Pasuje też zasada 1: Kraków – Krakowa 😉)';
+  return s;
+}
+
+function answer(v,btn){
+  if(answered)return;answered=true;
+  const q=list[i];
+  const ok = q.type==='ou' ? v===q.a : (+v===q.r || (q.alt||[]).includes(+v));
+  const fb=$('fb');
+  document.querySelectorAll('#answers button').forEach(b=>{b.disabled=true;
+    const good = q.type==='ou' ? b.dataset.v===q.a : (+b.dataset.v===q.r);
+    b.style.opacity = good||b===btn ? 1 : .35;
+    if(good) b.style.outline='4px solid #2b2140';
+  });
+  if(ok){
+    score++;streak++;
+    fb.className='fb ok';fb.innerHTML='<b>✅ '+pick(PRAISE)+'</b><br>'+explain(q);
+    if(q.type==='ou') $('word').innerHTML=q.w.replace('_','<span class="'+(q.a==='ó'?'hl':'hlu')+'">'+q.a+'</span>');
+    if(streak%3===0) confetti(14);
+  } else {
+    streak=0;mistakes.push(q);
+    fb.className='fb bad';fb.innerHTML='<b>❌ '+pick(OOPS)+'</b><br>'+explain(q);
+    $('qcard').classList.remove('shake');void $('qcard').offsetWidth;$('qcard').classList.add('shake');
+    if(q.type==='ou') $('word').innerHTML=q.w.replace('_','<span class="'+(q.a==='ó'?'hl':'hlu')+'">'+q.a+'</span>');
+  }
+  $('score').textContent=score;
+  $('streak').textContent=streak>=3?('🔥'+streak):'';
+  $('next').style.display='block';
+  $('next').textContent = i===list.length-1 ? 'Zobacz wynik 🏆' : 'Dalej ➜';
+  setTimeout(()=>$('next').scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+
+function nextQ(){ i++; if(i<list.length) render(); else finish(); }
+
+function finish(){
+  const pct=score/list.length;
+  const st = pct===1?3 : pct>=.7?2 : pct>=.4?1 : 0;
+  $('stars').textContent='⭐'.repeat(st)+'☆'.repeat(3-st);
+  $('endScore').textContent=score+' / '+list.length;
+  $('endOwl').textContent = st===3?'🦉👑':'🦉';
+  $('endMsg').innerHTML = st===3?'<b>Perfekcyjnie!</b> Kartkówka? Bułka z masłem! 🎉'
+    : st===2?'<b>Bardzo dobrze!</b> Jeszcze jedna runda i będzie komplet!'
+    : st===1?'<b>Dobry początek!</b> Zajrzyj do ściągi i spróbuj jeszcze raz 💪'
+    : '<b>Nie poddawaj się!</b> Przeczytaj ściągę – potem pójdzie lepiej!';
+  if(mistakes.length){
+    $('reviewBox').innerHTML='<div class="review"><b>Te wyrazy powtórz:</b><ul>'+mistakes.map(q=>'<li><b>'+full(q)+'</b> – '+(q.r?('zasada '+q.r+(q.h?' ('+q.h+')':'')):'zwykłe u')+'</li>').join('')+'</ul></div>';
+  } else $('reviewBox').innerHTML='';
+  if(st===3) confetti(40); else if(st===2) confetti(15);
+  saveBest(mode,score,list.length);
+  show('end');
+}
+
+function confetti(n){
+  const em=['⭐','🎉','✨','💖','🟣','🟡','ó'];
+  for(let k=0;k<n;k++){
+    const d=document.createElement('div');d.className='conf';d.textContent=pick(em);
+    d.style.left=Math.random()*100+'vw';d.style.animationDuration=(1.6+Math.random()*1.6)+'s';
+    d.style.animationDelay=Math.random()*.4+'s';
+    document.body.appendChild(d);setTimeout(()=>d.remove(),3800);
+  }
+}
+
+const NAMES={ou:'Ó czy U?',rule:'Detektyw zasad',mix:'Wielki finał'};
+function saveBest(m,s,t){try{const k='sowka_'+m;const b=JSON.parse(localStorage.getItem(k)||'null');if(!b||s/t>b.s/b.t)localStorage.setItem(k,JSON.stringify({s,t}));}catch(e){}}
+function loadBest(){try{const parts=[];for(const m in NAMES){const b=JSON.parse(localStorage.getItem('sowka_'+m)||'null');if(b)parts.push(NAMES[m]+': '+b.s+'/'+b.t);}$('bestTxt').textContent=parts.length?'🏆 Rekordy – '+parts.join(' · '):'';}catch(e){}}
+
+$('rulesList').innerHTML=[1,2,3,4,5].map(r=>'<div class="rulecard" style="--c:'+RULES[r].c+'"><h3>'+r+'. '+RULES[r].t+'</h3><p>'+RULES[r].d+'</p><p><i>np. '+RULES[r].ex+'</i></p></div>').join('')
+ +'<p class="tip">💡 Sprawdzaj tak: <b>stół → stoły</b>. Jeśli słyszysz „o”, piszesz „ó”!</p>';
+loadBest();
+</script>
+</body>
+</html>
