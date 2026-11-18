@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Krówki personalizowane – zaprojektuj własny papierek | Krowki24.pl</title>
+  <meta name="description" content="Zaprojektuj własny papierek krówki: wgraj zdjęcie lub logo, dopisz imiona i datę, zobacz krówkę w 3D i zamów. Krówki z Milanówka od 1921 roku.">
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="topbar">Zapisz się do newslettera i odbierz <b>5% rabatu</b> na pierwsze zakupy · <a href="./">Wróć na krowki.pl</a></div>
+
+  <header class="site shop-header">
+    <div class="wrap nav">
+      <a class="logo" href="./" aria-label="Krowki24.pl – sklep">
+        <span class="logo-mark" data-cow></span>
+        <span class="logo-text">Krowki24<small>Sklep · Milanówek od 1921</small></span>
+      </a>
+      <label class="shop-search"><span aria-hidden="true">⌕</span><input type="search" placeholder="Szukaj krówek, okazji, wzorów…" aria-label="Szukaj"></label>
+      <div class="shop-actions">
+        <button id="accountBtn" type="button">Zaloguj się</button>
+        <a class="cart-pill" href="#" id="cart"><span class="cart-label">Koszyk · </span><span id="cartSum">0,00 zł</span></a>
+      </div>
+    </div>
+    <nav class="shop-menu" aria-label="Kategorie">
+      <ul class="wrap">
+        <li><a href="#">Okazje ▾</a></li>
+        <li><a href="#">Ślub i wesele</a></li>
+        <li><a href="#">Chrzest i komunia</a></li>
+        <li><a href="#">Urodziny</a></li>
+        <li><a href="#">Podziękowania</a></li>
+        <li><a href="#">Boże Narodzenie</a></li>
+        <li><a href="#" aria-current="page">Krówki personalizowane</a></li>
+        <li><a href="./#dla-firm">Krówki reklamowe</a></li>
+        <li><a class="hl" href="#projektuj">✦ Zaprojektuj papierek</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="wrap crumbs"><a href="#">Sklep</a> / <a href="#">Krówki personalizowane</a> / Zaprojektuj własny papierek</div>
+
+    <!-- HERO KONFIGURATORA -->
+    <section class="hero cfg-hero">
+      <div class="wrap hero-grid">
+        <div class="hero-visual reveal">
+          <div class="hero-card">
+            <svg class="candy-stack" viewBox="0 0 400 400" aria-hidden="true"><g id="hs"></g></svg>
+          </div>
+          <div class="hero-note"><strong>Podgląd 3D</strong>zobaczysz swoją krówkę, zanim ją zamówisz</div>
+        </div>
+        <div class="reveal">
+          <span class="badge-new">Nowość</span>
+          <div class="eyebrow">Krówki personalizowane</div>
+          <h1>Twoja krówka,<br><em>Twój projekt.</em></h1>
+          <p class="lead">Wgraj zdjęcie albo logo, dopisz imiona i datę. Od razu zobaczysz gotową krówkę w 3D i cenę. Każdy projekt sprawdza nasz grafik, zanim trafi do druku.</p>
+          <div class="three-steps">
+            <span><b>1</b>Wgraj zdjęcie lub wybierz wzór</span>
+            <span><b>2</b>Dopasuj</span>
+            <span><b>3</b>Zamów</span>
+          </div>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="#projektuj">Zacznij projektować</a>
+            <a class="btn btn-ghost" href="#inspiracje">Zobacz inspiracje</a>
+          </div>
+          <div class="hero-trust"><span>Projekt w mniej niż 3 minuty</span><span>Bez znajomości grafiki</span><span>Działa na telefonie</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KONFIGURATOR (tylko dla zalogowanych) -->
+    <section id="projektuj" class="designer-zone">
+      <div class="wrap">
+        <div class="designer-shell">
+          <div class="designer-head">
+            <h2>Projektant papierka</h2>
+            <div class="who" id="who"></div>
+          </div>
+          <div class="designer-frame" id="frame">
+            <!-- Stan: niezalogowany -->
+            <div class="gate" id="gate">
+              <div class="gate-fake" aria-hidden="true"><div></div><div id="gateCandy"></div><div></div></div>
+              <div class="gate-card">
+                <div class="lock" aria-hidden="true">✦</div>
+                <h3>Zaloguj się, żeby zaprojektować papierek</h3>
+                <p class="muted">Twoje projekty zapiszą się na koncie i wrócisz do nich w każdej chwili, także z telefonu.</p>
+                <div class="btn-row" style="margin-top:1.4rem">
+                  <button class="btn btn-primary" type="button" data-login>Zaloguj się</button>
+                  <button class="btn btn-ghost" type="button" data-login>Załóż konto (1 minuta)</button>
+                </div>
+                <ul>
+                  <li>Zapisane projekty i szybkie ponowne zamówienie</li>
+                  <li>Podgląd 3D i cena widoczna od razu</li>
+                  <li>5% rabatu na pierwsze zakupy</li>
+                </ul>
+                <p class="demo-switch">Wersja demonstracyjna: <button type="button" data-login>symuluj zalogowanego klienta</button></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mini-banner reveal">
+          <p><b>Nie masz pomysłu?</b><br>Wybierz jeden z gotowych wzorów i tylko dopisz imiona.</p>
+          <a class="btn btn-light" href="#inspiracje">Zobacz inspiracje</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- INSPIRACJE -->
+    <section id="inspiracje" style="padding-top:0">
+      <div class="wrap">
+        <div class="center reveal">
+          <div class="eyebrow">Inspiracje</div>
+          <h2>Zacznij od gotowego projektu</h2>
+          <p class="lead">Wybierz wzór, a w projektancie podmienisz tylko zdjęcie, imiona i datę.</p>
+        </div>
+        <div class="inspo">
+          <div class="inspo-item reveal"><span data-candy data-bg="#fff" data-ink="#6d2430" data-accent="#c48b93" data-title="Ania &amp; Tomek" data-sub="dziękujemy"></span><b>Ślub klasyczny</b><button type="button" data-use>Użyj jako punkt wyjścia →</button></div>
+          <div class="inspo-item reveal"><span data-candy data-bg="#f3f6fa" data-ink="#2b4c6f" data-accent="#8fb0cf" data-title="Antoś" data-sub="chrzest święty" data-photo="1"></span><b>Chrzest ze zdjęciem</b><button type="button" data-use>Użyj jako punkt wyjścia →</button></div>
+          <div class="inspo-item reveal"><span data-candy data-bg="#fff6f2" data-ink="#b24a3a" data-accent="#e9967a" data-title="Zosia" data-sub="1 rok" data-pattern="dots" data-photo="1"></span><b>Roczek</b><button type="button" data-use>Użyj jako punkt wyjścia →</button></div>
+          <div class="inspo-item reveal"><span data-candy data-bg="#1d3557" data-ink="#fff" data-accent="#a8dadc" data-title="TWOJE LOGO" data-sub="krówka firmowa"></span><b>Logo firmy</b><button type="button" data-use>Użyj jako punkt wyjścia →</button></div>
+          <div class="inspo-item reveal"><span data-candy data-bg="#2f4a3a" data-ink="#f1e4d3" data-accent="#d9b98a" data-title="Wesołych Świąt" data-sub="rodzina Nowaków"></span><b>Święta</b><button type="button" data-use>Użyj jako punkt wyjścia →</button></div>
+          <div class="inspo-item reveal"><span data-candy data-bg="#fffaf2" data-ink="#3b2417" data-accent="#b07a3c" data-title="Dla Mamy" data-sub="z miłością" data-pattern="stripes"></span><b>Dzień Matki</b><button type="button" data-use>Użyj jako punkt wyjścia →</button></div>
+          <div class="inspo-item reveal"><span data-candy data-bg="#f1efe0" data-ink="#5a3a26" data-accent="#9a8a5a" data-title="Dziękuję" data-sub="Pani Ani"></span><b>Dzień Nauczyciela</b><button type="button" data-use>Użyj jako punkt wyjścia →</button></div>
+          <div class="inspo-item reveal"><span data-candy data-bg="#f7d9c4" data-ink="#3b2417" data-accent="#b07a3c" data-title="Kasia 18" data-sub="urodziny" data-photo="1"></span><b>Urodziny</b><button type="button" data-use>Użyj jako punkt wyjścia →</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GOTOWE WZORY -->
+    <section class="b2b">
+      <div class="wrap">
+        <div class="center reveal">
+          <div class="eyebrow">Bez projektowania</div>
+          <h2>Gotowe kolekcje</h2>
+          <p class="lead">Wolisz nie projektować? Wybierz krówki w gotowych papierkach.</p>
+        </div>
+        <div class="products">
+          <div class="product reveal"><div class="product-img bg-cream"><span class="tag">nowość</span><span data-candy data-bg="#6d2430" data-ink="#faf6ef" data-accent="#d9b98a" data-title="Wesołych Świąt" data-sub="kolekcja bordo"></span></div><div class="product-body"><b>Krówki Świąteczna Kolekcja Bordo</b><span class="price">59,00 zł <small>/ kg</small></span><button class="btn btn-primary" type="button" data-cart="59">Do koszyka</button></div></div>
+          <div class="product reveal"><div class="product-img bg-green"><span class="tag">nowość</span><span data-candy data-bg="#2f4a3a" data-ink="#f1e4d3" data-accent="#d9b98a" data-title="Wesołych Świąt" data-sub="kolekcja zieleń"></span></div><div class="product-body"><b>Krówki Świąteczna Kolekcja Zieleń, kartonik 500 g</b><span class="price">40,00 zł <small>/ szt.</small></span><button class="btn btn-primary" type="button" data-cart="40">Do koszyka</button></div></div>
+          <div class="product reveal"><div class="product-img bg-cream"><span class="tag">nowość</span><span data-candy data-bg="#f7efe2" data-ink="#3b2417" data-accent="#b07a3c" data-title="Wesołych Świąt" data-sub="kolekcja ecru"></span></div><div class="product-body"><b>Krówki Świąteczna Kolekcja Ecru</b><span class="price">59,00 zł <small>/ kg</small></span><button class="btn btn-primary" type="button" data-cart="59">Do koszyka</button></div></div>
+          <div class="product reveal"><div class="product-img bg-caramel"><span class="tag">nowość</span><span data-candy data-bg="#c2364a" data-ink="#fff" data-accent="#ffd6a0" data-title="Mikołajki" data-sub="mix kolorów" data-pattern="dots"></span></div><div class="product-body"><b>Mikołajki MIX kolorów</b><span class="price">59,00 zł <small>/ kg</small></span><button class="btn btn-primary" type="button" data-cart="59">Do koszyka</button></div></div>
+        </div>
+        <div class="mini-banner reveal">
+          <p><b>✦ Chcesz to samo, ale z imieniem?</b><br>Każdy wzór możesz zmienić w projektancie papierka.</p>
+          <a class="btn btn-gold" href="#projektuj">Zaprojektuj własny papierek</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section>
+      <div class="wrap">
+        <div class="center reveal">
+          <div class="eyebrow">Jak to działa</div>
+          <h2>Najczęstsze pytania</h2>
+        </div>
+        <div class="faq">
+          <details open><summary>Ile krówek jest w jednym kilogramie?</summary><p>Około 95–100 sztuk. W projektancie przy wyborze ilości od razu zobaczysz przeliczenie, np. 2 kg to około 190 krówek.</p></details>
+          <details><summary>Jakie jest minimalne zamówienie i czas realizacji?</summary><p>Krówki z własnym projektem zamówisz od 1 kg. Realizacja trwa zwykle 5–7 dni roboczych od akceptacji projektu.</p></details>
+          <details><summary>Czy ktoś sprawdzi mój projekt przed drukiem?</summary><p>Tak. Projektant sam pilnuje, żeby tekst się mieścił, a zdjęcie było ostre. Dodatkowo każdy projekt ogląda nasz grafik i w razie wątpliwości kontaktuje się z Tobą.</p></details>
+          <details><summary>Jakie zdjęcia się nadają?</summary><p>Najlepiej zwykłe zdjęcia z telefonu w dobrej jakości (JPG, PNG). Jeśli zdjęcie będzie zbyt małe, projektant od razu Ci o tym powie.</p></details>
+          <details><summary>Czy mogę zamówić ten sam projekt jeszcze raz?</summary><p>Tak. Wszystkie projekty zapisują się na Twoim koncie w zakładce „Moje projekty”.</p></details>
+          <details><summary>Jak wygląda wysyłka i płatność?</summary><p>Tak jak przy każdym zamówieniu w sklepie: krówki z projektem trafiają do koszyka razem z innymi produktami.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ZAUFANIE -->
+    <section style="padding-top:0">
+      <div class="wrap trust">
+        <div class="reveal"><b>1921</b><span>rodzinna receptura</span></div>
+        <div class="reveal"><b>Ręcznie</b><span>zawijana każda krówka</span></div>
+        <div class="reveal"><b>Milanówek</b><span>rodzinna manufaktura</span></div>
+        <div class="reveal"><b>Sprawdzony</b><span>projekt przed drukiem</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site">
+    <div class="wrap">
+      <div class="foot-grid">
+        <div class="foot-logo">
+          <a class="logo" href="./"><span class="logo-mark" data-cow="#f1e4d3"></span><span class="logo-text">Krowki24<small>Sklep · Milanówek od 1921</small></span></a>
+          <p style="margin-top:1.2rem">+48 512 511 628<br><a href="mailto:sklep@krowki24.pl">sklep@krowki24.pl</a></p>
+        </div>
+        <div><h4>Informacje</h4><ul><li><a href="./#manufaktura">O nas</a></li><li><a href="./#kontakt">Kontakt</a></li><li><a href="#">Regulamin sklepu</a></li><li><a href="#">Polityka prywatności (RODO)</a></li><li><a href="#">Blog</a></li></ul></div>
+        <div><h4>Moje konto</h4><ul><li><a href="#" data-login>Logowanie</a></li><li><a href="#">Moje zamówienia</a></li><li><a href="#projektuj">Moje projekty</a></li><li><a href="#">FAQ</a></li></ul></div>
+        <div>
+          <h4>Newsletter</h4>
+          <p>Odbierz 5% rabatu na pierwsze zakupy.</p>
+          <form class="newsletter" data-demo="Dziękujemy za zapis! (wersja demonstracyjna)"><input required type="email" placeholder="Twój e-mail" aria-label="E-mail"><button class="btn btn-gold" type="submit">Zapisz</button></form>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>© 2026 Krowki.pl Sp. z o.o. · Przykładowa strona sklepu (koncepcja)</span>
+        <span>Sklep docelowo na platformie Shoper</span>
+      </div>
+    </div>
+  </footer>
+
+  <a class="btn btn-primary sticky-cta" href="#projektuj">✦ Zacznij projektować</a>
+
+  <script src="main.js"></script>
+  <script>
+    (function () {
+      // Hero: kompozycja krówek
+      var g = document.getElementById("hs"), C = window.KROWKI.candy;
+      [
+        { x: 25, y: 30, r: -12, o: { bg: "#fff", ink: "#6d2430", accent: "#c48b93", title: "Ania & Tomek", sub: "dziękujemy" } },
+        { x: 175, y: 45, r: 10, o: { bg: "#f3f6fa", ink: "#2b4c6f", accent: "#8fb0cf", title: "Antoś", sub: "chrzest", photo: true } },
+        { x: 35, y: 215, r: 9, o: { bg: "#1d3557", ink: "#fff", accent: "#a8dadc", title: "TWOJE LOGO", sub: "firma" } },
+        { x: 170, y: 205, r: -8, o: { bg: "#2f4a3a", ink: "#f1e4d3", accent: "#d9b98a", title: "Wesołych Świąt", sub: "rodzina" } },
+        { x: 100, y: 125, r: -2, o: { bg: "#fff6f2", ink: "#b24a3a", accent: "#e9967a", title: "Zosia", sub: "1 rok", pattern: "dots", photo: true } }
+      ].forEach(function (it) {
+        var w = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        w.setAttribute("transform", "translate(" + it.x + " " + it.y + ") rotate(" + it.r + " 100 65)");
+        w.innerHTML = C(it.o).replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "");
+        g.appendChild(w);
+      });
+      document.getElementById("gateCandy").innerHTML = C({ bg: "#e9c9a0", title: "Twój projekt", sub: "podgląd" });
+
+      // ---- Logowanie (symulacja) i osadzenie konfiguratora ----
+      // Konfigurator to istniejący moduł z folderu /krówki/ (bez zmian), osadzony przez iframe.
+      var KEY = "krowki-demo-user";
+      var DESIGNER_URL = "../kr%C3%B3wki/";
+      var frame = document.getElementById("frame"), gate = document.getElementById("gate"), who = document.getElementById("who"), acc = document.getElementById("accountBtn");
+
+      function render() {
+        var user = localStorage.getItem(KEY);
+        var iframe = frame.querySelector("iframe");
+        if (user) {
+          gate.hidden = true;
+          if (!iframe) {
+            iframe = document.createElement("iframe");
+            iframe.src = DESIGNER_URL;
+            iframe.title = "Projektant papierka krówki";
+            iframe.allow = "clipboard-write; fullscreen";
+            iframe.loading = "lazy";
+            frame.appendChild(iframe);
+          }
+          who.innerHTML = "Zalogowano jako <b>" + user + "</b> · <a href=\"#\">Moje projekty</a> · <a href=\"#\" data-logout>Wyloguj</a>";
+          acc.textContent = "Moje konto";
+        } else {
+          gate.hidden = false;
+          if (iframe) iframe.remove();
+          who.innerHTML = "Dostępne dla zalogowanych klientów";
+          acc.textContent = "Zaloguj się";
+        }
+      }
+      document.addEventListener("click", function (e) {
+        var t = e.target.closest("[data-login],[data-logout],#accountBtn,[data-use],[data-cart]");
+        if (!t) return;
+        if (t.matches("[data-cart]")) {
+          var s = document.getElementById("cartSum"), v = parseFloat(s.dataset.v || "0") + parseFloat(t.dataset.cart);
+          s.dataset.v = v; s.textContent = v.toFixed(2).replace(".", ",") + " zł";
+          window.krowkiToast("Dodano do koszyka");
+          return;
+        }
+        e.preventDefault();
+        if (t.matches("[data-logout]") || (t.id === "accountBtn" && localStorage.getItem(KEY))) {
+          if (t.matches("[data-logout]")) { localStorage.removeItem(KEY); window.krowkiToast("Wylogowano"); render(); }
+          else document.getElementById("projektuj").scrollIntoView();
+          return;
+        }
+        if (t.matches("[data-use]") && localStorage.getItem(KEY)) { document.getElementById("projektuj").scrollIntoView(); return; }
+        localStorage.setItem(KEY, "Anna K.");
+        window.krowkiToast("Zalogowano (symulacja). Projektant jest gotowy.");
+        render();
+        document.getElementById("projektuj").scrollIntoView();
+      });
+      render();
+    })();
+  </script>
+</body>
+</html>
