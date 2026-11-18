@@ -27,14 +27,15 @@ Wymagany Node.js 18+. Fonty ładują się z Google Fonts (potrzebny internet).
 - **Wycena:** kg ↔ sztuki (95 szt./kg), progi rabatowe, od 25 kg wycena indywidualna. **Ceny przykładowe** – `src/config/pricing.ts`.
 - **PDF do druku:** 76 × 79 mm, BleedBox = strona, TrimBox = 70 × 73 mm, grafika 600 DPI, dopisek producenta zawsze w górnej klapie, linie pomocnicze nie trafiają do pliku.
 - **Autozapis** (IndexedDB, co ~1,5 s) i wznowienie projektu po powrocie.
-- **Telefon:** układ pionowy, duże przyciski, wgrywanie z aparatu/galerii, przeciąganie palcem.
+- **Telefon:** układ pionowy, duże przyciski, wgrywanie z aparatu/galerii, przeciąganie palcem; dwa palce na elemencie = powiększanie i obrót, na pustym polu = przybliżanie widoku.
+- **Formaty:** JPG, PNG, WEBP, GIF, SVG, HEIC/HEIF (zdjęcia z iPhone’a, konwersja w przeglądarce) i PDF (pierwsza strona, np. logo od grafika, z przezroczystym tłem).
 
 ## Osadzenie w sklepie
 
-`npm run build` tworzy `dist/embed/krowka-designer.js` (jeden plik) i `dist/embed/index.html` (przykładowa strona sklepu).
+`npm run build` tworzy `dist/embed/krowka-designer.js` (moduł ES; cięższe części – 3D, PDF, HEIC – doładowują się z tego samego folderu dopiero gdy są potrzebne) i `dist/embed/index.html` (przykładowa strona sklepu).
 
 ```html
-<script src="https://twoj-serwer/krowka-designer.js"></script>
+<script type="module" src="https://twoj-serwer/krowka-designer.js"></script>
 <krowka-designer
   token="PODPISANY_TOKEN_KLIENTA"
   login-url="/logowanie"
@@ -78,6 +79,5 @@ tests/                    testy Vitest
 ## Jeszcze nie zrobione (kolejne etapy)
 
 - Edycja szablonów i cen w panelu (backend, panel grafika i PDF w CMYK są już w `../server`, opis w `../README.md`).
-- Wgrywanie PDF i HEIC (iPhone: wybór z galerii zwykle daje JPG), usuwanie tła z logo.
-- Gesty dwoma palcami (szczypanie/obrót) – teraz rogi ramki.
+- Usuwanie tła z logo.
 - Płatności – docelowo w koszyku sklepu.

@@ -134,3 +134,30 @@ describe('dopisek producenta', () => {
     expect(PRODUCER.textWidth).toBeCloseTo(23.75, 1);
   });
 });
+import { angleDelta, applyPinch, pinchMetrics } from '../src/lib/gestures';
+import { isHeic, isPdf } from '../src/lib/convert';
+import { newImage } from '../src/lib/factory';
+describe('gesty i formaty', () => {
+  it('rozsunięcie palców 2× powiększa zdjęcie z zachowaniem proporcji', () => {
+    const img = newImage({ w: 20, h: 10 });
+    const p = applyPinch(img, 1.2, 0) as { w: number; h: number };
+    expect(p.w).toBeCloseTo(24); expect(p.h).toBeCloseTo(12);
+  });
+  it('obrót dwoma palcami', () => {
+    expect((applyPinch(newImage(), 1, 15) as { rotation: number }).rotation).toBe(15);
+    expect(angleDelta(170, -170)).toBeCloseTo(20);
+  });
+  it('tekst skaluje się wielkością fontu', () => {
+    const t = newText({ fontSize: 3 });
+    expect((applyPinch(t, 1.1, 0) as { fontSize: number }).fontSize).toBeCloseTo(3.3);
+  });
+  it('odległość i kąt palców', () => {
+    const m = pinchMetrics({ x1: 0, y1: 0, x2: 3, y2: 4 });
+    expect(m.dist).toBe(5);
+  });
+  it('rozpoznaje HEIC i PDF', () => {
+    expect(isHeic(new File([], 'IMG_1234.HEIC'))).toBe(true);
+    expect(isPdf(new File([], 'logo.pdf', { type: 'application/pdf' }))).toBe(true);
+    expect(isHeic(new File([], 'a.jpg', { type: 'image/jpeg' }))).toBe(false);
+  });
+});

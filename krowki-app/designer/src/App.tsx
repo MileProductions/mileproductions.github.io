@@ -4,6 +4,7 @@ import { LAYOUTS, TEMPLATES } from './config/templates';
 import { checkDesign } from './lib/checks';
 import { fillFrame, newImage } from './lib/factory';
 import { loadAsset } from './lib/images';
+import { isHeic, isPdf, toEditableImage } from './lib/convert';
 import type { Design, ImageEl } from './lib/types';
 import { useHost } from './host';
 import { restore, startAutosave } from './state/persist';
@@ -16,7 +17,7 @@ import { PriceBox } from './components/Price';
 import { Summary } from './components/Summary';
 import type { User } from './adapters';
 
-const ACCEPT = 'image/jpeg,image/png,image/webp,image/gif,image/svg+xml,image/heic,image/heif';
+const ACCEPT = 'image/jpeg,image/png,image/webp,image/gif,image/svg+xml,image/heic,image/heif,.heic,.heif,application/pdf,.pdf';
 const MAX_MB = 25;
 
 export default function App() {
@@ -152,15 +153,20 @@ function useUpload(say: (t: string) => void) {
   const open = (t: string | null) => { target.current = t; input.current?.click(); };
 
   const handle = async (files: FileList | File[]) => {
-    const list = [...files].filter((f) => f.type.startsWith('image/') || /\.(svg|heic|heif)$/i.test(f.name));
-    if (!list.length) return say('To nie wygląda na zdjęcie. Wybierz plik JPG lub PNG.');
+    const list = [...files].filter((f) => f.type.startsWith('image/') || isHeic(f) || isPdf(f) || /\.svg$/i.test(f.name));
+    if (!list.length) return say('To nie wygląda na zdjęcie. Wybierz plik JPG, PNG, HEIC lub PDF.');
     setBusy(true);
+    let added = 0;
     try {
       for (const file of list) {
         if (file.size > MAX_MB * 1024 * 1024) { say(`Plik „${file.name}” jest za duży (maks. ${MAX_MB} MB).`); continue; }
         let asset;
-        try { asset = await loadAsset(file, file.name); } catch {
-          say(`Nie udało się otworzyć „${file.name}”. Zapisz zdjęcie jako JPG i spróbuj ponownie.`); continue;
+        try {
+          if (isHeic(file) || isPdf(file)) say(isPdf(file) ? 'Otwieram PDF…' : 'Przygotowuję zdjęcie z iPhone’a…');
+          const ready = await toEditableImage(file);
+          asset = await loadAsset(ready.blob, ready.name);
+        } catch (e) {
+          say(e instanceof Error && e.message.startsWith('Nie udało') ? e.message : `Nie udało się otworzyć „${file.name}”. Zapisz zdjęcie jako JPG i spróbuj ponownie.`); continue;
         }
         const st = useStore.getState();
         st.addAsset(asset);
@@ -182,8 +188,9 @@ function useUpload(say: (t: string) => void) {
           st.select(el.id);
         }
         target.current = null;
+        added++;
       }
-      useStore.getState().set({ step: 2 });
+      if (added) useStore.getState().set({ step: 2 });
     } finally { setBusy(false); }
   };
 
@@ -209,7 +216,7 @@ function Start({ say }: { say: (t: string) => void }) {
         onClick={() => up.open(null)} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && up.open(null)}>
         <div className="kd-big">📷</div>
         <h2>{up.busy ? 'Wczytuję zdjęcie…' : 'Przeciągnij tu zdjęcie albo kliknij, aby wybrać'}</h2>
-        <p>Z komputera lub prosto z telefonu. Ułożymy je na papierku za Ciebie.</p>
+        <p>Z komputera lub prosto z telefonu (JPG, PNG, HEIC, a logo także w PDF). Ułożymy je na papierku za Ciebie.</p>
         <span className="kd-btn kd-primary kd-lg">Wybierz zdjęcie</span>
       </div>
       <h3 className="kd-or">…albo zacznij od gotowego wzoru</h3>
@@ -246,7 +253,7 @@ function TemplateCard({ id, name, onClick }: { id: string; name: string; onClick
 
 const TIPS = [
   'Kliknij zdjęcie lub tekst na papierku, aby je zmienić.',
-  'Przeciągaj elementy palcem lub myszką. Rogi ramki powiększają i obracają.',
+  'Przeciągaj elementy palcem lub myszką. Rogi ramki albo dwa palce powiększają i obracają.',
   'Różowa ramka to przód cukierka. Szare pole zostanie odcięte.',
 ];
 

@@ -7,6 +7,10 @@ import {
 import { safeRect } from '../lib/checks';
 import { fitTextHeight } from '../lib/factory';
 import { fontsReady } from '../lib/render';
+import { angleDelta, applyPinch, pinchMetrics } from '../lib/gestures';
+
+// zdarzenia dotyku działają także w trakcie przeciągania (potrzebne do gestu dwoma palcami)
+Konva.hitOnDragEnabled = true;
 import { PREVIEW_MAX, processedCanvas } from '../lib/images';
 import { clipHexagon, HEART_PATH, imageAttrs, producerAttrs, shapeAttrs, textAttrs } from '../lib/nodes';
 import type { El, ImageEl, ShapeEl } from '../lib/types';
@@ -36,6 +40,7 @@ export function Editor({ width, height, onRequestUpload, onRequestCrop, onEditTe
   const anchor = useRef<string | null>(null);
   const [guides, setGuides] = useState<{ v?: boolean; h?: boolean }>({});
   const [, setFontTick] = useState(0);
+  const pinch = useRef<{ dist: number; angle: number } | null>(null);
 
   const fit = Math.max(1, Math.min(width / FULL_W, height / FULL_H));
   const scale = fit * zoom;
@@ -59,6 +64,27 @@ export function Editor({ width, height, onRequestUpload, onRequestCrop, onEditTe
     document.fonts?.addEventListener?.('loadingdone', f);
     return () => document.fonts?.removeEventListener?.('loadingdone', f);
   }, []);
+
+  // gest dwoma palcami: na zaznaczonym elemencie powiększa i obraca, na pustym polu przybliża widok
+  const onTouchMove = (e: Konva.KonvaEventObject<TouchEvent>) => {
+    const t = e.evt.touches;
+    if (t.length !== 2) { pinch.current = null; return; }
+    e.evt.preventDefault();
+    const m = pinchMetrics({ x1: t[0].clientX, y1: t[0].clientY, x2: t[1].clientX, y2: t[1].clientY });
+    const prev = pinch.current;
+    pinch.current = { dist: m.dist, angle: m.angle };
+    if (!prev || prev.dist < 1) return;
+    const k = m.dist / prev.dist, dRot = angleDelta(prev.angle, m.angle);
+    const st = useStore.getState();
+    const el = st.design.elements.find((x) => x.id === st.selectedId);
+    if (el && !el.locked) {
+      nodes.current[el.id]?.stopDrag();
+      st.updateEl(el.id, applyPinch(el, k, dRot), 'pinch:' + el.id);
+    } else {
+      st.set({ zoom: Math.min(4, Math.max(1, st.zoom * k)) });
+    }
+  };
+  const onTouchEnd = (e: Konva.KonvaEventObject<TouchEvent>) => { if (e.evt.touches.length < 2) pinch.current = null; };
 
   const ref = (id: string) => (n: Konva.Node | null) => { if (n) nodes.current[id] = n; else delete nodes.current[id]; };
 
@@ -118,7 +144,7 @@ export function Editor({ width, height, onRequestUpload, onRequestCrop, onEditTe
   });
 
   return (
-    <Stage width={sw} height={sh} onMouseDown={(e) => { if (e.target === e.target.getStage()) select(null); }} onTouchStart={(e) => { if (e.target === e.target.getStage()) select(null); }}>
+    <Stage width={sw} height={sh} style={{ touchAction: 'none' }} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onMouseDown={(e) => { if (e.target === e.target.getStage()) select(null); }} onTouchStart={(e) => { if (e.target === e.target.getStage()) select(null); }}>
       <Layer x={ox} y={oy} scaleX={scale} scaleY={scale}>
         <Rect x={0} y={0} width={FULL_W} height={FULL_H} fill={design.bg} onMouseDown={() => select(null)} onTouchStart={() => select(null)} />
         {design.elements.map((el) => {

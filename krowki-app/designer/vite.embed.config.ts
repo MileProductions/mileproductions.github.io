@@ -7,6 +7,6 @@ export default defineConfig({
   define: { 'process.env.NODE_ENV': '"production"' },
   build: {
     outDir: 'dist/embed',
-    lib: { entry: 'src/embed.tsx', name: 'KrowkaDesigner', formats: ['iife'], fileName: () => 'krowka-designer.js' },
+    lib: { entry: 'src/embed.tsx', name: 'KrowkaDesigner', formats: ['es'], fileName: () => 'krowka-designer.js' },
   },
 });
