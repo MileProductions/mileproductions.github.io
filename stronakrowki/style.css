@@ -504,3 +504,7 @@ footer.site .logo.img-ok .logo-img { filter: brightness(0) invert(.92) sepia(.2)
 .photo.loaded > img.pic { border-radius: 6px; }
 .hero-note { z-index: 3; }
 .hero-visual:has(.hero-card.loaded) .seal { display: none; }
+/* Wycieczki: samo zdjęcie, ramka = rozmiar zdjęcia */
+.photo.tour-photo { aspect-ratio: auto; background: none; box-shadow: none; overflow: visible; }
+.photo.tour-photo img { display: block; width: 100%; height: auto; border-radius: 6px; box-shadow: var(--shadow); }
+.photo.tour-photo figcaption { position: static; color: var(--muted); text-shadow: none; padding: .7rem .2rem 0; font-size: 1rem; }
