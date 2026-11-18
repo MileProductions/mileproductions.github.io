@@ -14,7 +14,7 @@ export interface AuthProvider {
 export interface NewsletterGate {
   config(): Promise<{ consentText: string; privacyUrl: string | null }>;
   /** wysyła kod i link na e-mail; consent = zgoda na newsletter (wymagana przy pierwszym zapisie) */
-  request(email: string, consent: boolean): Promise<void>;
+  request(email: string, consent: boolean): Promise<{ demoCode?: string }>;
   verify(email: string, code: string): Promise<User>;
 }
 
@@ -147,7 +147,7 @@ export function newsletterAuth(apiUrl: string): AuthProvider & { token(): string
     },
     newsletter: {
       config: () => call('/config'),
-      async request(email, consent) { await call('/auth/request', { email, consent }); },
+      async request(email, consent) { const j = await call('/auth/request', { email, consent }); return { demoCode: j.demoCode }; },
       async verify(email, code) {
         const j = await call('/auth/verify', { email, code });
         localStorage.setItem(SESSION_KEY, j.token);

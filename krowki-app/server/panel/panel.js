@@ -2,6 +2,8 @@
 // Bez frameworka i bez budowania. Wszystkie dane klienta wstawiane jako tekst (bez innerHTML).
 
 const main = document.getElementById('main');
+// adres API względem panelu (/panel/ → /api/admin), działa też w wersji testowej pod podfolderem
+const API = new URL('../api/admin', location.href).pathname;
 let me = null;
 let filter = { status: 'submitted', q: '' };
 
@@ -18,7 +20,7 @@ function h(tag, attrs = {}, ...kids) {
   return el;
 }
 async function api(path, opt = {}) {
-  const r = await fetch('/api/admin' + path, {
+  const r = await fetch(API + path, {
     ...opt, credentials: 'same-origin',
     headers: opt.body ? { 'content-type': 'application/json' } : {},
     body: opt.body ? JSON.stringify(opt.body) : undefined,
@@ -39,7 +41,7 @@ const fmtMoney = (v) => (v ? v.toLocaleString('pl-PL', { style: 'currency', curr
 const fmtSize = (b) => (b > 1e6 ? `${(b / 1e6).toFixed(1)} MB` : `${Math.ceil(b / 1e3)} kB`);
 const badge = (s) => h('span', { class: `badge s-${s}` }, me?.statuses?.[s] ?? s);
 const CMYK = { ok: ['CMYK gotowy', 'c-ok'], pending: ['CMYK w toku…', 'c-pending'], error: ['Błąd CMYK', 'c-error'] };
-const fileUrl = (id, dl) => `/api/admin/files/${id}${dl ? '?download=1' : ''}`;
+const fileUrl = (id, dl) => `${API}/files/${id}${dl ? '?download=1' : ''}`;
 
 function ask({ title, text, field, required, confirm = 'Zapisz', danger }) {
   return new Promise((resolve) => {
@@ -183,7 +185,7 @@ async function showDesign(number) {
             cmyk ? fileRow(cmyk, `PDF do druku, CMYK (${d.number}-CMYK.pdf)`) : null,
             rgb ? fileRow(rgb, 'PDF z konfiguratora, RGB') : null,
             ...assets.map((f) => fileRow(f, `Zdjęcie klienta: ${f.name.includes('__') ? f.name.slice(f.name.indexOf('__') + 2) : f.name}`)),
-            h('li', {}, h('span', {}, 'Projekt (JSON, do ponownego otwarcia)'), h('a', { href: `/api/admin/designs/${d.number}/design.json` }, 'Pobierz'))),
+            h('li', {}, h('span', {}, 'Projekt (JSON, do ponownego otwarcia)'), h('a', { href: `${API}/designs/${d.number}/design.json` }, 'Pobierz'))),
           d.cmyk !== 'pending' ? regen : null,
           check ? h('p', { class: 'muted', style: 'font-size:13px' }, `Kontrola pliku: strona ${check.media.w} × ${check.media.h} mm, format netto ${check.trim?.w} × ${check.trim?.h} mm.`) : null,
         ),
@@ -227,8 +229,8 @@ async function showNewsletter() {
     h('h1', {}, 'Newsletter z konfiguratora'),
     h('p', {}, `Potwierdzonych adresów: ${confirmed}. Niepotwierdzone (pending) to osoby, które nie kliknęły jeszcze linku ani nie wpisały kodu.`),
     h('div', { class: 'actions' },
-      h('a', { class: 'btn primary', href: '/api/admin/subscribers.csv' }, 'Pobierz potwierdzone (CSV)'),
-      h('a', { class: 'btn', href: '/api/admin/subscribers.csv?all=1' }, 'Pobierz wszystkie (CSV)')),
+      h('a', { class: 'btn primary', href: API + '/subscribers.csv' }, 'Pobierz potwierdzone (CSV)'),
+      h('a', { class: 'btn', href: API + '/subscribers.csv?all=1' }, 'Pobierz wszystkie (CSV)')),
     rows.length
       ? h('table', {}, h('thead', {}, h('tr', {}, ['E-mail', 'Status', 'Zgoda', 'Potwierdzono', 'Projekty', ''].map((t) => h('th', {}, t)))),
         h('tbody', {}, rows.map((r) => h('tr', { style: 'cursor:default' },
@@ -242,15 +244,29 @@ async function showNewsletter() {
   );
 }
 
+// ——— wersja testowa: maile, które w prawdziwej wersji wyszłyby do klientów ———
+async function showOutbox() {
+  const mails = await api('/outbox');
+  main.replaceChildren(
+    h('h1', {}, 'Wysłane maile (wersja testowa)'),
+    h('p', { class: 'muted' }, 'W wersji testowej maile nie wychodzą. Tu widać, co dostałby klient i grafik.'),
+    mails.length ? h('div', { class: 'stack' }, mails.map((m) => h('div', { class: 'card' },
+      h('p', { class: 'muted', style: 'margin:0 0 6px;font-size:13px' }, `${fmtDate(m.at)} · do: ${m.to}`),
+      h('h2', {}, m.subject),
+      h('pre', { style: 'white-space:pre-wrap;font:inherit;margin:0' }, m.text)))) : h('div', { class: 'card empty' }, 'Brak maili.'),
+  );
+}
+
 // ——— routing ———
 async function route() {
   if (!me) return;
   const hash = location.hash || '#/';
-  for (const a of document.querySelectorAll('nav a')) a.classList.toggle('on', a.getAttribute('href') === (hash.startsWith('#/newsletter') ? '#/newsletter' : '#/'));
+  for (const a of document.querySelectorAll('nav a')) a.classList.toggle('on', a.getAttribute('href') === (hash.match(/^#\/(newsletter|maile)/)?.[0] ?? '#/'));
   try {
     const m = hash.match(/^#\/projekt\/(.+)$/);
     if (m) await showDesign(decodeURIComponent(m[1]));
     else if (hash.startsWith('#/newsletter')) await showNewsletter();
+    else if (hash.startsWith('#/maile')) await showOutbox();
     else await showList();
   } catch (e) {
     if (me) main.replaceChildren(h('div', { class: 'card' }, h('p', { class: 'err' }, e.message), h('a', { href: '#/' }, '← Wróć do listy')));

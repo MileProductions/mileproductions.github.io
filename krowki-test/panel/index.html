@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Panel grafika · Krówki z własnym projektem</title>
+  <link rel="stylesheet" href="panel.css" />
+</head>
+<body>
+  <header class="top">
+    <a href="#/" class="logo">🍬 Panel grafika</a>
+    <nav id="nav" hidden>
+      <a href="#/">Projekty</a>
+      <a href="#/newsletter">Newsletter</a>
+      <a href="#/maile">Maile (test)</a>
+    </nav>
+    <span class="grow"></span>
+    <span id="who"></span>
+    <button id="logout" class="link" hidden>Wyloguj</button>
+  </header>
+  <main id="main"><p class="muted">Ładowanie…</p></main>
+  <div id="toast" role="status" hidden></div>
+  <script type="module">import { ready } from '../boot.js'; await ready(); import('./panel.js');</script>
+<style>body{padding-bottom:36px}</style><div style="position:fixed;bottom:0;left:0;right:0;z-index:99;background:#3b2414;color:#fff;font:13px/1.4 system-ui,sans-serif;padding:6px 12px;text-align:center">🧪 Wersja testowa: dane zostają tylko w tej przeglądarce, maile nie wychodzą, PDF w CMYK powstaje tylko na serwerze. Logowanie: <b>grafik@test.pl</b> / <b>krowki-test</b> · <a href="../" style="color:#ffd9a8">← Konfigurator</a></div>
+</body>
+</html>

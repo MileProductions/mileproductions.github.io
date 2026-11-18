@@ -16,6 +16,12 @@ krowki-app/
   Dockerfile, docker-compose.yml   wszystko w jednym kontenerze
 ```
 
+## Wersja testowa na GitHub Pages
+
+`https://mileproductions.github.io/krowki-test/` (panel: `/krowki-test/panel/`, logowanie `grafik@test.pl` / `krowki-test`).
+GitHub Pages nie uruchamia serwera, więc backend udaje tam service worker (`pages-test/sw.js`): to samo API, dane w IndexedDB przeglądarki. Maile nie wychodzą (kod pokazuje się na ekranie, „wysłane” maile są w panelu w zakładce „Maile (test)”), a PDF w CMYK powstaje tylko na prawdziwym serwerze. Konfigurator i panel to te same pliki co na serwerze.
+Przebudowanie: `node pages-test/build.mjs` (z folderu `krowki-app/`).
+
 ## Jak to działa dla klienta
 
 1. Klient otwiera konfigurator, np. `https://projektuj.krowki24.pl/` albo ramkę na stronie sklepu.

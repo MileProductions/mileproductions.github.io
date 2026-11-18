@@ -91,6 +91,7 @@ function AccessGate({ onUser }: { onUser: (u: User) => void }) {
   const [consent, setConsent] = useState(false);
   const [code, setCode] = useState('');
   const [sent, setSent] = useState(false);
+  const [demoCode, setDemoCode] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => { gate.config().then(setCfg).catch(() => setCfg({ consentText: 'Zapisuję się do newslettera.', privacyUrl: null })); }, [gate]);
@@ -99,7 +100,10 @@ function AccessGate({ onUser }: { onUser: (u: User) => void }) {
     setBusy(true); setError(null);
     try { await fn(); } catch (e) { setError(e instanceof Error ? e.message : 'Coś poszło nie tak. Spróbuj ponownie.'); } finally { setBusy(false); }
   };
-  const request = () => go(async () => { await gate.request(email.trim(), consent); setSent(true); setCode(''); });
+  const request = () => go(async () => {
+    const r = await gate.request(email.trim(), consent);
+    setSent(true); setDemoCode(r?.demoCode ?? null); setCode(r?.demoCode ?? '');
+  });
   const verify = () => go(async () => { onUser(await gate.verify(email.trim(), code)); });
 
   return (
@@ -123,6 +127,7 @@ function AccessGate({ onUser }: { onUser: (u: User) => void }) {
           <>
             <h2>Sprawdź skrzynkę</h2>
             <p>Wysłaliśmy kod na <b>{email}</b>. Wpisz go poniżej albo kliknij przycisk w mailu.</p>
+            {demoCode && <p className="kd-tip"><span>🧪 Wersja testowa: maile nie wychodzą. Twój kod to <b>{demoCode}</b>, już jest wpisany.</span></p>}
             <input className="kd-code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} placeholder="000000" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} autoFocus />
             {error && <p className="kd-error">{error}</p>}
             <button className="kd-btn kd-primary kd-block kd-lg" disabled={busy || code.length !== 6}>{busy ? 'Sprawdzam…' : 'Zaczynam projektować'}</button>
