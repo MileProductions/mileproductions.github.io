@@ -8,12 +8,12 @@
     var bg = o.bg || "#f6ecdc", ink = o.ink || "#3b2417", acc = o.accent || "#b07a3c";
     var t = o.title || "KRÓWKA", s = o.sub || "z Milanówka", id = "c" + Math.random().toString(36).slice(2, 8);
     var pattern = "";
-    if (o.pattern === "stripes") pattern = '<rect x="46" y="28" width="108" height="74" fill="url(#' + id + 'p)" opacity=".18"/>';
-    if (o.pattern === "dots") pattern = '<rect x="46" y="28" width="108" height="74" fill="url(#' + id + 'd)" opacity=".22"/>';
+    if (o.pattern === "stripes") pattern = '<path d="M51 26 L149 26 L154 76 L46 76 Z" fill="url(#' + id + 'p)" opacity=".18"/>';
+    if (o.pattern === "dots") pattern = '<path d="M51 26 L149 26 L154 76 L46 76 Z" fill="url(#' + id + 'd)" opacity=".22"/>';
     var photo = o.photo
-      ? '<circle cx="100" cy="56" r="15" fill="' + acc + '" opacity=".35"/><circle cx="94" cy="53" r="5" fill="' + ink + '" opacity=".55"/><circle cx="106" cy="53" r="5" fill="' + ink + '" opacity=".45"/><path d="M86 68 q14 10 28 0" stroke="' + ink + '" stroke-width="2" fill="none" opacity=".5"/>'
+      ? '<circle cx="100" cy="43" r="10" fill="' + acc + '" opacity=".35"/><circle cx="96" cy="41" r="3.2" fill="' + ink + '" opacity=".55"/><circle cx="104" cy="41" r="3.2" fill="' + ink + '" opacity=".45"/><path d="M93 47 q7 5 14 0" stroke="' + ink + '" stroke-width="1.4" fill="none" opacity=".5"/>'
       : "";
-    var ty = o.photo ? 86 : 64, sy = o.photo ? 96 : 80;
+    var ty = o.photo ? 62 : 54, sy = o.photo ? 69 : 66;
     return (
       '<svg viewBox="0 0 200 130" role="img" aria-label="Krówka w papierku: ' + t + '" xmlns="http://www.w3.org/2000/svg">' +
       "<defs>" +
@@ -23,21 +23,25 @@
       '<filter id="' + id + 's" x="-10%" y="-10%" width="120%" height="140%"><feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#3b2417" flood-opacity=".22"/></filter>' +
       "</defs>" +
       '<g filter="url(#' + id + 's)">' +
-      // zakładki boczne
-      '<path d="M46 30 L14 40 Q10 65 14 90 L46 100 Z" fill="' + bg + '"/>' +
-      '<path d="M154 30 L186 40 Q190 65 186 90 L154 100 Z" fill="' + bg + '"/>' +
-      '<path d="M46 30 L14 40 Q10 65 14 90 L46 100 Z" fill="#000" opacity=".07"/>' +
-      '<path d="M154 30 L186 40 Q190 65 186 90 L154 100 Z" fill="#000" opacity=".07"/>' +
-      '<path d="M22 46 L44 40 M20 65 L44 65 M22 84 L44 90 M178 46 L156 40 M180 65 L156 65 M178 84 L156 90" stroke="#000" stroke-opacity=".08" stroke-width="1.2"/>' +
-      // front
-      '<rect x="44" y="26" width="112" height="78" rx="6" fill="' + bg + '"/>' +
+      // skrzydełka: płaskie, trójkątne, przy podstawie (jak w podglądzie 3D konfiguratora)
+      '<path d="M51 52 L5 81 L48 98 Z" fill="#000" opacity=".16" transform="translate(0 2)"/>' +
+      '<path d="M149 52 L195 81 L152 98 Z" fill="#000" opacity=".16" transform="translate(0 2)"/>' +
+      '<path d="M51 52 L5 81 L48 98 Z" fill="' + bg + '"/>' +
+      '<path d="M149 52 L195 81 L152 98 Z" fill="' + bg + '"/>' +
+      '<path d="M51 52 L5 81 L48 98 Z M149 52 L195 81 L152 98 Z" fill="#000" opacity=".06"/>' +
+      '<path d="M5 81 L48 98 M195 81 L152 98" stroke="#000" stroke-opacity=".18" stroke-width=".8"/>' +
+      // bok (ścianka przednia)
+      '<path d="M46 76 L154 76 L152 97 L48 97 Z" fill="' + bg + '"/>' +
+      '<path d="M46 76 L154 76 L152 97 L48 97 Z" fill="#000" opacity=".13"/>' +
+      // front (góra cukierka)
+      '<path d="M51 26 L149 26 L154 76 L46 76 Z" fill="' + bg + '"/>' +
       pattern +
-      '<rect x="44" y="26" width="112" height="78" rx="6" fill="url(#' + id + 'g)"/>' +
-      '<rect x="51" y="33" width="98" height="64" rx="3" fill="none" stroke="' + acc + '" stroke-width="1"/>' +
-      '<rect x="54" y="36" width="92" height="58" rx="2" fill="none" stroke="' + acc + '" stroke-width=".5" opacity=".7"/>' +
+      '<path d="M51 26 L149 26 L154 76 L46 76 Z" fill="url(#' + id + 'g)"/>' +
+      '<path d="M57 31 L143 31 L147 71 L53 71 Z" fill="none" stroke="' + acc + '" stroke-width=".9"/>' +
+      '<path d="M46 76 L154 76" stroke="#fff" stroke-opacity=".5" stroke-width=".8"/>' +
       photo +
-      '<text x="100" y="' + ty + '" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-size="' + (o.photo ? 12 : 17) + '" font-weight="600" fill="' + ink + '" letter-spacing=".5">' + t + "</text>" +
-      '<text x="100" y="' + sy + '" text-anchor="middle" font-family="Inter, sans-serif" font-size="6.5" fill="' + acc + '" letter-spacing="1.6">' + s.toUpperCase() + "</text>" +
+      '<text x="100" y="' + ty + '" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-size="' + (o.photo ? 10 : 14) + '" font-weight="600" fill="' + ink + '" letter-spacing=".5">' + t + "</text>" +
+      '<text x="100" y="' + sy + '" text-anchor="middle" font-family="Inter, sans-serif" font-size="5.4" fill="' + acc + '" letter-spacing="1.4">' + s.toUpperCase() + "</text>" +
       "</g></svg>"
     );
   }
