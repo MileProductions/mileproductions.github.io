@@ -459,3 +459,31 @@ footer.site a:hover { color: var(--gold-soft); }
   .shop-header .logo-text small { display: none; }
 }
 @media (max-width: 900px) { .cfg-hero .hero-visual { order: 2; } }
+
+/* ---------- Zdjęcia z krowki.pl (z ilustracją SVG jako zapasem) ---------- */
+.ph { position: relative; overflow: hidden; }
+.ph > img.pic { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
+.ph > img.pic.contain { object-fit: contain; padding: 1rem; }
+.photo > img.pic { z-index: 0; }
+.photo figcaption { z-index: 2; text-shadow: 0 1px 8px rgba(0,0,0,.5); }
+.photo.has-shade::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top, rgba(30,18,10,.55), transparent 45%); }
+.logo-img { height: 46px; width: auto; display: none; }
+.logo.img-ok .logo-img { display: block; }
+.logo.img-ok .logo-mark, .logo.img-ok .logo-text { display: none; }
+footer.site .logo.img-ok .logo-img { filter: brightness(0) invert(.92) sepia(.2); }
+.wrapper-tile.ph { padding: 0; }
+.band { height: clamp(260px, 38vw, 460px); border-radius: 24px; margin-top: 3rem; background: linear-gradient(170deg, #cbb497, #8c6b4f); }
+.gallery { display: grid; grid-template-columns: repeat(6, 1fr); gap: .8rem; margin-top: 2rem; }
+.gallery a { aspect-ratio: 1; border-radius: 12px; background: var(--cream-2); display: block; }
+.gallery a:hover img { transform: scale(1.05); }
+.gallery img { transition: transform .4s; }
+@media (max-width: 900px) { .gallery { grid-template-columns: repeat(3, 1fr); } }
+.occasion.ph { padding: 0; aspect-ratio: 4 / 5; }
+.occasion.ph > div { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 1.4rem; background: linear-gradient(to top, rgba(250,246,239,.97) 55%, rgba(250,246,239,0)); }
+.occasions.three { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 900px) { .occasions.three { grid-template-columns: 1fr; } }
+.flav-banner { aspect-ratio: 21 / 8; border-radius: 22px; margin-top: 2.5rem; background: var(--cream-2); }
+.sample .box.ph { aspect-ratio: 1; max-width: 300px; border-radius: 20px; }
+.tour-thumbs { display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem; margin-top: .8rem; }
+.tour-thumbs a { aspect-ratio: 1; border-radius: 10px; display: block; background: var(--cream-2); }
+.hero-card.ph > img.pic { border-radius: 28px; }
