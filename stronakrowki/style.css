@@ -555,3 +555,9 @@ footer.site .logo.img-ok .logo-img { filter: brightness(0) invert(.92) sepia(.2)
 @media (max-width: 480px) { .fl-grid { grid-template-columns: 1fr 1fr; gap: .7rem; } .fl-card { padding: .8rem; } .fl-body h3 { font-size: 1.12rem; } .fl-body p { font-size: .8rem; } }
 .fl-layout > * { min-width: 0; }
 @media (max-width: 860px) { .fl-layout { grid-template-columns: minmax(0, 1fr); } .fl-featured .cube-big { width: 45%; } }
+
+/* Kotwice: tytuł sekcji widoczny pod przyklejonym nagłówkiem */
+html { scroll-padding-top: 96px; }
+html:has(.shop-header) { scroll-padding-top: 136px; }
+section[id]:not([style*="padding-top:0"]) { scroll-margin-top: calc(28px - clamp(4.5rem, 9vw, 8rem)); }
+section.designer-zone[id] { scroll-margin-top: 0; }
