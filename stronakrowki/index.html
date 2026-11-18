@@ -59,7 +59,7 @@
         </div>
         <div class="hero-visual reveal">
           <div class="hero-card ph">
-            <img class="pic contain" src="https://krowki.pl/images/design/Krowki%2037.png" alt="Krówki z Milanówka" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()">
+            <img fetchpriority="high" class="pic contain" src="https://krowki.pl/images/design/Krowki%2037.png" alt="Krówki z Milanówka" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()">
             <svg class="candy-stack" viewBox="0 0 400 400" aria-hidden="true">
               <g id="hs"></g>
             </svg>
@@ -164,21 +164,30 @@
           <div class="facts">
             <span class="fact">ok. 95–100 szt. w 1 kg</span>
             <span class="fact">realizacja ok. 5–7 dni roboczych od akceptacji</span>
+            <span class="fact">min. zamówienie od 5 kg</span><!-- propozycja do akceptacji: minimum B2B -->
             <span class="fact">10+ smaków</span>
           </div>
         </div>
         <div class="reveal">
           <p class="muted" style="font-size:.85rem;margin-bottom:1rem">Nasze realizacje dla firm</p>
           <div class="logos">
-            <div class="wrapper-tile ph" data-candy data-bg="#1d3557" data-ink="#ffffff" data-accent="#a8dadc" data-title="NORDA" data-sub="logistics"><img class="pic" src="https://krowki.pl/images/galerie/43/thumbnails/krowki-firmowe-logo-1.webp" alt="Realizacja: krówki firmowe z logo 1" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></div>
-            <div class="wrapper-tile ph" data-candy data-bg="#fff" data-ink="#e63946" data-accent="#e63946" data-title="Pixel&amp;Co" data-sub="software house" data-pattern="dots"><img class="pic" src="https://krowki.pl/images/galerie/43/thumbnails/krowki-firmowe-logo-2.webp" alt="Realizacja: krówki firmowe z logo 2" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></div>
-            <div class="wrapper-tile ph" data-candy data-bg="#2f4a3a" data-ink="#f1e4d3" data-accent="#d9b98a" data-title="Zielony Dom" data-sub="deweloper"><img class="pic" src="https://krowki.pl/images/galerie/43/thumbnails/krowki-firmowe-logo-3.webp" alt="Realizacja: krówki firmowe z logo 3" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></div>
-            <div class="wrapper-tile ph" data-candy data-bg="#f7d9c4" data-ink="#3b2417" data-accent="#b07a3c" data-title="Kawiarnia 7" data-sub="dziękujemy"><img class="pic" src="https://krowki.pl/images/galerie/43/thumbnails/krowki-firmowe-logo-4.webp" alt="Realizacja: krówki firmowe z logo 4" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></div>
-            <div class="wrapper-tile ph" data-candy data-bg="#111" data-ink="#f5c518" data-accent="#f5c518" data-title="VOLT" data-sub="energy" data-pattern="stripes"><img class="pic" src="https://krowki.pl/images/galerie/43/thumbnails/krowki-firmowe-logo-5.webp" alt="Realizacja: krówki firmowe z logo 5" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></div>
-            <div class="wrapper-tile ph" data-candy data-bg="#6d2430" data-ink="#faf6ef" data-accent="#d9b98a" data-title="Wesołych Świąt" data-sub="kancelaria"><img class="pic" src="https://krowki.pl/images/galerie/43/thumbnails/krowki-firmowe-logo-6.webp" alt="Realizacja: krówki firmowe z logo 6" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></div>
+            <a class="wrapper-tile ph" href="https://krowki.pl/images/galerie/43/krowki-firmowe-logo-1.webp" data-lb="firmy" data-candy data-bg="#1d3557" data-ink="#ffffff" data-accent="#a8dadc" data-title="NORDA" data-sub="logistics"><img class="pic" src="https://krowki.pl/images/galerie/43/thumbnails/krowki-firmowe-logo-1.webp" alt="Realizacja: krówki firmowe z logo 1" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a>
+            <a class="wrapper-tile ph" href="https://krowki.pl/images/galerie/43/krowki-firmowe-logo-2.webp" data-lb="firmy" data-candy data-bg="#fff" data-ink="#e63946" data-accent="#e63946" data-title="Pixel&amp;Co" data-sub="software house" data-pattern="dots"><img class="pic" src="https://krowki.pl/images/galerie/43/thumbnails/krowki-firmowe-logo-2.webp" alt="Realizacja: krówki firmowe z logo 2" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a>
+            <a class="wrapper-tile ph" href="https://krowki.pl/images/galerie/43/krowki-firmowe-logo-3.webp" data-lb="firmy" data-candy data-bg="#2f4a3a" data-ink="#f1e4d3" data-accent="#d9b98a" data-title="Zielony Dom" data-sub="deweloper"><img class="pic" src="https://krowki.pl/images/galerie/43/thumbnails/krowki-firmowe-logo-3.webp" alt="Realizacja: krówki firmowe z logo 3" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a>
+            <a class="wrapper-tile ph" href="https://krowki.pl/images/galerie/43/krowki-firmowe-logo-4.webp" data-lb="firmy" data-candy data-bg="#f7d9c4" data-ink="#3b2417" data-accent="#b07a3c" data-title="Kawiarnia 7" data-sub="dziękujemy"><img class="pic" src="https://krowki.pl/images/galerie/43/thumbnails/krowki-firmowe-logo-4.webp" alt="Realizacja: krówki firmowe z logo 4" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a>
+            <a class="wrapper-tile ph" href="https://krowki.pl/images/galerie/43/krowki-firmowe-logo-5.webp" data-lb="firmy" data-candy data-bg="#111" data-ink="#f5c518" data-accent="#f5c518" data-title="VOLT" data-sub="energy" data-pattern="stripes"><img class="pic" src="https://krowki.pl/images/galerie/43/thumbnails/krowki-firmowe-logo-5.webp" alt="Realizacja: krówki firmowe z logo 5" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a>
+            <a class="wrapper-tile ph" href="https://krowki.pl/images/galerie/43/krowki-firmowe-logo-6.webp" data-lb="firmy" data-candy data-bg="#6d2430" data-ink="#faf6ef" data-accent="#d9b98a" data-title="Wesołych Świąt" data-sub="kancelaria"><img class="pic" src="https://krowki.pl/images/galerie/43/thumbnails/krowki-firmowe-logo-6.webp" alt="Realizacja: krówki firmowe z logo 6" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a>
           </div>
-          <div class="gallery" style="grid-template-columns:repeat(3,1fr);margin-top:.8rem"><a class="ph" href="https://krowki.pl/images/galerie/43/krowki-firmowe-logo-7.webp" target="_blank" rel="noopener"><img class="pic" src="https://krowki.pl/images/galerie/43/thumbnails/krowki-firmowe-logo-7.webp" alt="Krówki firmowe z logo 7" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/43/krowki-firmowe-logo-8.webp" target="_blank" rel="noopener"><img class="pic" src="https://krowki.pl/images/galerie/43/thumbnails/krowki-firmowe-logo-8.webp" alt="Krówki firmowe z logo 8" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/43/krowki-firmowe-logo-9.webp" target="_blank" rel="noopener"><img class="pic" src="https://krowki.pl/images/galerie/43/thumbnails/krowki-firmowe-logo-9.webp" alt="Krówki firmowe z logo 9" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a></div>
+          <div class="gallery" style="grid-template-columns:repeat(3,1fr);margin-top:.8rem"><a class="ph" href="https://krowki.pl/images/galerie/43/krowki-firmowe-logo-7.webp" data-lb="firmy"><img class="pic" src="https://krowki.pl/images/galerie/43/thumbnails/krowki-firmowe-logo-7.webp" alt="Krówki firmowe z logo 7" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/43/krowki-firmowe-logo-8.webp" data-lb="firmy"><img class="pic" src="https://krowki.pl/images/galerie/43/thumbnails/krowki-firmowe-logo-8.webp" alt="Krówki firmowe z logo 8" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/43/krowki-firmowe-logo-9.webp" data-lb="firmy"><img class="pic" src="https://krowki.pl/images/galerie/43/thumbnails/krowki-firmowe-logo-9.webp" alt="Krówki firmowe z logo 9" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a></div>
         </div>
+      </div>
+
+      <!-- Placeholdery logotypów: do podmiany na prawdziwe logo klientów (za ich zgodą) -->
+      <div class="wrap trusted reveal" aria-label="Zaufali nam">
+        <span class="trusted-label">Zaufali nam</span>
+        <ul>
+          <li>NORDA</li><li>Pixel&amp;Co</li><li>ZIELONY DOM</li><li>VOLT</li><li>Kancelaria L&amp;M</li><li>EVENTO</li>
+        </ul>
       </div>
     </section>
 
@@ -232,19 +241,26 @@
           <p class="lead">Najczęściej wybieramy klasyczną mleczną. Ale jeśli chcesz zaskoczyć, mamy kilkanaście smaków. Niektóre smaki z logo robimy tylko w wybranych terminach.</p>
         </div>
         <div class="flavours">
-          <div class="flavour reveal"><span class="dot" style="background:#d9b98a"></span><div><b>Klasyczna mleczna</b><small>Ta, od której wszystko się zaczęło.</small><span class="tag">bestseller</span></div></div>
-          <div class="flavour reveal"><span class="dot" style="background:#c2364a"></span><div><b>Malina</b><small>Z posypką z owoców liofilizowanych.</small></div></div>
-          <div class="flavour reveal"><span class="dot" style="background:#e0485a"></span><div><b>Truskawka</b><small>Z posypką z owoców liofilizowanych.</small></div></div>
-          <div class="flavour reveal"><span class="dot" style="background:#8f1d2c"></span><div><b>Czerwona porzeczka</b><small>Z posypką z owoców liofilizowanych.</small></div></div>
-          <div class="flavour reveal"><span class="dot" style="background:#93a85a"></span><div><b>Pistacja</b><small>Kremowa, z kawałkami pistacji.</small></div></div>
-          <div class="flavour reveal"><span class="dot" style="background:#d8a548"></span><div><b>Imbir</b><small>Z wyraźną, rozgrzewającą nutą.</small></div></div>
-          <div class="flavour reveal"><span class="dot" style="background:#e6d3a8"></span><div><b>Sezam</b><small>Delikatnie orzechowa.</small></div></div>
-          <div class="flavour reveal"><span class="dot" style="background:#a8642b"></span><div><b>Słony karmel</b><small>Słodko-słona, bardzo uzależniająca.</small></div></div>
-          <div class="flavour reveal"><span class="dot" style="background:#b98a52"></span><div><b>Peanut butter</b><small>Dla fanów masła orzechowego.</small></div></div>
-          <div class="flavour reveal"><span class="dot" style="background:#5a3422"></span><div><b>Czekoladowa</b><small>Mleczna ciągutka z kakao.</small></div></div>
-          <div class="flavour reveal"><span class="dot" style="background:#9b5b34"></span><div><b>Cynamonowa</b><small>Na święta.</small><span class="tag">sezonowa</span></div></div>
-          <div class="flavour reveal"><span class="dot" style="background:#d27a2c"></span><div><b>Pumpkin Spiced Latte</b><small>Dynia, cynamon, goździki, gałka muszkatołowa.</small><span class="tag">limitowana · jesień</span></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#d9b98a"></span><div><b>Klasyczna mleczna</b><span class="avail now">od ręki z nadrukiem</span><small>Ta, od której wszystko się zaczęło.</small><span class="tag">bestseller</span></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#c2364a"></span><div><b>Malina</b><span class="avail now">od ręki z nadrukiem</span><small>Z posypką z owoców liofilizowanych.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#e0485a"></span><div><b>Truskawka</b><span class="avail now">od ręki z nadrukiem</span><small>Z posypką z owoców liofilizowanych.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#8f1d2c"></span><div><b>Czerwona porzeczka</b><span class="avail now">od ręki z nadrukiem</span><small>Z posypką z owoców liofilizowanych.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#93a85a"></span><div><b>Pistacja</b><span class="avail order">na zamówienie</span><small>Kremowa, z kawałkami pistacji.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#d8a548"></span><div><b>Imbir</b><span class="avail order">na zamówienie</span><small>Z wyraźną, rozgrzewającą nutą.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#e6d3a8"></span><div><b>Sezam</b><span class="avail order">na zamówienie</span><small>Delikatnie orzechowa.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#a8642b"></span><div><b>Słony karmel</b><span class="avail now">od ręki z nadrukiem</span><small>Słodko-słona, bardzo uzależniająca.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#b98a52"></span><div><b>Peanut butter</b><span class="avail order">na zamówienie</span><small>Dla fanów masła orzechowego.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#5a3422"></span><div><b>Czekoladowa</b><span class="avail now">od ręki z nadrukiem</span><small>Mleczna ciągutka z kakao.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#9b5b34"></span><div><b>Cynamonowa</b><span class="avail season">sezonowo</span><small>Na święta.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#d27a2c"></span><div><b>Pumpkin Spiced Latte</b><span class="avail season">sezonowo · jesień</span><small>Dynia, cynamon, goździki, gałka muszkatołowa.</small></div></div>
         </div>
+        <!-- Dostępność smaków i alergeny: propozycja do akceptacji przez manufakturę -->
+        <div class="fl-legend reveal">
+          <span><i class="avail now">od ręki z nadrukiem</i> robimy przez cały rok, także z Twoim logo</span>
+          <span><i class="avail order">na zamówienie</i> produkujemy w wybranych terminach</span>
+          <span><i class="avail season">sezonowo</i> tylko w swoim sezonie</span>
+        </div>
+        <p class="allergens reveal"><b>Alergeny:</b> wszystkie krówki zawierają <b>mleko</b>. Smaki pistacjowy i peanut butter zawierają <b>orzechy</b> (pistacje, orzeszki ziemne), a sezamowy <b>sezam</b>. Produkujemy je w zakładzie, w którym przetwarza się orzechy i sezam, więc pozostałe smaki mogą zawierać ich śladowe ilości.</p>
       </div>
     </section>
 
@@ -261,7 +277,7 @@
           <a class="occasion ph bg-caramel reveal" href="sklep.html"><img class="pic" src="https://krowki.pl/images/krowki_personalizowane-4.png" alt="Krówki personalizowane" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"><div><h3>Prezent i słodki stół</h3><p>Pudełka, torebki i krówki luzem</p></div></a>
           <a class="occasion ph bg-cream reveal" href="sklep.html"><img class="pic" src="https://krowki.pl/images/krowki_personalizowane-5.png" alt="Podziękowania dla gości" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"><div><h3>Podziękowania dla gości</h3><p>Chrzest, komunia, urodziny, roczek</p></div></a>
         </div>
-        <div class="gallery"><a class="ph" href="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-1.webp" target="_blank" rel="noopener"><img class="pic" src="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-1.webp" alt="Krówki na okazje, realizacja 1" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-2.webp" target="_blank" rel="noopener"><img class="pic" src="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-2.webp" alt="Krówki na okazje, realizacja 2" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-3.webp" target="_blank" rel="noopener"><img class="pic" src="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-3.webp" alt="Krówki na okazje, realizacja 3" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-4.webp" target="_blank" rel="noopener"><img class="pic" src="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-4.webp" alt="Krówki na okazje, realizacja 4" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-5.webp" target="_blank" rel="noopener"><img class="pic" src="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-5.webp" alt="Krówki na okazje, realizacja 5" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-6.webp" target="_blank" rel="noopener"><img class="pic" src="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-6.webp" alt="Krówki na okazje, realizacja 6" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a></div>
+        <div class="gallery"><a class="ph" href="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-1.webp" data-lb="okazje"><img class="pic" src="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-1.webp" alt="Krówki na okazje, realizacja 1" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-2.webp" data-lb="okazje"><img class="pic" src="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-2.webp" alt="Krówki na okazje, realizacja 2" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-3.webp" data-lb="okazje"><img class="pic" src="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-3.webp" alt="Krówki na okazje, realizacja 3" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-4.webp" data-lb="okazje"><img class="pic" src="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-4.webp" alt="Krówki na okazje, realizacja 4" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-5.webp" data-lb="okazje"><img class="pic" src="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-5.webp" alt="Krówki na okazje, realizacja 5" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-6.webp" data-lb="okazje"><img class="pic" src="https://krowki.pl/images/galerie/45/krowki-na-kazda-okazje-6.webp" alt="Krówki na okazje, realizacja 6" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a></div>
         <div class="center" style="margin-top:2.5rem"><a class="btn btn-primary" href="sklep.html">Przejdź do sklepu</a></div>
       </div>
     </section>
@@ -277,30 +293,61 @@
             <tr><th>Dla kogo</th><td>Grupy szkolne i przedszkolne, od 4. roku życia</td></tr>
             <tr><th>Wielkość grupy</th><td>20–40 osób</td></tr>
             <tr><th>Terminy</th><td>Poniedziałek–piątek, 10:00–11:30 lub 12:00–13:30</td></tr>
-            <tr><th>Gdzie</th><td>ul. Klonowa 1b, 05-825 Grodzisk Mazowiecki</td></tr>
+            <tr><th>Czas trwania</th><td>ok. 1,5 godz.</td></tr>
+            <tr><th>Cena</th><td>np. 35 zł / osoba <span class="muted">(do potwierdzenia)</span><!-- placeholder ceny --></td></tr>
+            <tr><th>Gdzie</th><td>ul. Klonowa 1b, 05-825 Grodzisk Mazowiecki<br><a class="route" href="https://www.google.com/maps/dir/?api=1&amp;destination=ul.+Klonowa+1b,+05-825+Grodzisk+Mazowiecki" target="_blank" rel="noopener">Wyznacz trasę →</a></td></tr>
+            <tr><th>Dojazd</th><td>Parking dla autokaru przy manufakturze</td></tr>
             <tr><th>Rezerwacje</th><td>Agnieszka Lewicka, <a href="tel:+48512511628">+48 512 511 628</a></td></tr>
           </table>
           <a class="btn btn-primary" href="#kontakt">Zarezerwuj wycieczkę</a>
         </div>
         <div class="reveal"><figure class="photo tour-photo" style="margin:0">
-          <img src="https://krowki.pl/images/galerie/42/wycieczka-002.jpg" alt="Dzieci na wycieczce w manufakturze krówek" loading="lazy" referrerpolicy="no-referrer">
+          <a href="https://krowki.pl/images/galerie/42/wycieczka-002.jpg" data-lb="wycieczki" data-lb-first><img src="https://krowki.pl/images/galerie/42/wycieczka-002.jpg" alt="Dzieci na wycieczce w manufakturze krówek" loading="lazy" referrerpolicy="no-referrer"></a>
           <figcaption>Warsztaty w manufakturze krówek</figcaption>
         </figure>
-        <div class="tour-thumbs"><a class="ph" href="https://krowki.pl/images/galerie/42/wycieczka-005.jpg" target="_blank" rel="noopener"><img class="pic" src="https://krowki.pl/images/galerie/42/thumbnails/wycieczka-005.jpg" alt="Wycieczka do manufaktury" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/42/wycieczka-009.jpg" target="_blank" rel="noopener"><img class="pic" src="https://krowki.pl/images/galerie/42/thumbnails/wycieczka-009.jpg" alt="Wycieczka do manufaktury" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/42/wycieczka-013.jpg" target="_blank" rel="noopener"><img class="pic" src="https://krowki.pl/images/galerie/42/thumbnails/wycieczka-013.jpg" alt="Wycieczka do manufaktury" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/42/wycieczka-017.jpg" target="_blank" rel="noopener"><img class="pic" src="https://krowki.pl/images/galerie/42/thumbnails/wycieczka-017.jpg" alt="Wycieczka do manufaktury" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a></div></div>
+        <div class="tour-thumbs"><a class="ph" href="https://krowki.pl/images/galerie/42/wycieczka-005.jpg" data-lb="wycieczki"><img class="pic" src="https://krowki.pl/images/galerie/42/thumbnails/wycieczka-005.jpg" alt="Wycieczka do manufaktury" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/42/wycieczka-009.jpg" data-lb="wycieczki"><img class="pic" src="https://krowki.pl/images/galerie/42/thumbnails/wycieczka-009.jpg" alt="Wycieczka do manufaktury" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/42/wycieczka-013.jpg" data-lb="wycieczki"><img class="pic" src="https://krowki.pl/images/galerie/42/thumbnails/wycieczka-013.jpg" alt="Wycieczka do manufaktury" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a><a class="ph" href="https://krowki.pl/images/galerie/42/wycieczka-017.jpg" data-lb="wycieczki"><img class="pic" src="https://krowki.pl/images/galerie/42/thumbnails/wycieczka-017.jpg" alt="Wycieczka do manufaktury" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></a></div></div>
+      </div>
+    </section>
+
+    <!-- OPINIE: przykładowe opinie, do podmiany na prawdziwe (za zgodą klientów) -->
+    <section class="testimonials">
+      <div class="wrap">
+        <div class="center reveal">
+          <div class="eyebrow">Opinie</div>
+          <h2>Co mówią nasi klienci</h2>
+        </div>
+        <div class="quotes">
+          <figure class="quote reveal">
+            <span class="q-kind">Dla firm</span>
+            <blockquote>„Zamawiamy krówki z logo na każde targi. Grafik przygotował projekt w jeden dzień, a na stoisku znikają szybciej niż ulotki.”</blockquote>
+            <figcaption><b>Marta K.</b> agencja eventowa, Warszawa</figcaption>
+          </figure>
+          <figure class="quote reveal">
+            <span class="q-kind">Na okazje</span>
+            <blockquote>„Krówki z naszymi imionami i datą ślubu były najmilszym podziękowaniem dla gości. Wiele osób zabrało je do domu na pamiątkę.”</blockquote>
+            <figcaption><b>Ola i Paweł</b> para młoda</figcaption>
+          </figure>
+          <figure class="quote reveal">
+            <span class="q-kind">Wycieczki</span>
+            <blockquote>„Dzieci były zachwycone, że mogły same zawinąć krówkę i zaprojektować papierek. Świetnie zorganizowane i bezpieczne zajęcia.”</blockquote>
+            <figcaption><b>Pani Joanna</b> nauczycielka przedszkola</figcaption>
+          </figure>
+        </div>
       </div>
     </section>
 
     <!-- BLOG -->
-    <section>
+    <section id="blog">
       <div class="wrap">
         <div class="center reveal">
           <div class="eyebrow">Blog</div>
           <h2>Słodkie historie</h2>
+          <p class="muted" style="font-size:.85rem">Podgląd makiety: kliknij wpis, żeby zobaczyć przykładowy artykuł.</p>
         </div>
         <div class="posts">
-          <a class="post reveal" href="#"><div class="post-img bg-caramel ph"><span data-cow></span><img class="pic" src="https://krowki.pl/images/design/news-1.webp" alt="Krówki z Milanówka" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></div><small>Historia</small><h3>Historia krówek z Milanówka</h3><p>Od letniska lat 20. i ciągutki Feliksa Pomorskiego do krowy na papierku.</p></a>
-          <a class="post reveal" href="#"><div class="post-img bg-cream ph" data-candy data-bg="#fffaf2" data-title="Ciągutka" data-sub="mleczna"><img class="pic" src="https://krowki.pl/images/design/news-2.webp" alt="Jak powstaje ciągutka mleczna" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></div><small>Manufaktura</small><h3>Jak powstaje ciągutka mleczna</h3><p>Kotły, stoły, paski i ręczne zawijanie. Dwa dni pracy dla jednej krówki.</p></a>
-          <a class="post reveal" href="#"><div class="post-img bg-cream ph" data-candy data-bg="#fff" data-ink="#6d2430" data-accent="#c48b93" data-title="Na okazje" data-sub="krówki"><img class="pic" src="https://krowki.pl/images/design/news-3.webp" alt="Krówki na każdą okazję" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></div><small>Inspiracje</small><h3>Krówki na każdą okazję</h3><p>Śluby, chrzciny, urodziny i podziękowania. Jak dobrać wzór i opakowanie.</p></a>
+          <a class="post reveal" href="#wpis-1" data-modal="post-1"><div class="post-img bg-caramel ph"><span data-cow></span><img class="pic" src="https://krowki.pl/images/design/news-1.webp" alt="Krówki z Milanówka" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></div><small>Historia</small><h3>Historia krówek z Milanówka</h3><p>Od letniska lat 20. i ciągutki Feliksa Pomorskiego do krowy na papierku.</p></a>
+          <a class="post reveal" href="#wpis-2" data-modal="post-2"><div class="post-img bg-cream ph" data-candy data-bg="#fffaf2" data-title="Ciągutka" data-sub="mleczna"><img class="pic" src="https://krowki.pl/images/design/news-2.webp" alt="Jak powstaje ciągutka mleczna" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></div><small>Manufaktura</small><h3>Jak powstaje ciągutka mleczna</h3><p>Kotły, stoły, paski i ręczne zawijanie. Dwa dni pracy dla jednej krówki.</p></a>
+          <a class="post reveal" href="#wpis-3" data-modal="post-3"><div class="post-img bg-cream ph" data-candy data-bg="#fff" data-ink="#6d2430" data-accent="#c48b93" data-title="Na okazje" data-sub="krówki"><img class="pic" src="https://krowki.pl/images/design/news-3.webp" alt="Krówki na każdą okazję" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></div><small>Inspiracje</small><h3>Krówki na każdą okazję</h3><p>Śluby, chrzciny, urodziny i podziękowania. Jak dobrać wzór i opakowanie.</p></a>
         </div>
       </div>
     </section>
@@ -324,6 +371,24 @@
       </div>
     </section>
 
+    <!-- FAQ: odpowiedzi to propozycje do akceptacji przez manufakturę -->
+    <section id="faq">
+      <div class="wrap">
+        <div class="center reveal">
+          <div class="eyebrow">FAQ</div>
+          <h2>Najczęstsze pytania</h2>
+        </div>
+        <div class="faq reveal">
+          <details open><summary>Jak długo krówki pozostają miękkie, a kiedy zaczynają kruszeć?</summary><p>Świeża krówka jest miękka i ciągnąca. Z czasem cukier naturalnie krystalizuje, więc po kilku tygodniach środek robi się bardziej kruchy. To znak, że w krówce nie ma konserwantów. Najlepiej smakuje w ciągu 2–3 tygodni od produkcji, dlatego robimy krówki na bieżąco, pod konkretny termin zamówienia.</p></details>
+          <details><summary>Jaki jest termin przydatności do spożycia?</summary><p>Na każdym opakowaniu podajemy datę minimalnej trwałości, zwykle około 3 miesięcy od produkcji. Krówki najlepiej przechowywać w suchym i chłodnym miejscu, z dala od słońca.<!-- placeholder: potwierdzić termin --></p></details>
+          <details><summary>W jakim formacie przesłać logo i czy grafik przygotuje wizualizację?</summary><p>Najlepiej przesłać logo w pliku wektorowym (PDF, AI, EPS lub SVG). PNG w dobrej rozdzielczości też wystarczy. Nasz grafik bezpłatnie przygotuje wizualizację papierka. Do produkcji przechodzimy dopiero po Twojej akceptacji.</p></details>
+          <details><summary>Jaka jest minimalna ilość zamówienia dla firm?</summary><p>Krówki z logo firmy robimy od 5 kg, czyli około 500 sztuk. Przy większych zamówieniach cena za kilogram spada, a szczegóły podamy w wycenie.<!-- propozycja do akceptacji: minimum B2B --></p></details>
+          <details><summary>Czy w jednym zamówieniu można mieszać smaki?</summary><p>Tak. W jednym zamówieniu możesz połączyć kilka smaków, a minimum liczymy dla każdego smaku osobno, np. od 2 kg. Najłatwiej ustalić to w rozmowie z opiekunem zamówienia.<!-- propozycja do akceptacji --></p></details>
+          <details><summary>Jak wygląda dostawa i odbiór osobisty w manufakturze?</summary><p>Wysyłamy kurierem na terenie całej Polski, zwykle w 1–2 dni robocze od zakończenia produkcji. Gotowe zamówienie możesz też odebrać osobiście w manufakturze w Grodzisku Mazowieckim, od poniedziałku do piątku w godzinach 8:00–16:00, po wcześniejszym umówieniu.</p></details>
+        </div>
+      </div>
+    </section>
+
     <!-- KONTAKT -->
     <section id="kontakt" class="b2b">
       <div class="wrap">
@@ -337,6 +402,7 @@
             <h3>Krówki reklamowe</h3>
             <p>Angelika Smolarek<br><a href="tel:+48505112124">+48 505 112 124</a></p>
             <p>Magdalena Lewandowska<br><a href="tel:+48503111200">+48 503 111 200</a></p>
+            <p>Zapytania z logo w załączniku<br><a href="mailto:reklamowe@krowki.pl">reklamowe@krowki.pl</a><!-- placeholder adresu do potwierdzenia --></p>
           </div>
           <div class="contact-card reveal">
             <h3>Okazje i wycieczki</h3>
@@ -345,8 +411,8 @@
           </div>
           <div class="contact-card reveal">
             <h3>Adresy</h3>
-            <p><b>Siedziba:</b> Krowki.pl Sp. z o.o., ul. Podgórna 16, 05-822 Milanówek</p>
-            <p><b>Manufaktura:</b> ul. Klonowa 1b, 05-825 Grodzisk Mazowiecki</p>
+            <p><b>Siedziba:</b> Krowki.pl Sp. z o.o., ul. Podgórna 16, 05-822 Milanówek<br><a class="route" href="https://www.google.com/maps/dir/?api=1&amp;destination=ul.+Podg%C3%B3rna+16,+05-822+Milan%C3%B3wek" target="_blank" rel="noopener">Wyznacz trasę →</a></p>
+            <p><b>Manufaktura:</b> ul. Klonowa 1b, 05-825 Grodzisk Mazowiecki<br><a class="route" href="https://www.google.com/maps/dir/?api=1&amp;destination=ul.+Klonowa+1b,+05-825+Grodzisk+Mazowiecki" target="_blank" rel="noopener">Wyznacz trasę →</a></p>
             <p class="muted" style="font-size:.85rem">NIP 5291838620</p>
           </div>
         </div>
@@ -363,7 +429,7 @@
           <div class="social"><a href="https://www.facebook.com/KrowkazMilanowka" aria-label="Facebook">Fb</a><a href="https://www.instagram.com/krowkipl/" aria-label="Instagram">Ig</a><a href="https://www.tiktok.com/@krowkipl" aria-label="TikTok">Tt</a><a href="https://www.linkedin.com/company/krowki-pl/" aria-label="LinkedIn">In</a></div>
         </div>
         <div><h4>Oferta</h4><ul><li><a href="#dla-firm">Krówki reklamowe</a></li><li><a href="#okazje">Krówki na okazje</a></li><li><a href="#smaki">Smaki</a></li><li><a href="sklep.html">Sklep</a></li><li><a href="sklep.html#projektuj">Zaprojektuj papierek</a></li></ul></div>
-        <div><h4>Firma</h4><ul><li><a href="#manufaktura">Manufaktura</a></li><li><a href="#wycieczki">Wycieczki</a></li><li><a href="#">Blog</a></li><li><a href="#">FAQ</a></li><li><a href="#kontakt">Kontakt</a></li></ul></div>
+        <div><h4>Firma</h4><ul><li><a href="#manufaktura">Manufaktura</a></li><li><a href="#wycieczki">Wycieczki</a></li><li><a href="#blog">Blog</a></li><li><a href="#faq">FAQ</a></li><li><a href="#kontakt">Kontakt</a></li></ul></div>
         <div>
           <h4>Newsletter</h4>
           <p>Zapisz się i odbierz 5% rabatu na pierwsze zakupy w sklepie.</p>
@@ -372,10 +438,17 @@
       </div>
       <div class="foot-bottom">
         <span>© 2026 Krowki.pl Sp. z o.o. · Koncepcja nowej strony</span>
-        <span><a href="#">Polityka prywatności</a> · <a href="#">Polityka cookies</a> · <a href="#">Regulamin współpracy</a> · <a href="#">Obowiązek informacyjny</a></span>
+        <span><a href="#polityka-prywatnosci" data-modal="legal" data-title="Polityka prywatności">Polityka prywatności</a> · <a href="#polityka-cookies" data-modal="legal" data-title="Polityka cookies">Polityka cookies</a> · <a href="#regulamin-wspolpracy" data-modal="legal" data-title="Regulamin współpracy">Regulamin współpracy</a> · <a href="#obowiazek-informacyjny" data-modal="legal" data-title="Obowiązek informacyjny">Obowiązek informacyjny</a></span>
       </div>
     </div>
   </footer>
+
+
+  <!-- Treści okien: przykładowe artykuły bloga i informacja o dokumentach -->
+  <template id="tpl-post-1"><small class="m-cat">Historia</small><h2>Historia krówek z Milanówka</h2><p>W latach 20. XX wieku Milanówek był podwarszawskim letniskiem, do którego zjeżdżali warszawiacy. To tutaj Feliks Pomorski zaczął gotować mleczną ciągutkę, którą szybko pokochali letnicy i mieszkańcy.</p><p>W latach 30. produkcja nabrała rozmachu, a na papierkach pojawiła się krowa, która towarzyszy nam do dziś. Przepis przechodził w rodzinie z pokolenia na pokolenie. W 1990 roku Konstancja Dołęga-Dołęgowska założyła firmę, którą dziś prowadzi razem z córkami.</p><p>Technologia się zmieniła, ale receptura i ręczne zawijanie zostały takie same.</p></template>
+  <template id="tpl-post-2"><small class="m-cat">Manufaktura</small><h2>Jak powstaje ciągutka mleczna</h2><p>Wszystko zaczyna się w kotłach, w których gotujemy mleko, masło i cukier. Masę trzeba cały czas mieszać, aż nabierze karmelowego koloru i odpowiedniej gęstości.</p><p>Gorącą masę wylewamy na stoły, gdzie powoli stygnie. Potem kroimy ją na paski, a paski na charakterystyczne kostki.</p><p>Na końcu każdą krówkę zawijamy ręcznie w papierek. Cały proces trwa do dwóch dni i właśnie dlatego nasze krówki są miękkie i ciągnące.</p></template>
+  <template id="tpl-post-3"><small class="m-cat">Inspiracje</small><h2>Krówki na każdą okazję</h2><p>Ślub, chrzest, komunia czy urodziny: krówki z imieniem, datą albo zdjęciem to słodka pamiątka, którą goście chętnie zabierają do domu.</p><p>Do wyboru jest kilkadziesiąt gotowych wzorów albo własny projekt, który przygotujesz w kilka minut w naszym projektancie papierków. Krówki pakujemy w pudełka, w torebki z podziękowaniem albo luzem, na stół słodyczy.</p><p>Wystarczy zamówić z wyprzedzeniem, najlepiej 2–3 tygodnie przed uroczystością.</p></template>
+  <template id="tpl-legal"><small class="m-cat">Dokumenty</small><h2 data-slot="title">Dokument</h2><p>To jest makieta nowej strony. Ten dokument zostanie podpięty na etapie wdrożenia, a jego treść przeniesiemy z obecnej strony krowki.pl po aktualizacji przez firmę.</p></template>
 
   <a class="btn btn-primary sticky-cta" href="sklep.html#projektuj">✦ Zaprojektuj własny papierek</a>
 

@@ -157,3 +157,93 @@
     f.addEventListener("submit", function (e) { e.preventDefault(); window.krowkiToast(f.dataset.demo); f.reset(); });
   });
 })();
+
+/* ---------- Lightbox galerii i okna (modal) ---------- */
+(function () {
+  "use strict";
+  var lastFocus = null;
+
+  function overlay(cls, inner) {
+    var o = document.createElement("div");
+    o.className = "ovl " + cls;
+    o.setAttribute("role", "dialog");
+    o.setAttribute("aria-modal", "true");
+    o.innerHTML = inner;
+    document.body.appendChild(o);
+    document.body.classList.add("no-scroll");
+    requestAnimationFrame(function () { o.classList.add("open"); });
+    return o;
+  }
+  function closeOverlay(o) {
+    if (!o) return;
+    o.classList.remove("open");
+    document.body.classList.remove("no-scroll");
+    setTimeout(function () { o.remove(); }, 200);
+    if (lastFocus) lastFocus.focus();
+  }
+
+  // Lightbox
+  var lb = null, items = [], idx = 0;
+  function show(i) {
+    idx = (i + items.length) % items.length;
+    var a = items[idx], img = a.querySelector("img");
+    var big = lb.querySelector(".lb-img");
+    big.src = a.getAttribute("href");
+    big.alt = img ? img.alt : "";
+    lb.querySelector(".lb-count").textContent = (idx + 1) + " / " + items.length;
+    lb.querySelector(".lb-cap").textContent = img ? img.alt : "";
+  }
+  function openLb(a) {
+    var g = a.dataset.lb;
+    items = Array.prototype.filter.call(document.querySelectorAll('a[data-lb="' + g + '"]'), function (x) { return x.offsetParent !== null || x.hasAttribute("data-lb-first"); });
+    lastFocus = a;
+    lb = overlay("lb",
+      '<button class="ovl-close" type="button" aria-label="Zamknij">×</button>' +
+      '<button class="lb-nav lb-prev" type="button" aria-label="Poprzednie zdjęcie">‹</button>' +
+      '<figure class="lb-fig"><img class="lb-img" referrerpolicy="no-referrer" alt=""><figcaption><span class="lb-cap"></span><span class="lb-count"></span></figcaption></figure>' +
+      '<button class="lb-nav lb-next" type="button" aria-label="Następne zdjęcie">›</button>');
+    lb.setAttribute("aria-label", "Galeria zdjęć");
+    show(items.indexOf(a));
+    if (items.length < 2) lb.querySelectorAll(".lb-nav").forEach(function (b) { b.hidden = true; });
+    lb.addEventListener("click", function (e) {
+      if (e.target.closest(".lb-prev")) return show(idx - 1);
+      if (e.target.closest(".lb-next")) return show(idx + 1);
+      if (e.target.closest(".ovl-close") || e.target === lb || e.target.classList.contains("lb-fig")) { closeOverlay(lb); lb = null; }
+    });
+    lb.querySelector(".ovl-close").focus();
+  }
+
+  // Modal (blog, dokumenty)
+  var md = null;
+  function openModal(trigger) {
+    var key = trigger.dataset.modal, tpl = document.getElementById("tpl-" + key);
+    if (!tpl) return;
+    lastFocus = trigger;
+    md = overlay("md", '<div class="md-box"><button class="ovl-close" type="button" aria-label="Zamknij">×</button><div class="md-body"></div></div>');
+    var body = md.querySelector(".md-body");
+    body.appendChild(tpl.content.cloneNode(true));
+    var slot = body.querySelector('[data-slot="title"]');
+    if (slot && trigger.dataset.title) slot.textContent = trigger.dataset.title;
+    var h = body.querySelector("h2");
+    if (h) { h.id = "md-title"; md.setAttribute("aria-labelledby", "md-title"); }
+    if (key.indexOf("post-") === 0) body.insertAdjacentHTML("beforeend", '<p class="md-note">Przykładowy artykuł w makiecie. Pełne wpisy pojawią się na blogu po wdrożeniu.</p>');
+    md.addEventListener("click", function (e) {
+      if (e.target === md || e.target.closest(".ovl-close")) { closeOverlay(md); md = null; }
+    });
+    md.querySelector(".ovl-close").focus();
+  }
+
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest("a[data-lb]");
+    if (a) { e.preventDefault(); openLb(a); return; }
+    var m = e.target.closest("[data-modal]");
+    if (m) { e.preventDefault(); openModal(m); }
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      if (lb) { closeOverlay(lb); lb = null; } else if (md) { closeOverlay(md); md = null; }
+    }
+    if (lb && e.key === "ArrowLeft") show(idx - 1);
+    if (lb && e.key === "ArrowRight") show(idx + 1);
+  });
+})();

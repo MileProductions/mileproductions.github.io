@@ -522,3 +522,59 @@ section.designer-zone[id] { scroll-margin-top: 0; }
 .flavour b { font-size: 1.02rem; margin-bottom: .15rem; }
 @media (max-width: 1000px) { .flavours { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 720px) { .flavours { grid-template-columns: repeat(2, 1fr); gap: .7rem; } .flavour { padding: 1rem; gap: .7rem; } }
+
+/* ---------- Lightbox i okna ---------- */
+body.no-scroll { overflow: hidden; }
+.ovl { position: fixed; inset: 0; z-index: 200; background: rgba(30, 18, 10, .86); display: flex; align-items: center; justify-content: center; padding: 1.5rem; opacity: 0; transition: opacity .2s; }
+.ovl.open { opacity: 1; }
+.ovl-close { position: absolute; top: 1rem; right: 1rem; width: 46px; height: 46px; border-radius: 50%; border: 0; background: var(--cream); color: var(--brown); font-size: 1.6rem; line-height: 1; cursor: pointer; z-index: 2; }
+.lb-fig { margin: 0; max-width: min(1100px, 100%); max-height: 100%; display: flex; flex-direction: column; align-items: center; }
+.lb-img { max-width: 100%; max-height: calc(100vh - 9rem); border-radius: 10px; box-shadow: 0 30px 60px -20px rgba(0,0,0,.6); background: #2a1910; }
+.lb-fig figcaption { color: #e9dccb; font-size: .9rem; margin-top: .8rem; display: flex; gap: 1.2rem; justify-content: center; }
+.lb-count { color: var(--gold-soft); }
+.lb-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 52px; height: 52px; border-radius: 50%; border: 1px solid rgba(217,185,138,.5); background: rgba(250,246,239,.1); color: var(--cream); font-size: 2rem; line-height: 1; cursor: pointer; }
+.lb-nav:hover { background: rgba(250,246,239,.22); }
+.lb-prev { left: 1rem; } .lb-next { right: 1rem; }
+@media (max-width: 600px) { .lb-nav { top: auto; bottom: 1rem; transform: none; } .lb-prev { left: calc(50% - 62px); } .lb-next { right: calc(50% - 62px); } .lb-img { max-height: calc(100vh - 12rem); } }
+.md-box { position: relative; background: var(--paper); border-radius: 24px; max-width: 680px; width: 100%; max-height: calc(100vh - 3rem); overflow: auto; padding: clamp(1.8rem, 5vw, 3rem); box-shadow: var(--shadow); }
+.md-box .ovl-close { background: var(--cream-2); }
+.md-body h2 { font-size: clamp(1.8rem, 4vw, 2.4rem); padding-right: 2.5rem; }
+.md-body p { color: var(--brown-2); }
+.m-cat { color: var(--gold); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; font-size: .74rem; display: block; margin-bottom: .6rem; }
+.md-note { font-size: .82rem; color: var(--muted) !important; border-top: 1px solid var(--line); padding-top: 1rem; margin-top: 1.4rem; }
+a[data-lb] { cursor: zoom-in; display: block; }
+.tour-photo a[data-lb] img { transition: transform .4s; }
+
+/* ---------- Zaufali nam ---------- */
+.trusted { margin-top: 3.5rem; padding-top: 2rem; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
+.trusted-label { font-size: .75rem; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.trusted ul { list-style: none; margin: 0; padding: 0; display: flex; flex: 1; justify-content: space-between; gap: 1.5rem 2rem; flex-wrap: wrap; }
+.trusted li { font-family: var(--serif); font-size: 1.35rem; font-weight: 600; letter-spacing: .06em; color: #a8998b; filter: grayscale(1); opacity: .85; white-space: nowrap; }
+.trusted li:nth-child(2n) { font-family: var(--sans); font-size: 1rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+
+/* ---------- Opinie ---------- */
+.testimonials { padding-top: clamp(4rem, 8vw, 6.5rem); }
+.quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; margin-top: 3rem; }
+.quote { margin: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 22px; padding: 2rem 1.8rem 1.7rem; position: relative; display: flex; flex-direction: column; }
+.quote::before { content: "“"; position: absolute; top: .6rem; right: 1.4rem; font-family: var(--serif); font-size: 5rem; line-height: 1; color: var(--gold-soft); opacity: .6; }
+.q-kind { font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 1rem; }
+.quote blockquote { margin: 0 0 1.4rem; font-family: var(--serif); font-size: 1.3rem; line-height: 1.4; color: var(--brown); flex: 1; }
+.quote figcaption { font-size: .86rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: .9rem; }
+.quote figcaption b { color: var(--brown); display: block; }
+@media (max-width: 900px) { .quotes { grid-template-columns: 1fr; } }
+
+/* ---------- Smaki: dostępność i alergeny ---------- */
+.avail { display: inline-block; font-size: .64rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; font-style: normal; border-radius: 999px; padding: .12rem .55rem; margin: .25rem 0 .35rem; }
+.flavour b { display: block; }
+.avail.now { background: #e5f4e4; color: #2f5a35; }
+.avail.order { background: #f9eeda; color: #8a5a17; }
+.avail.season { background: #f9ece7; color: #8a3d22; }
+.fl-legend { display: flex; flex-wrap: wrap; gap: .6rem 1.6rem; justify-content: center; margin-top: 2rem; font-size: .85rem; color: var(--muted); }
+.fl-legend .avail { margin: 0 .3rem 0 0; }
+.allergens { max-width: 820px; margin: 1.2rem auto 0; text-align: center; font-size: .84rem; color: var(--muted); }
+.allergens b { color: var(--brown-2); }
+
+/* ---------- Trasa ---------- */
+a.route { font-size: .84rem; font-weight: 600; color: var(--gold); text-decoration: none; white-space: nowrap; }
+a.route:hover { text-decoration: underline; }
+#faq { padding-top: clamp(3rem, 6vw, 5rem); }
