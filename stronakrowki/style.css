@@ -487,3 +487,20 @@ footer.site .logo.img-ok .logo-img { filter: brightness(0) invert(.92) sepia(.2)
 .tour-thumbs { display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem; margin-top: .8rem; }
 .tour-thumbs a { aspect-ratio: 1; border-radius: 10px; display: block; background: var(--cream-2); }
 .hero-card.ph > img.pic { border-radius: 28px; }
+
+/* Po wczytaniu zdjęcia: bez ilustracji zapasowej, ramka dopasowana do zdjęcia */
+.loaded > svg, .loaded > span:not(.tag) { display: none !important; }
+.photo.loaded, .band.loaded, .flav-banner.loaded, .hero-card.loaded {
+  aspect-ratio: auto; height: auto; background: none; padding: 0; box-shadow: none; border: 0;
+}
+.photo.loaded > img.pic, .band.loaded > img.pic, .flav-banner.loaded > img.pic, .hero-card.loaded > img.pic {
+  position: static; width: 100%; height: auto; padding: 0; object-fit: initial; border-radius: inherit;
+}
+.photo.loaded { border-radius: 6px; }
+.photo.loaded::before, .photo.loaded::after { display: none; }
+.photo.loaded figcaption {
+  position: static; color: var(--muted); text-shadow: none; padding: .7rem .2rem 0; font-size: 1rem;
+}
+.photo.loaded > img.pic { border-radius: 6px; }
+.hero-note { z-index: 3; }
+.hero-visual:has(.hero-card.loaded) .seal { display: none; }
