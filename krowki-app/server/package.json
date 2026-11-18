@@ -1,0 +1,23 @@
+{
+  "name": "krowki-server",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Backend konfiguratora papierków krówek: projekty, PDF w CMYK, dostęp przez newsletter, panel grafika",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env --disable-warning=ExperimentalWarning src/server.js",
+    "dev": "node --env-file-if-exists=.env --disable-warning=ExperimentalWarning --watch src/server.js",
+    "test": "node --disable-warning=ExperimentalWarning --test test/*.test.js",
+    "admin:add": "node --env-file-if-exists=.env --disable-warning=ExperimentalWarning scripts/admin-add.js",
+    "cleanup": "node --env-file-if-exists=.env --disable-warning=ExperimentalWarning scripts/cleanup.js"
+  },
+  "dependencies": {
+    "express": "^5.3.0",
+    "multer": "^2.5.0",
+    "nodemailer": "^7.0.13",
+    "pdf-lib": "^1.17.1"
+  }
+}

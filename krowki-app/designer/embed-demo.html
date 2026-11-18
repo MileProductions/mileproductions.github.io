@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Przykład osadzenia modułu w sklepie</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; background: #eee; }
+    .shop-header { background: #5d2a12; color: #fff; padding: 16px 24px; font-size: 20px; }
+    .shop-content { max-width: 1280px; margin: 16px auto; background: #fff; }
+  </style>
+</head>
+<body>
+  <div class="shop-header">Sklep z krówkami – przykładowa strona sklepu</div>
+  <div class="shop-content">
+    <!-- 1) skrypt modułu -->
+    <script type="module" src="./krowka-designer.js"></script>
+    <!-- 2) moduł; w sklepie zamiast "demo" podaj token="{{ podpisany token klienta }}" i login-url -->
+    <krowka-designer demo primary-color="#8e3b16"></krowka-designer>
+  </div>
+  <script>
+    // 3) sklep nasłuchuje zdarzeń modułu
+    const el = document.querySelector('krowka-designer');
+    el.addEventListener('krowka:cart:add', (e) => {
+      console.log('Dodaj do koszyka:', e.detail);
+      alert('Sklep otrzymał projekt ' + e.detail.designId + ': ' + e.detail.kg + ' kg, ' + e.detail.total + ' zł');
+    });
+    el.addEventListener('krowka:auth:required', () => console.log('Klient niezalogowany'));
+  </script>
+</body>
+</html>

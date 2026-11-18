@@ -1,0 +1,3 @@
+# GitHub Pages: kod aplikacji (backend i źródła konfiguratora) nie jest publikowany jako strona.
+exclude:
+  - krowki-app
