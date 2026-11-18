@@ -231,30 +231,19 @@
           <h2>Klasyka i coś więcej</h2>
           <p class="lead">Najczęściej wybieramy klasyczną mleczną. Ale jeśli chcesz zaskoczyć, mamy kilkanaście smaków. Niektóre smaki z logo robimy tylko w wybranych terminach.</p>
         </div>
-        <div class="fl-layout">
-          <aside class="fl-featured reveal" id="flavourFeatured">
-            <span class="tag">bestseller · od 1921</span>
-            <h3>Klasyczna mleczna</h3>
-            <p>Ta, od której wszystko się zaczęło. Mleko, masło i cukier gotowane powoli w kotłach, aż masa nabierze koloru karmelu. Miękka i ciągnąca, jak sto lat temu.</p>
-            <ul class="fl-facts">
-              <li><b>3</b><span>główne składniki</span></li>
-              <li><b>~10 g</b><span>jedna krówka</span></li>
-              <li><b>2 dni</b><span>od kotła do papierka</span></li>
-            </ul>
-            <a class="btn btn-primary" href="#probka">Spróbuj za darmo</a>
-          </aside>
-          <div>
-            <div class="fl-filter reveal" role="group" aria-label="Filtruj smaki">
-              <button type="button" data-g="all" aria-pressed="true">Wszystkie</button>
-              <button type="button" data-g="owocowe" aria-pressed="false">Owocowe</button>
-              <button type="button" data-g="orzechowe" aria-pressed="false">Orzechowe</button>
-              <button type="button" data-g="klasyczne" aria-pressed="false">Karmelowe</button>
-              <button type="button" data-g="korzenne" aria-pressed="false">Korzenne</button>
-              <button type="button" data-g="sezonowe" aria-pressed="false">Limitowane</button>
-            </div>
-            <div class="fl-grid" id="flavourGrid"></div>
-            <p class="muted fl-note">Smaki zrobimy także z Twoim logo. Niektóre produkujemy tylko w wybranych terminach, więc zapytaj o dostępność.</p>
-          </div>
+        <div class="flavours">
+          <div class="flavour reveal"><span class="dot" style="background:#d9b98a"></span><div><b>Klasyczna mleczna</b><small>Ta, od której wszystko się zaczęło.</small><span class="tag">bestseller</span></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#c2364a"></span><div><b>Malina</b><small>Z posypką z owoców liofilizowanych.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#e0485a"></span><div><b>Truskawka</b><small>Z posypką z owoców liofilizowanych.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#8f1d2c"></span><div><b>Czerwona porzeczka</b><small>Z posypką z owoców liofilizowanych.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#93a85a"></span><div><b>Pistacja</b><small>Kremowa, z kawałkami pistacji.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#d8a548"></span><div><b>Imbir</b><small>Z wyraźną, rozgrzewającą nutą.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#e6d3a8"></span><div><b>Sezam</b><small>Delikatnie orzechowa.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#a8642b"></span><div><b>Słony karmel</b><small>Słodko-słona, bardzo uzależniająca.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#b98a52"></span><div><b>Peanut butter</b><small>Dla fanów masła orzechowego.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#5a3422"></span><div><b>Czekoladowa</b><small>Mleczna ciągutka z kakao.</small></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#9b5b34"></span><div><b>Cynamonowa</b><small>Na święta.</small><span class="tag">sezonowa</span></div></div>
+          <div class="flavour reveal"><span class="dot" style="background:#d27a2c"></span><div><b>Pumpkin Spiced Latte</b><small>Dynia, cynamon, goździki, gałka muszkatołowa.</small><span class="tag">limitowana · jesień</span></div></div>
         </div>
       </div>
     </section>
@@ -391,7 +380,6 @@
   <a class="btn btn-primary sticky-cta" href="sklep.html#projektuj">✦ Zaprojektuj własny papierek</a>
 
   <script src="main.js"></script>
-  <script src="smaki.js"></script>
   <script>
     // Kompozycja krówek w hero
     (function () {
