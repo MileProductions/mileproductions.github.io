@@ -1,0 +1,33 @@
+{
+  "name": "krowki-designer",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build && vite build --config vite.embed.config.ts && cp embed-demo.html dist/embed/index.html",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "idb-keyval": "^6.3.0",
+    "konva": "^9.3.22",
+    "pdf-lib": "^1.17.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-easy-crop": "^6.2.5",
+    "react-konva": "^18.2.16",
+    "three": "^0.170.0",
+    "zustand": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@types/three": "^0.170.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "jsdom": "^31.0.1",
+    "typescript": "^5.9.3",
+    "vite": "^5.4.21",
+    "vitest": "^2.1.9"
+  }
+}

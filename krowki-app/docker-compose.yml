@@ -1,0 +1,15 @@
+# Uruchomienie na serwerze (VPS): cp server/.env.example .env, uzupełnij, potem:
+#   docker compose up -d --build
+#   docker compose exec app npm run admin:add -- grafik@firma.pl "Imię Nazwisko"
+# HTTPS: postaw przed aplikacją reverse proxy (np. Caddy lub nginx) dla subdomeny, np. projektuj.krowki24.pl.
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - krowki-data:/data
+volumes:
+  krowki-data:
