@@ -195,3 +195,12 @@ h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
 .kd-gate .kd-accept { font-size: 14px; line-height: 1.4; }
 .kd-gate .kd-btn { margin-top: 12px; width: 100%; }
 .kd-logout { font-size: 13px; white-space: nowrap; }
+
+.kd-pick { width: min(760px, 100%); max-height: 90vh; overflow: auto; }
+.kd-pick-head { justify-content: space-between; align-items: center; }
+.kd-pick-head h3 { margin: 0; }
+.kd-pick .kd-close { position: static; }
+.kd-muted { color: #6b6b6b; margin: 0; font-size: 14px; }
+.kd-confirm { width: min(420px, 100%); }
+.kd-confirm h3 { margin: 0; }
+.kd-confirm-btns { justify-content: flex-end; flex-wrap: wrap; }
