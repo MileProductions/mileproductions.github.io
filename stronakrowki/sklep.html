@@ -73,7 +73,7 @@
       </div>
     </section>
 
-    <!-- KONFIGURATOR (tylko dla zalogowanych) -->
+    <!-- KONFIGURATOR (dostępny dla wszystkich, bez logowania) -->
     <section id="projektuj" class="designer-zone">
       <div class="wrap">
         <div class="designer-shell">
@@ -82,25 +82,6 @@
             <div class="who" id="who"></div>
           </div>
           <div class="designer-frame" id="frame">
-            <!-- Stan: niezalogowany -->
-            <div class="gate" id="gate">
-              <div class="gate-fake" aria-hidden="true"><div></div><div id="gateCandy"></div><div></div></div>
-              <div class="gate-card">
-                <div class="lock" aria-hidden="true">✦</div>
-                <h3>Zaloguj się, żeby zaprojektować papierek</h3>
-                <p class="muted">Twoje projekty zapiszą się na koncie i wrócisz do nich w każdej chwili, także z telefonu.</p>
-                <div class="btn-row" style="margin-top:1.4rem">
-                  <button class="btn btn-primary" type="button" data-login>Zaloguj się</button>
-                  <button class="btn btn-ghost" type="button" data-login>Załóż konto (1 minuta)</button>
-                </div>
-                <ul>
-                  <li>Zapisane projekty i szybkie ponowne zamówienie</li>
-                  <li>Podgląd 3D i cena widoczna od razu</li>
-                  <li>5% rabatu na pierwsze zakupy</li>
-                </ul>
-                <p class="demo-switch">Wersja demonstracyjna: <button type="button" data-login>symuluj zalogowanego klienta</button></p>
-              </div>
-            </div>
           </div>
         </div>
         <div class="mini-banner reveal">
@@ -194,7 +175,7 @@
           <p style="margin-top:1.2rem">+48 512 511 628<br><a href="mailto:sklep@krowki24.pl">sklep@krowki24.pl</a></p>
         </div>
         <div><h4>Informacje</h4><ul><li><a href="./#manufaktura">O nas</a></li><li><a href="./#kontakt">Kontakt</a></li><li><a href="#">Regulamin sklepu</a></li><li><a href="#">Polityka prywatności (RODO)</a></li><li><a href="#">Blog</a></li></ul></div>
-        <div><h4>Moje konto</h4><ul><li><a href="#" data-login>Logowanie</a></li><li><a href="#">Moje zamówienia</a></li><li><a href="#projektuj">Moje projekty</a></li><li><a href="#">FAQ</a></li></ul></div>
+        <div><h4>Moje konto</h4><ul><li><a href="#">Logowanie</a></li><li><a href="#">Moje zamówienia</a></li><li><a href="#projektuj">Moje projekty</a></li><li><a href="#">FAQ</a></li></ul></div>
         <div>
           <h4>Newsletter</h4>
           <p>Odbierz 5% rabatu na pierwsze zakupy.</p>
@@ -227,44 +208,21 @@
         w.innerHTML = C(it.o).replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "");
         g.appendChild(w);
       });
-      document.getElementById("gateCandy").innerHTML = C({ bg: "#e9c9a0", title: "Twój projekt", sub: "podgląd" });
 
-      // ---- Logowanie (symulacja) i osadzenie konfiguratora ----
-      // Konfigurator to istniejący moduł z folderu /krówki/ (bez zmian), osadzony przez iframe.
-      var KEY = "krowki-demo-user";
+      // ---- Osadzenie konfiguratora: dostępny dla wszystkich, bez logowania ----
+      // Konfigurator to moduł z folderu /krówki/, osadzony przez iframe. ?wzor=<id> otwiera wybrany wzór.
       var DESIGNER_URL = "../kr%C3%B3wki/";
-      var frame = document.getElementById("frame"), gate = document.getElementById("gate"), who = document.getElementById("who"), acc = document.getElementById("accountBtn");
+      var frame = document.getElementById("frame");
+      document.getElementById("who").innerHTML = "Dla wszystkich · bez logowania · projekt zapisuje się w tej przeglądarce";
+      var iframe = document.createElement("iframe");
+      iframe.src = DESIGNER_URL;
+      iframe.title = "Projektant papierka krówki";
+      iframe.allow = "clipboard-write; fullscreen";
+      iframe.loading = "lazy";
+      frame.appendChild(iframe);
 
-      var pendingWzor = null;
-      function openWzor(id) {
-        var iframe = frame.querySelector("iframe");
-        if (iframe) iframe.src = DESIGNER_URL + "?wzor=" + encodeURIComponent(id);
-        else pendingWzor = id;
-      }
-      function render() {
-        var user = localStorage.getItem(KEY);
-        var iframe = frame.querySelector("iframe");
-        if (user) {
-          gate.hidden = true;
-          if (!iframe) {
-            iframe = document.createElement("iframe");
-            iframe.src = DESIGNER_URL + (pendingWzor ? "?wzor=" + encodeURIComponent(pendingWzor) : "");
-            iframe.title = "Projektant papierka krówki";
-            iframe.allow = "clipboard-write; fullscreen";
-            iframe.loading = "lazy";
-            frame.appendChild(iframe);
-          }
-          who.innerHTML = "Zalogowano jako <b>" + user + "</b> · <a href=\"#\">Moje projekty</a> · <a href=\"#\" data-logout>Wyloguj</a>";
-          acc.textContent = "Moje konto";
-        } else {
-          gate.hidden = false;
-          if (iframe) iframe.remove();
-          who.innerHTML = "Dostępne dla zalogowanych klientów";
-          acc.textContent = "Zaloguj się";
-        }
-      }
       document.addEventListener("click", function (e) {
-        var t = e.target.closest("[data-login],[data-logout],#accountBtn,[data-use],[data-cart]");
+        var t = e.target.closest("[data-use],[data-cart]");
         if (!t) return;
         if (t.matches("[data-cart]")) {
           var s = document.getElementById("cartSum"), v = parseFloat(s.dataset.v || "0") + parseFloat(t.dataset.cart);
@@ -273,21 +231,9 @@
           return;
         }
         e.preventDefault();
-        if (t.matches("[data-logout]") || (t.id === "accountBtn" && localStorage.getItem(KEY))) {
-          if (t.matches("[data-logout]")) { localStorage.removeItem(KEY); window.krowkiToast("Wylogowano"); render(); }
-          else document.getElementById("projektuj").scrollIntoView();
-          return;
-        }
-        if (t.matches("[data-use]")) {
-          openWzor(t.getAttribute("data-use"));
-          if (localStorage.getItem(KEY)) { render(); document.getElementById("projektuj").scrollIntoView(); return; }
-        }
-        localStorage.setItem(KEY, "Anna K.");
-        window.krowkiToast("Zalogowano (symulacja). Projektant jest gotowy.");
-        render();
+        iframe.src = DESIGNER_URL + "?wzor=" + encodeURIComponent(t.getAttribute("data-use"));
         document.getElementById("projektuj").scrollIntoView();
       });
-      render();
     })();
   </script>
 </body>
