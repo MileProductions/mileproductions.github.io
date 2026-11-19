@@ -26,7 +26,7 @@ CREATE INDEX IF NOT EXISTS login_codes_email ON login_codes(email);
 CREATE TABLE IF NOT EXISTS sessions (
   token_hash TEXT PRIMARY KEY,
   kind TEXT NOT NULL,                              -- customer | admin
-  subject TEXT NOT NULL,                           -- e-mail klienta albo id grafika
+  subject TEXT NOT NULL,                           -- e-mail klienta albo id konta panelu
   expires_at TEXT NOT NULL,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS designs (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   number TEXT UNIQUE,
   email TEXT NOT NULL,
-  status TEXT NOT NULL DEFAULT 'submitted',
+  status TEXT NOT NULL DEFAULT 'ready',            -- ready | ordered | production | done | cancelled
   name TEXT, phone TEXT, notes TEXT,
   kg REAL, pcs INTEGER, total REAL,
   design_json TEXT NOT NULL,
@@ -74,6 +74,8 @@ export function openDb(dataDir) {
   fs.mkdirSync(dataDir, { recursive: true });
   const db = new DatabaseSync(path.join(dataDir, 'krowki.sqlite'));
   db.exec(SCHEMA);
+  // dawny przepływ z akceptacją przez grafika → wszystko, co czekało, jest gotowe do druku
+  db.exec("UPDATE designs SET status = 'ready' WHERE status IN ('submitted', 'accepted', 'rejected')");
   const stmts = new Map();
   const prep = (sql) => { let s = stmts.get(sql); if (!s) { s = db.prepare(sql); stmts.set(sql, s); } return s; };
   return {

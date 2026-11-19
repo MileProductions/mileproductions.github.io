@@ -101,10 +101,11 @@ test('wysłanie projektu: zapis, numer, maile, PDF w CMYK', async () => {
   assert.match(number, /^KR-\d{4}-0001$/);
   assert.equal(j.shopUrl, 'https://sklep.example/krowki');
   const mails = ctx.mailer.outbox.slice(-2);
-  assert.ok(mails.some((m) => m.to === 'klient@example.com' && m.subject.includes(number)));
+  assert.ok(mails.some((m) => m.to === 'klient@example.com' && m.subject === `Projekt ${number} gotowy do druku`));
   assert.ok(mails.some((m) => m.to === 'grafik@example.com'));
   await ctx.designs.idle();
   const d = ctx.db.get('SELECT * FROM designs WHERE number = ?', number);
+  assert.equal(d.status, 'ready');
   if (await ghostscriptVersion()) assert.equal(d.cmyk_status, 'ok', d.cmyk_error);
   const kinds = ctx.db.all('SELECT kind FROM files WHERE design_id = ?', d.id).map((x) => x.kind).sort();
   assert.equal(ctx.db.get("SELECT name FROM files WHERE kind = 'asset'").name, 'x1__zdjęcie ślubne.png');
@@ -123,7 +124,7 @@ test('PDF w złym formacie jest odrzucany', async () => {
   assert.match((await r.json()).error, /siatki/);
 });
 
-test('panel: logowanie, lista, odrzucenie z komentarzem, akceptacja, pobranie PDF', async () => {
+test('panel produkcji: logowanie, lista gotowych, zamówienie, produkcja, pobranie PDF', async () => {
   let r = await fetch(base + '/api/admin/designs');
   assert.equal(r.status, 401);
   r = await post('/api/admin/login', { email: 'grafik@example.com', password: 'zle' });
@@ -132,24 +133,23 @@ test('panel: logowanie, lista, odrzucenie z komentarzem, akceptacja, pobranie PD
   assert.equal(r.status, 200);
   const cookie = r.headers.get('set-cookie').split(';')[0];
   const h = { cookie };
-  r = await fetch(base + '/api/admin/designs?status=submitted', { headers: h });
+  r = await fetch(base + '/api/admin/designs?status=ready', { headers: h });
   const list = await r.json();
-  assert.equal(list.items[0].number, number);
-  assert.equal(list.counts.submitted, 1);
+  assert.equal(list.items[0].number, number, 'projekt od razu gotowy do druku, bez akceptacji');
+  assert.equal(list.counts.ready, 1);
 
-  r = await post(`/api/admin/designs/${number}/status`, { status: 'rejected' }, h);
-  assert.equal(r.status, 400, 'odrzucenie wymaga komentarza');
-  r = await post(`/api/admin/designs/${number}/status`, { status: 'rejected', note: 'Zdjęcie za ciemne' }, { ...h, origin: 'https://obcy.example' });
-  assert.equal(r.status, 403, 'ochrona przed CSRF');
-  r = await post(`/api/admin/designs/${number}/status`, { status: 'rejected', note: 'Zdjęcie za ciemne' }, h);
-  assert.equal(r.status, 200);
-  assert.match(ctx.mailer.outbox.at(-1).text, /Zdjęcie za ciemne/);
   r = await post(`/api/admin/designs/${number}/status`, { status: 'accepted' }, h);
-  assert.equal((await r.json()).status, 'accepted');
+  assert.equal(r.status, 400, 'nie ma już akceptacji przez grafika');
+  r = await post(`/api/admin/designs/${number}/status`, { status: 'ordered', shopOrder: '12345' }, { ...h, origin: 'https://obcy.example' });
+  assert.equal(r.status, 403, 'ochrona przed CSRF');
   r = await post(`/api/admin/designs/${number}/status`, { status: 'ordered', shopOrder: '12345' }, h);
+  assert.equal((await r.json()).shopOrder, '12345');
+  r = await post(`/api/admin/designs/${number}/status`, { status: 'production', note: 'Wysyłka w piątek' }, h);
   const d = await r.json();
-  assert.equal(d.shopOrder, '12345');
-  assert.ok(d.events.length >= 4);
+  assert.equal(d.status, 'production');
+  assert.equal(ctx.mailer.outbox.at(-1).to, 'klient@example.com');
+  assert.match(ctx.mailer.outbox.at(-1).text, /w produkcji[\s\S]*Wysyłka w piątek/i);
+  assert.ok(d.events.some((e) => e.action === 'checked'));
 
   const pdf = d.files.find((f) => f.kind === 'pdf_cmyk') ?? d.files.find((f) => f.kind === 'pdf_rgb');
   r = await fetch(`${base}/api/admin/files/${pdf.id}?download=1`, { headers: h });

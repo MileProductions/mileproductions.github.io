@@ -1,24 +1,26 @@
-# Krówki z własnym projektem: konfigurator, backend i panel grafika
+# Krówki z własnym projektem: konfigurator, backend i panel produkcji
 
 Etap 1 z planu integracji ze sklepem krowki24.pl:
 
 - **backend** zapisuje projekty z konfiguratora (projekt, PDF, podgląd, oryginały zdjęć) i nadaje im numer, np. `KR-2611-0042`,
 - **PDF do druku w CMYK**: Ghostscript zamienia plik RGB z konfiguratora na PDF/X-3 w CMYK z profilem FOGRA39,
 - **dostęp przez newsletter** (wariant C): kto poda e-mail, zaznaczy zgodę i potwierdzi adres kodem albo linkiem z maila, może projektować. Konto w sklepie jest potrzebne dopiero przy zamówieniu,
-- **panel grafika** pod `/panel/`: lista projektów, podgląd, akceptacja albo „do poprawy” z komentarzem (klient dostaje maila), powiązanie z numerem zamówienia w Shoperze, pobieranie PDF, lista zapisów do newslettera (CSV) i usuwanie danych klienta (RODO).
+- **panel produkcji** pod `/panel/`: lista projektów gotowych do druku, podgląd, powiązanie z numerem zamówienia w Shoperze, statusy „W produkcji” (klient dostaje maila) i „Zrealizowany”, pobieranie PDF, lista zapisów do newslettera (CSV) i usuwanie danych klienta (RODO).
+
+Klient sam przygotowuje i akceptuje projekt. Nie ma ręcznej akceptacji przez grafika: po zapisaniu system automatycznie sprawdza plik (format siatki, spad, konwersja do CMYK) i projekt jest od razu „Gotowy do druku”. Jakość pilnuje konfigurator: blokuje zbyt małe zdjęcia i ostrzega przed tekstem przy krawędzi.
 
 Statyczne demo na GitHub Pages (`/krówki/`) działa dalej bez zmian, w trybie pokazowym. Ten folder nie jest publikowany na Pages (`_config.yml`).
 
 ```
 krowki-app/
   designer/   źródła konfiguratora (React + Vite), te same co w krowki-designer.zip, plus adapter do backendu
-  server/     backend (Node.js 22, Express, SQLite, Ghostscript) i panel grafika (server/panel)
+  server/     backend (Node.js 22, Express, SQLite, Ghostscript) i panel produkcji (server/panel)
   Dockerfile, docker-compose.yml   wszystko w jednym kontenerze
 ```
 
 ## Wersja testowa na GitHub Pages
 
-`https://mileproductions.github.io/krowki-test/` (panel: `/krowki-test/panel/`, logowanie `grafik@test.pl` / `krowki-test`).
+`https://mileproductions.github.io/krowki-test/` (panel: `/krowki-test/panel/`, logowanie `produkcja@test.pl` / `krowki-test`).
 GitHub Pages nie uruchamia serwera, więc backend udaje tam service worker (`pages-test/sw.js`): to samo API, dane w IndexedDB przeglądarki. Maile nie wychodzą (kod pokazuje się na ekranie, „wysłane” maile są w panelu w zakładce „Maile (test)”), a PDF w CMYK powstaje tylko na prawdziwym serwerze. Konfigurator i panel to te same pliki co na serwerze.
 Przebudowanie: `node pages-test/build.mjs` (z folderu `krowki-app/`).
 
@@ -26,9 +28,9 @@ Przebudowanie: `node pages-test/build.mjs` (z folderu `krowki-app/`).
 
 1. Klient otwiera konfigurator, np. `https://projektuj.krowki24.pl/` albo ramkę na stronie sklepu.
 2. Podaje e-mail i zaznacza zgodę na newsletter. Dostaje maila z 6-cyfrowym kodem i przyciskiem. Wpisanie kodu albo kliknięcie przycisku potwierdza zapis (double opt-in) i otwiera projektanta. Przy kolejnej wizycie zgoda nie jest już potrzebna, wystarczy kod. Sesja trwa 90 dni.
-3. Projektuje, w kroku 3 akceptuje projekt i klika **„Wyślij projekt do akceptacji”**. Dostaje numer projektu na ekranie i w mailu oraz przycisk „Przejdź do sklepu” (`SHOP_PRODUCT_URL`), gdzie zamawia produkt i wpisuje numer projektu.
-4. Grafik dostaje powiadomienie (`NOTIFY_EMAIL`), w panelu akceptuje projekt albo odsyła go do poprawy z komentarzem. Klient dostaje maila w obu przypadkach.
-5. Grafik ręcznie wpisuje numer zamówienia z Shopera („Zamówiony…”), potem „W produkcji” i „Zrealizowany”. Automatyczne powiązanie przez webhook Shopera to etap 2.
+3. Projektuje, w kroku 3 sprawdza podgląd, zaznacza akceptację projektu i klika **„Zapisz projekt do druku”**. Dostaje numer projektu na ekranie i w mailu oraz przycisk „Przejdź do sklepu” (`SHOP_PRODUCT_URL`), gdzie zamawia produkt i wpisuje numer projektu.
+4. Serwer automatycznie sprawdza plik i robi PDF w CMYK. Projekt ma od razu status „Gotowy do druku”. Produkcja dostaje powiadomienie (`NOTIFY_EMAIL`), także gdy konwersja do CMYK się nie uda.
+5. W panelu produkcja wpisuje numer zamówienia z Shopera („Zamówiony…”), potem „W produkcji” (mail do klienta) i „Zrealizowany”. Automatyczne powiązanie przez webhook Shopera to etap 2.
 
 ## Uruchomienie lokalnie
 
@@ -38,7 +40,7 @@ Wymagane: Node.js 22.13+, Ghostscript (`apt install ghostscript` / `brew install
 cd krowki-app/designer && npm ci && npm run build     # buduje konfigurator do designer/dist
 cd ../server && npm ci
 cp .env.example .env                                   # ustaw PUBLIC_URL=http://localhost:8080
-npm run admin:add -- grafik@firma.pl "Anna Kowalska"   # konto do panelu (zapyta o hasło)
+npm run admin:add -- produkcja@firma.pl "Anna Kowalska"   # konto do panelu (zapyta o hasło)
 npm start                                              # http://localhost:8080 i http://localhost:8080/panel/
 npm test                                               # testy API (z konwersją CMYK, jeśli jest Ghostscript)
 ```
@@ -53,7 +55,7 @@ Najprościej VPS z Dockerem i subdomena, np. `projektuj.krowki24.pl`:
 cd krowki-app
 cp server/.env.example .env     # uzupełnij: PUBLIC_URL, SMTP_URL, NOTIFY_EMAIL, SHOP_PRODUCT_URL, ALLOWED_ORIGINS
 docker compose up -d --build
-docker compose exec app npm run admin:add -- grafik@krowki24.pl "Imię Nazwisko"
+docker compose exec app npm run admin:add -- produkcja@krowki24.pl "Imię Nazwisko"
 ```
 
 Przed kontenerem reverse proxy z HTTPS (Caddy albo nginx). Kopia zapasowa to wolumen `krowki-data` (baza `krowki.sqlite` i folder `files/`). Raz dziennie warto uruchamiać `docker compose exec app npm run cleanup`, który usuwa stare projekty po `RETENTION_DAYS` (RODO).
@@ -88,11 +90,11 @@ Domena sklepu musi być wtedy w `ALLOWED_ORIGINS`.
 | `POST /api/auth/verify` `{email, code}` | wszyscy | potwierdza zapis i zwraca token sesji |
 | `GET /potwierdz?t=…` | link z maila | potwierdza i wraca do konfiguratora z sesją |
 | `GET /api/me`, `POST /api/auth/logout` | klient | sesja |
-| `POST /api/designs` (multipart: `design`, `pdf`, `preview`, `asset`…, `kg`, `pcs`, `total`, `customer`) | klient | zapis projektu, numer, maile, kolejka CMYK |
+| `POST /api/designs` (multipart: `design`, `pdf`, `preview`, `asset`…, `kg`, `pcs`, `total`, `customer`) | klient | zapis projektu, automatyczne sprawdzenie, numer, maile, kolejka CMYK |
 | `GET /api/designs`, `GET /api/designs/:numer` | klient | własne projekty i ich status |
-| `/api/admin/*` | grafik (cookie) | lista, szczegóły, status, pliki, newsletter CSV, usuwanie danych |
+| `/api/admin/*` | produkcja (cookie) | lista, szczegóły, status, pliki, newsletter CSV, usuwanie danych |
 
-Klient widzi tylko swoje projekty. Hasła grafików są haszowane (scrypt), sesje panelu w ciasteczku `HttpOnly; SameSite=Strict`, zapytania zmieniające dane w panelu sprawdzają nagłówek `Origin`. Limity prób: kody, logowanie, wysyłki.
+Klient widzi tylko swoje projekty. Hasła kont panelu są haszowane (scrypt), sesje panelu w ciasteczku `HttpOnly; SameSite=Strict`, zapytania zmieniające dane w panelu sprawdzają nagłówek `Origin`. Limity prób: kody, logowanie, wysyłki.
 
 ## Plik do druku
 

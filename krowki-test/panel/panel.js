@@ -1,11 +1,12 @@
-// Panel grafika: lista projektów, podgląd, akceptacja / odrzucenie, pobieranie plików, newsletter.
+// Panel produkcji: podgląd zamówień, pliki do druku, statusy, newsletter. Projekty klienci przygotowują sami,
+// a system sprawdza je automatycznie – w panelu nie ma akceptacji ani odrzucania.
 // Bez frameworka i bez budowania. Wszystkie dane klienta wstawiane jako tekst (bez innerHTML).
 
 const main = document.getElementById('main');
 // adres API względem panelu (/panel/ → /api/admin), działa też w wersji testowej pod podfolderem
 const API = new URL('../api/admin', location.href).pathname;
 let me = null;
-let filter = { status: 'submitted', q: '' };
+let filter = { status: 'ready', q: '' };
 
 // ——— pomocnicze ———
 function h(tag, attrs = {}, ...kids) {
@@ -83,7 +84,7 @@ function showLogin() {
         await boot();
       } catch (x) { err.textContent = x.message; }
     },
-  }, h('h1', {}, 'Logowanie grafika'), h('label', {}, 'E-mail'), email, h('label', {}, 'Hasło'), pass, err, h('button', { class: 'primary', type: 'submit' }, 'Zaloguj się'));
+  }, h('h1', {}, 'Logowanie do panelu'), h('label', {}, 'E-mail'), email, h('label', {}, 'Hasło'), pass, err, h('button', { class: 'primary', type: 'submit' }, 'Zaloguj się'));
   main.replaceChildren(form);
   email.focus();
 }
@@ -114,13 +115,12 @@ async function showList() {
   main.replaceChildren(
     h('h1', {}, 'Projekty'),
     h('div', { class: 'filters' },
-      chip('submitted', 'Do akceptacji', data.counts.submitted ?? 0),
-      ...Object.entries(me.statuses).filter(([s]) => s !== 'submitted').map(([s, l]) => chip(s, l, data.counts[s] ?? 0)),
+      ...Object.entries(me.statuses).map(([s, l]) => chip(s, l, data.counts[s] ?? 0)),
       chip('', 'Wszystkie', total),
       search),
     rows.length
       ? h('table', {}, h('thead', {}, h('tr', {}, ['', 'Numer', 'Wysłany', 'Klient', 'Ilość', 'Status', 'Plik do druku', 'Zamówienie w sklepie'].map((t) => h('th', {}, t)))), h('tbody', {}, rows))
-      : h('div', { class: 'card empty' }, filter.status === 'submitted' && !filter.q ? 'Nie ma projektów czekających na akceptację. 🎉' : 'Brak projektów.'),
+      : h('div', { class: 'card empty' }, filter.status === 'ready' && !filter.q ? 'Nie ma nowych projektów do druku.' : 'Brak projektów.'),
   );
 }
 
@@ -136,19 +136,13 @@ async function showDesign(number) {
     try { await api(`/designs/${d.number}/status`, { method: 'POST', body: { status, ...extra } }); toast(`Status: ${me.statuses[status]}`); showDesign(number); } catch (e) { toast(e.message); }
   };
   const actions = [];
-  if (['submitted', 'rejected'].includes(d.status)) {
-    actions.push(h('button', { class: 'green', onclick: async () => { const note = await ask({ title: `Akceptuj ${d.number}`, text: 'Klient dostanie maila, że projekt jest gotowy do druku. Możesz dopisać uwagę (opcjonalnie).', field: 'textarea', confirm: 'Akceptuj' }); if (note !== null) setStatus('accepted', { note: note === true ? '' : note }); } }, '✓ Akceptuj'));
+  if (d.status === 'ready') {
+    actions.push(h('button', { class: 'primary', onclick: async () => { const o = await ask({ title: 'Powiąż z zamówieniem w sklepie', text: 'Numer zamówienia z Shopera, w którym klient wpisał ten numer projektu.', field: 'text', required: true }); if (o) setStatus('ordered', { shopOrder: o }); } }, '🛒 Zamówiony…'));
   }
-  if (['submitted', 'accepted'].includes(d.status)) {
-    actions.push(h('button', { class: 'danger', onclick: async () => { const note = await ask({ title: `Do poprawy: ${d.number}`, text: 'Napisz klientowi, co trzeba poprawić. Treść trafi do maila.', field: 'textarea', required: true, confirm: 'Wyślij do poprawy' }); if (note) setStatus('rejected', { note }); } }, '✗ Do poprawy'));
-  }
-  if (['submitted', 'accepted'].includes(d.status)) {
-    actions.push(h('button', { onclick: async () => { const o = await ask({ title: 'Powiąż z zamówieniem w sklepie', text: 'Numer zamówienia z Shopera, w którym klient wpisał ten numer projektu.', field: 'text', required: true }); if (o) setStatus('ordered', { shopOrder: o }); } }, '🛒 Zamówiony…'));
-  }
-  if (['accepted', 'ordered'].includes(d.status)) actions.push(h('button', { onclick: () => setStatus('production') }, '🖨 W produkcji'));
-  if (['ordered', 'production'].includes(d.status)) actions.push(h('button', { onclick: () => setStatus('done') }, '📦 Zrealizowany'));
+  if (['ready', 'ordered'].includes(d.status)) actions.push(h('button', { class: d.status === 'ordered' ? 'primary' : '', onclick: async () => { const note = await ask({ title: `W produkcji: ${d.number}`, text: 'Klient dostanie maila, że jego krówki są w produkcji. Możesz dopisać informację (opcjonalnie).', field: 'textarea', confirm: 'Do produkcji' }); if (note !== null) setStatus('production', { note: note === true ? '' : note }); } }, '🖨 W produkcji'));
+  if (['ordered', 'production'].includes(d.status)) actions.push(h('button', { class: d.status === 'production' ? 'green' : '', onclick: () => setStatus('done') }, '📦 Zrealizowany'));
   if (!['done', 'cancelled'].includes(d.status)) actions.push(h('button', { class: 'link', onclick: async () => { if (await ask({ title: 'Anulować projekt?', text: 'Klient nie dostanie maila.', confirm: 'Anuluj projekt', danger: true })) setStatus('cancelled'); } }, 'Anuluj'));
-  if (['rejected', 'cancelled', 'done'].includes(d.status)) actions.push(h('button', { class: 'link', onclick: () => setStatus('submitted') }, 'Przywróć do akceptacji'));
+  if (['cancelled', 'done'].includes(d.status)) actions.push(h('button', { class: 'link', onclick: () => setStatus('ready') }, 'Przywróć jako gotowy do druku'));
 
   const cmykBox = d.cmyk === 'ok'
     ? h('div', { class: 'notice ok' }, `PDF w CMYK gotowy · profil ${d.cmykProfile ?? ''}`)
@@ -174,8 +168,8 @@ async function showDesign(number) {
       ),
       h('div', { class: 'stack' },
         h('div', { class: 'card' },
-          h('h2', {}, 'Decyzja'),
-          d.status === 'rejected' && d.rejectReason ? h('div', { class: 'notice err' }, 'Wysłano do poprawy: ', d.rejectReason) : null,
+          h('h2', {}, 'Realizacja'),
+          h('p', { class: 'muted', style: 'font-size:14px;margin-top:0' }, 'Klient sam przygotował i zaakceptował projekt, a system sprawdził plik. Zostaje powiązać go z zamówieniem i wydrukować.'),
           h('div', { class: 'actions' }, actions),
         ),
         h('div', { class: 'card' },
@@ -215,6 +209,7 @@ async function showDesign(number) {
 
 function describe(e) {
   if (e.action === 'submitted') return `Klient wysłał projekt (${e.actor})`;
+  if (e.action === 'checked') return 'Automatyczne sprawdzenie pliku: OK';
   if (e.action === 'cmyk') return 'Utworzono PDF w CMYK';
   if (e.action === 'cmyk-error') return 'Błąd konwersji do CMYK';
   if (e.action.startsWith('status:')) return `${e.actor}: ${me.statuses[e.action.slice(7)] ?? e.action}`;
@@ -249,7 +244,7 @@ async function showOutbox() {
   const mails = await api('/outbox');
   main.replaceChildren(
     h('h1', {}, 'Wysłane maile (wersja testowa)'),
-    h('p', { class: 'muted' }, 'W wersji testowej maile nie wychodzą. Tu widać, co dostałby klient i grafik.'),
+    h('p', { class: 'muted' }, 'W wersji testowej maile nie wychodzą. Tu widać, co dostałby klient i produkcja.'),
     mails.length ? h('div', { class: 'stack' }, mails.map((m) => h('div', { class: 'card' },
       h('p', { class: 'muted', style: 'margin:0 0 6px;font-size:13px' }, `${fmtDate(m.at)} · do: ${m.to}`),
       h('h2', {}, m.subject),

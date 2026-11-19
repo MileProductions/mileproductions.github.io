@@ -11,7 +11,7 @@ import css from './styles.css?inline';
  *
  * Atrybuty:
  *  api-url      – backend konfiguratora (np. https://projektuj.krowki24.pl/api). Bez atrybutu token: dostęp po zapisie
- *                 do newslettera (kod z maila), projekt idzie do akceptacji przez POST {api-url}/designs
+ *                 do newslettera (kod z maila), projekt zapisuje się do druku przez POST {api-url}/designs
  *  token        – (później) podpisany token zalogowanego klienta wydany przez sklep; brak tokenu i api-url = prośba o zalogowanie
  *  login-url    – adres logowania w sklepie
  *  bez api-url  – projekt idzie do koszyka sklepu (zdarzenie cart:add)

@@ -164,11 +164,11 @@ export function createApp(cfg, { log = console } = {}) {
     const d = await designs.submit({ email: req.email, fields: req.body ?? {}, files: { pdf: f.pdf?.[0], preview: f.preview?.[0], assets: f.asset ?? [] } });
     res.status(201).json({
       orderId: d.number, status: d.status, shopUrl: cfg.shopProductUrl || null,
-      message: 'Projekt wysłany do sprawdzenia. Grafik obejrzy go przed drukiem. Potwierdzenie z numerem projektu wysłaliśmy e-mailem.',
+      message: 'Projekt zapisany i gotowy do druku. Potwierdzenie z numerem projektu wysłaliśmy e-mailem.',
     });
   }));
 
-  const publicDesign = (d) => ({ number: d.number, status: d.status, statusLabel: STATUSES[d.status], kg: d.kg, pcs: d.pcs, total: d.total, createdAt: d.created_at, rejectReason: d.status === 'rejected' ? d.reject_reason : null });
+  const publicDesign = (d) => ({ number: d.number, status: d.status, statusLabel: STATUSES[d.status], kg: d.kg, pcs: d.pcs, total: d.total, createdAt: d.created_at });
   app.get('/api/designs', customer, (req, res) => {
     res.json(db.all('SELECT * FROM designs WHERE email = ? ORDER BY id DESC LIMIT 100', req.email).map(publicDesign));
   });
@@ -178,7 +178,7 @@ export function createApp(cfg, { log = console } = {}) {
     res.json({ ...publicDesign(d), design: JSON.parse(d.design_json) });
   });
 
-  // ——— Panel grafika ———
+  // ——— Panel produkcji (podgląd zamówień, pliki do druku) ———
   const adminRouter = express.Router();
   const sameOrigin = (req) => {
     const origin = req.get('origin');
