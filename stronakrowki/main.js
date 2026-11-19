@@ -5,7 +5,7 @@
   // ---------- Ilustracja: krówka w papierku ----------
   // Papierek krówki: środek (front) + boczne zakładki zagięte na końcach.
   function candy(o) {
-    var bg = o.bg || "#f6ecdc", ink = o.ink || "#3b2417", acc = o.accent || "#b07a3c";
+    var bg = o.bg || "#f6ecdc", ink = o.ink || "#160602", acc = o.accent || "#b26935";
     var t = o.title || "KRÓWKA", s = o.sub || "z Milanówka", id = "c" + Math.random().toString(36).slice(2, 8);
     var pattern = "";
     if (o.pattern === "stripes") pattern = '<path d="M51 26 L149 26 L154 76 L46 76 Z" fill="url(#' + id + 'p)" opacity=".18"/>';
@@ -20,7 +20,7 @@
       '<linearGradient id="' + id + 'g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient>' +
       '<pattern id="' + id + 'p" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="3" height="8" fill="' + acc + '"/></pattern>' +
       '<pattern id="' + id + 'd" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="4.5" cy="4.5" r="1.6" fill="' + acc + '"/></pattern>' +
-      '<filter id="' + id + 's" x="-10%" y="-10%" width="120%" height="140%"><feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#3b2417" flood-opacity=".22"/></filter>' +
+      '<filter id="' + id + 's" x="-10%" y="-10%" width="120%" height="140%"><feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#160602" flood-opacity=".22"/></filter>' +
       "</defs>" +
       '<g filter="url(#' + id + 's)">' +
       // skrzydełka: płaskie, trójkątne, przy podstawie (jak w podglądzie 3D konfiguratora)
@@ -48,11 +48,11 @@
 
   // Znak graficzny: krowa w medalionie (uproszczona, własna)
   function cowMark(color) {
-    color = color || "#3b2417";
+    color = color || "#160602";
     return (
       '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
       '<circle cx="32" cy="32" r="30" fill="none" stroke="' + color + '" stroke-width="1.5"/>' +
-      '<circle cx="32" cy="32" r="26" fill="none" stroke="#b07a3c" stroke-width=".8"/>' +
+      '<circle cx="32" cy="32" r="26" fill="none" stroke="#b26935" stroke-width=".8"/>' +
       '<path d="M19 26 q-5 -6 -1 -9 q4 2 6 6 M45 26 q5 -6 1 -9 q-4 2 -6 6" fill="none" stroke="' + color + '" stroke-width="1.6" stroke-linecap="round"/>' +
       '<path d="M22 24 q10 -6 20 0 q3 8 0 16 q-2 8 -10 8 q-8 0 -10 -8 q-3 -8 0 -16 Z" fill="none" stroke="' + color + '" stroke-width="1.6"/>' +
       '<ellipse cx="32" cy="42" rx="7" ry="4.5" fill="none" stroke="' + color + '" stroke-width="1.4"/>' +
@@ -67,11 +67,11 @@
     return (
       '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
       '<defs><path id="sealc" d="M60 60 m-44 0 a44 44 0 1 1 88 0 a44 44 0 1 1 -88 0"/></defs>' +
-      '<circle cx="60" cy="60" r="57" fill="#3b2417"/>' +
-      '<circle cx="60" cy="60" r="52" fill="none" stroke="#d9b98a" stroke-width=".8"/>' +
-      '<text font-family="Inter, sans-serif" font-size="9.2" letter-spacing="3.1" fill="#d9b98a"><textPath href="#sealc">RODZINNA MANUFAKTURA · MILANÓWEK · </textPath></text>' +
-      '<text x="60" y="56" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-size="12" fill="#faf6ef" font-style="italic">od</text>' +
-      '<text x="60" y="76" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-size="24" font-weight="600" fill="#faf6ef">1921</text>' +
+      '<circle cx="60" cy="60" r="57" fill="#160602"/>' +
+      '<circle cx="60" cy="60" r="52" fill="none" stroke="#d9a57c" stroke-width=".8"/>' +
+      '<text font-family="Inter, sans-serif" font-size="9.2" letter-spacing="3.1" fill="#d9a57c"><textPath href="#sealc">RODZINNA MANUFAKTURA · MILANÓWEK · </textPath></text>' +
+      '<text x="60" y="56" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-size="12" fill="#f4f0e7" font-style="italic">od</text>' +
+      '<text x="60" y="76" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-size="24" font-weight="600" fill="#f4f0e7">1921</text>' +
       "</svg>"
     );
   }
@@ -82,10 +82,10 @@
       '<svg viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
       '<path d="M30 70 L110 40 L190 70 L110 100 Z" fill="#e9d3b3"/>' +
       '<path d="M30 70 L110 100 L110 165 L30 135 Z" fill="#c99a62"/>' +
-      '<path d="M190 70 L110 100 L110 165 L190 135 Z" fill="#b07a3c"/>' +
-      '<path d="M70 55 L150 85" stroke="#3b2417" stroke-width="10" opacity=".85"/>' +
-      '<path d="M150 85 L150 150" stroke="#3b2417" stroke-width="10" opacity=".7"/>' +
-      '<text x="70" y="128" font-family="Cormorant Garamond, Georgia, serif" font-size="13" fill="#3b2417" transform="rotate(20 70 128)">GRATIS</text>' +
+      '<path d="M190 70 L110 100 L110 165 L190 135 Z" fill="#b26935"/>' +
+      '<path d="M70 55 L150 85" stroke="#160602" stroke-width="10" opacity=".85"/>' +
+      '<path d="M150 85 L150 150" stroke="#160602" stroke-width="10" opacity=".7"/>' +
+      '<text x="70" y="128" font-family="Cormorant Garamond, Georgia, serif" font-size="13" fill="#160602" transform="rotate(20 70 128)">GRATIS</text>' +
       "</svg>"
     );
   }
