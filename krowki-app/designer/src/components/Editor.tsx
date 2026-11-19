@@ -162,8 +162,8 @@ export function Editor({ width, height, onRequestUpload, onRequestCrop, onEditTe
       {/* warstwa pomocnicza – nie trafia do druku */}
       <Layer x={ox} y={oy} scaleX={scale} scaleY={scale} listening={false}>
         <Path data={`M0 0 H${FULL_W} V${FULL_H} H0 Z M${BLEED} ${BLEED} V${BLEED + NET_H} H${BLEED + NET_W} V${BLEED} Z`} fill="rgba(40,40,40,0.45)" />
-        <Line points={FRONT_HEXAGON.flat()} closed stroke="#e91e63" strokeWidth={1.4 / scale} dash={[4 / scale, 3 / scale]} opacity={0.8} />
-        <Text x={FRONT.x} y={FRONT.y - 2.6} width={FRONT.w} align="center" text="PRZÓD CUKIERKA" fontSize={1.8} fontFamily="Lato" fill="#e91e63" opacity={0.75} />
+        <Line points={FRONT_HEXAGON.flat()} closed stroke="#b26935" strokeWidth={1.4 / scale} dash={[4 / scale, 3 / scale]} opacity={0.8} />
+        <Text x={FRONT.x} y={FRONT.y - 2.6} width={FRONT.w} align="center" text="PRZÓD CUKIERKA" fontSize={1.8} fontFamily="Lato" fill="#b26935" opacity={0.75} />
         {(showGrid || mode === 'advanced') && (
           <>
             {FOLD_LINES.map((l, i) => <Line key={i} points={l} stroke="#00a8b0" strokeWidth={1 / scale} dash={[3 / scale, 2 / scale]} />)}
@@ -186,8 +186,8 @@ export function Editor({ width, height, onRequestUpload, onRequestCrop, onEditTe
             : selected?.type === 'shape' ? undefined : ['top-left', 'top-right', 'bottom-left', 'bottom-right']}
           anchorSize={14}
           anchorCornerRadius={7}
-          borderStroke="#e91e63"
-          anchorStroke="#e91e63"
+          borderStroke="#b26935"
+          anchorStroke="#b26935"
           ignoreStroke
           boundBoxFunc={(o, n) => (Math.abs(n.width) < 8 || Math.abs(n.height) < 4 ? o : n)}
         />
@@ -210,8 +210,8 @@ function ImageNode({ el, asset, nodeRef, extra, onPlaceholder, onDbl }: {
   if (!canvas) {
     return (
       <Group ref={nodeRef} x={el.cx} y={el.cy} offsetX={el.w / 2} offsetY={el.h / 2} rotation={el.rotation} {...extra} onClick={onPlaceholder} onTap={onPlaceholder}>
-        <Rect width={el.w} height={el.h} fill="rgba(233,30,99,0.08)" stroke="#e91e63" strokeWidth={0.3} dash={[1, 0.8]} cornerRadius={1} />
-        <Text width={el.w} height={el.h} align="center" verticalAlign="middle" text={'+\n' + (el.placeholderLabel ?? 'Dodaj zdjęcie')} fontSize={Math.min(2.4, el.h / 4)} fontFamily="Lato" fill="#c2185b" />
+        <Rect width={el.w} height={el.h} fill="rgba(178,105,53,0.08)" stroke="#b26935" strokeWidth={0.3} dash={[1, 0.8]} cornerRadius={1} />
+        <Text width={el.w} height={el.h} align="center" verticalAlign="middle" text={'+\n' + (el.placeholderLabel ?? 'Dodaj zdjęcie')} fontSize={Math.min(2.4, el.h / 4)} fontFamily="Lato" fill="#671e08" />
       </Group>
     );
   }
