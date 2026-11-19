@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import express from 'express';
 import multer from 'multer';
 import {
-  checkPassword, createSession, dropSession, normEmail, randomCode, randomToken, rateLimiter, readSession, sha256, sqlTime, validEmail,
+  checkPassword, createSession, dropSession, normEmail, randomToken, rateLimiter, readSession, sha256, sqlTime, validEmail,
 } from './auth.js';
 import { openDb } from './db.js';
 import { createDesigns, STATUSES, UserError } from './designs.js';
@@ -14,7 +14,6 @@ import { ghostscriptVersion } from './pdf.js';
 import { createStorage, safeName } from './storage.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const CODE_MINUTES = 30;
 const DAY = 24 * 3600 * 1000;
 
 export function createApp(cfg, { log = console } = {}) {
@@ -27,8 +26,6 @@ export function createApp(cfg, { log = console } = {}) {
   app.disable('x-powered-by');
   app.set('trust proxy', 'loopback, linklocal, uniquelocal');
 
-  const ipLimit = rateLimiter({ max: 20, windowMs: 15 * 60 * 1000 });
-  const mailLimit = rateLimiter({ max: 4, windowMs: 15 * 60 * 1000 });
   const loginLimit = rateLimiter({ max: 10, windowMs: 15 * 60 * 1000 });
   const submitLimit = rateLimiter({ max: 20, windowMs: 60 * 60 * 1000 });
 
@@ -58,125 +55,72 @@ export function createApp(cfg, { log = console } = {}) {
 
   const json = express.json({ limit: '100kb' });
   const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
-  const bearer = (req) => (req.get('authorization') ?? '').replace(/^Bearer\s+/i, '') || null;
   const cookies = (req) => Object.fromEntries((req.get('cookie') ?? '').split(';').map((c) => c.trim().split('=')).filter((p) => p[0]).map(([k, ...v]) => [k, decodeURIComponent(v.join('='))]));
 
-  const customer = (req, res, next) => {
-    const s = readSession(db, 'customer', bearer(req));
-    if (!s) return res.status(401).json({ error: 'Zaloguj się adresem e-mail.' });
-    req.email = s.subject;
-    next();
-  };
-
-  // ——— Dostęp do konfiguratora: zapis do newslettera z potwierdzeniem e-mail ———
+  // ——— Konfigurator jest dostępny dla wszystkich, bez logowania ———
   app.get('/api/config', (req, res) => {
     res.json({ consentText: cfg.consentText, privacyUrl: cfg.privacyUrl || null, shopProductUrl: cfg.shopProductUrl || null, brand: cfg.brand });
   });
 
-  app.post('/api/auth/request', json, wrap(async (req, res) => {
-    const email = normEmail(req.body?.email);
-    if (!validEmail(email)) throw new UserError('Podaj poprawny adres e-mail.');
-    if (!ipLimit(req.ip) || !mailLimit(email)) throw new UserError('Za dużo prób. Spróbuj ponownie za kilkanaście minut.', 429);
+  /** Dobrowolny zapis do newslettera przy zapisie projektu: double opt-in, link potwierdzający w osobnym mailu. */
+  async function newsletterSignup(email, ip) {
     const sub = db.get('SELECT * FROM subscribers WHERE email = ?', email);
-    const consent = req.body?.consent === true;
-    if (sub?.status !== 'confirmed' && !consent) throw new UserError('Zaznacz zgodę na zapis do newslettera – daje ona dostęp do projektanta.');
-    if (consent) {
-      db.run(`INSERT INTO subscribers (email, status, consent_text, consent_at, consent_ip) VALUES (?, 'pending', ?, datetime('now'), ?)
-        ON CONFLICT(email) DO UPDATE SET consent_text = excluded.consent_text, consent_at = excluded.consent_at, consent_ip = excluded.consent_ip,
-        status = CASE WHEN subscribers.status = 'confirmed' THEN 'confirmed' ELSE 'pending' END`, email, cfg.consentText, req.ip);
-    }
-    const code = randomCode();
+    if (sub?.status === 'confirmed') return;
+    db.run(`INSERT INTO subscribers (email, status, consent_text, consent_at, consent_ip) VALUES (?, 'pending', ?, datetime('now'), ?)
+      ON CONFLICT(email) DO UPDATE SET status = 'pending', consent_text = excluded.consent_text, consent_at = excluded.consent_at, consent_ip = excluded.consent_ip`, email, cfg.consentText, ip);
     const link = randomToken();
-    db.run('UPDATE login_codes SET used_at = datetime(\'now\') WHERE email = ? AND used_at IS NULL', email);
-    db.run('INSERT INTO login_codes (email, code_hash, link_hash, expires_at) VALUES (?, ?, ?, ?)', email, sha256(email + ':' + code), sha256(link), sqlTime(new Date(Date.now() + CODE_MINUTES * 60000)));
-    const confirmUrl = `${cfg.publicUrl}/potwierdz?t=${link}`;
-    const first = sub?.status !== 'confirmed';
+    db.run("UPDATE login_codes SET used_at = datetime('now') WHERE email = ? AND used_at IS NULL", email);
+    db.run('INSERT INTO login_codes (email, code_hash, link_hash, expires_at) VALUES (?, ?, ?, ?)', email, '-', sha256(link), sqlTime(new Date(Date.now() + 7 * DAY)));
     await mailer.send({
       to: email,
-      subject: first ? `Potwierdź zapis – kod ${code}` : `Kod logowania: ${code}`,
+      subject: 'Potwierdź zapis do newslettera',
       ...mailBody(cfg, {
-        title: first ? 'Potwierdź adres i zacznij projektować' : 'Twój kod do projektanta krówek',
-        lines: [
-          `Kod: ${code}`,
-          'Wpisz go w projektancie albo kliknij przycisk poniżej. Kod jest ważny 30 minut.',
-          first ? 'Potwierdzając, zapisujesz się do naszego newslettera. Możesz się wypisać w każdej chwili.' : '',
-          'Jeśli to nie Ty, zignoruj tę wiadomość.',
-        ].filter(Boolean),
-        button: { label: first ? 'Potwierdzam i projektuję' : 'Otwórz projektanta', url: confirmUrl },
+        title: 'Potwierdź zapis do newslettera',
+        lines: ['Dziękujemy za zainteresowanie! Kliknij przycisk, aby potwierdzić zapis. Link jest ważny 7 dni.', 'Jeśli to nie Ty, zignoruj tę wiadomość – nie zapiszemy adresu.'],
+        button: { label: 'Potwierdzam zapis', url: `${cfg.publicUrl}/potwierdz?t=${link}` },
       }),
-    });
-    res.json({ ok: true, minutes: CODE_MINUTES });
-  }));
+    }).catch((e) => log.warn?.(`[mail] ${e.message}`));
+  }
 
-  async function confirm(row) {
+  // link z maila: potwierdza zapis do newslettera
+  app.get('/potwierdz', wrap(async (req, res) => {
+    const row = db.get("SELECT * FROM login_codes WHERE link_hash = ? AND used_at IS NULL AND expires_at > datetime('now')", sha256(String(req.query.t ?? '')));
+    const back = `<p><a href="${escapeAttr(cfg.designerUrl)}">Wróć do projektanta</a></p>`;
+    if (!row) return res.status(400).type('html').send(page('Link wygasł', '<p>Ten link był już użyty albo wygasł.</p>' + back));
     db.run("UPDATE login_codes SET used_at = datetime('now') WHERE id = ?", row.id);
-    const before = db.get('SELECT status FROM subscribers WHERE email = ?', row.email);
     db.run(`INSERT INTO subscribers (email, status, confirmed_at) VALUES (?, 'confirmed', datetime('now'))
       ON CONFLICT(email) DO UPDATE SET status = 'confirmed', confirmed_at = COALESCE(subscribers.confirmed_at, datetime('now'))`, row.email);
-    if (before?.status !== 'confirmed') newsletter.onConfirmed(row.email);
-    return createSession(db, 'customer', row.email, cfg.sessionDays * DAY);
-  }
-  const liveCode = "used_at IS NULL AND expires_at > datetime('now')";
-
-  app.post('/api/auth/verify', json, wrap(async (req, res) => {
-    if (!ipLimit(req.ip)) throw new UserError('Za dużo prób. Spróbuj ponownie za kilkanaście minut.', 429);
-    const email = normEmail(req.body?.email);
-    const code = String(req.body?.code ?? '').replace(/\D/g, '');
-    const row = db.get(`SELECT * FROM login_codes WHERE email = ? AND ${liveCode} ORDER BY id DESC LIMIT 1`, email);
-    if (!row) throw new UserError('Kod wygasł. Poproś o nowy.');
-    if (row.attempts >= 5) throw new UserError('Za dużo błędnych prób. Poproś o nowy kod.', 429);
-    if (sha256(email + ':' + code) !== row.code_hash) {
-      db.run('UPDATE login_codes SET attempts = attempts + 1 WHERE id = ?', row.id);
-      throw new UserError('Nieprawidłowy kod.');
-    }
-    res.json({ token: await confirm(row), email });
+    newsletter.onConfirmed(row.email);
+    res.type('html').send(page('Zapis potwierdzony', '<p>Dziękujemy! Będziemy wysyłać Ci informacje o nowościach i promocjach. Wypisać się możesz w każdej chwili.</p>' + back));
   }));
 
-  // link z maila: potwierdza, loguje i wraca do konfiguratora z tokenem w #
-  app.get('/potwierdz', wrap(async (req, res) => {
-    const row = db.get(`SELECT * FROM login_codes WHERE link_hash = ? AND ${liveCode}`, sha256(String(req.query.t ?? '')));
-    if (!row) {
-      return res.status(400).type('html').send(page('Link wygasł', '<p>Ten link był już użyty albo wygasł. Wróć do projektanta i poproś o nowy kod.</p>' +
-        `<p><a href="${escapeAttr(cfg.designerUrl)}">Otwórz projektanta</a></p>`));
-    }
-    const token = await confirm(row);
-    res.redirect(303, `${cfg.designerUrl}#kd-session=${token}`);
-  }));
-
-  app.get('/api/me', customer, (req, res) => res.json({ email: req.email }));
-  app.post('/api/auth/logout', (req, res) => { dropSession(db, bearer(req)); res.json({ ok: true }); });
-
-  // ——— Projekty klienta ———
+  // ——— Zapis projektu do druku (bez logowania; e-mail podaje klient) ———
   const upload = multer({
     storage: multer.memoryStorage(),
     defParamCharset: 'utf8',
     limits: { fileSize: cfg.maxFileMb * 1024 * 1024, files: cfg.maxAssets + 2, fields: 20, fieldSize: 5 * 1024 * 1024 },
   }).fields([{ name: 'pdf', maxCount: 1 }, { name: 'preview', maxCount: 1 }, { name: 'asset', maxCount: cfg.maxAssets }]);
 
-  app.post('/api/designs', customer, (req, res, next) => {
-    if (!submitLimit(req.email)) return next(new UserError('Za dużo projektów w krótkim czasie. Spróbuj za godzinę.', 429));
+  app.post('/api/designs', (req, res, next) => {
+    if (!submitLimit(req.ip)) return next(new UserError('Za dużo projektów w krótkim czasie. Spróbuj za godzinę.', 429));
     upload(req, res, (err) => {
       if (err) return next(new UserError(err.code === 'LIMIT_FILE_SIZE' ? `Plik jest za duży (maks. ${cfg.maxFileMb} MB).` : `Błąd przesyłania: ${err.message}`, 413));
       next();
     });
   }, wrap(async (req, res) => {
+    let customerData = {};
+    try { customerData = JSON.parse(req.body?.customer || '{}') ?? {}; } catch { /* sprawdzone niżej */ }
+    const email = normEmail(customerData.email);
+    if (!validEmail(email)) throw new UserError('Podaj poprawny adres e-mail – wyślemy na niego numer projektu.');
     const f = req.files ?? {};
-    const d = await designs.submit({ email: req.email, fields: req.body ?? {}, files: { pdf: f.pdf?.[0], preview: f.preview?.[0], assets: f.asset ?? [] } });
+    const d = await designs.submit({ email, fields: req.body ?? {}, files: { pdf: f.pdf?.[0], preview: f.preview?.[0], assets: f.asset ?? [] } });
+    if (customerData.newsletter === true) await newsletterSignup(email, req.ip);
     res.status(201).json({
       orderId: d.number, status: d.status, shopUrl: cfg.shopProductUrl || null,
-      message: 'Projekt zapisany i gotowy do druku. Potwierdzenie z numerem projektu wysłaliśmy e-mailem.',
+      message: 'Projekt zapisany i gotowy do druku. Potwierdzenie z numerem projektu wysłaliśmy e-mailem.'
+        + (customerData.newsletter === true ? ' Zapis do newslettera potwierdź linkiem z osobnego maila.' : ''),
     });
   }));
-
-  const publicDesign = (d) => ({ number: d.number, status: d.status, statusLabel: STATUSES[d.status], kg: d.kg, pcs: d.pcs, total: d.total, createdAt: d.created_at });
-  app.get('/api/designs', customer, (req, res) => {
-    res.json(db.all('SELECT * FROM designs WHERE email = ? ORDER BY id DESC LIMIT 100', req.email).map(publicDesign));
-  });
-  app.get('/api/designs/:number', customer, (req, res) => {
-    const d = db.get('SELECT * FROM designs WHERE number = ? AND email = ?', req.params.number, req.email);
-    if (!d) return res.status(404).json({ error: 'Nie ma takiego projektu.' });
-    res.json({ ...publicDesign(d), design: JSON.parse(d.design_json) });
-  });
 
   // ——— Panel produkcji (podgląd zamówień, pliki do druku) ———
   const adminRouter = express.Router();

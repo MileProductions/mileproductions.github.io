@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PRICING } from '../config/pricing';
 import { checkDesign } from '../lib/checks';
 import { formatPrice, quote } from '../lib/pricing';
@@ -21,7 +21,9 @@ export function Summary({ user, onBack }: { user: User | null; onBack: () => voi
   const [busy, setBusy] = useState<string | null>(null);
   const [done, setDone] = useState<OrderResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [cust, setCust] = useState({ name: user?.name ?? '', email: user?.email ?? '', phone: '', notes: '' });
+  const [cust, setCust] = useState({ name: user?.name ?? '', email: user?.email ?? '', phone: '', notes: '', newsletter: false });
+  const [nl, setNl] = useState<{ consentText: string; privacyUrl: string | null } | null>(null);
+  useEffect(() => { if (host.showCustomerForm) host.orders.newsletter?.config().then(setNl).catch(() => undefined); }, [host]);
   const issues = checkDesign(design, assets);
   const blocking = issues.filter((i) => i.level === 'error');
   const q = quote(kg);
@@ -109,6 +111,13 @@ export function Summary({ user, onBack }: { user: User | null; onBack: () => voi
             <input placeholder="E-mail" type="email" value={cust.email} onChange={(e) => setCust({ ...cust, email: e.target.value })} />
             <input placeholder="Telefon (opcjonalnie)" value={cust.phone} onChange={(e) => setCust({ ...cust, phone: e.target.value })} />
             <textarea placeholder="Uwagi do zamówienia (opcjonalnie)" rows={2} value={cust.notes} onChange={(e) => setCust({ ...cust, notes: e.target.value })} />
+            <p className="kd-hint">Na ten adres wyślemy numer projektu, który podasz przy zamówieniu w sklepie.</p>
+            {nl && (
+              <label className="kd-accept kd-newsletter">
+                <input type="checkbox" checked={cust.newsletter} onChange={(e) => setCust({ ...cust, newsletter: e.target.checked })} />
+                <span>{nl.consentText} <i>(dobrowolnie)</i>{nl.privacyUrl && <> <a href={nl.privacyUrl} target="_blank" rel="noopener">Polityka prywatności</a></>}</span>
+              </label>
+            )}
           </div>
         )}
         <label className="kd-accept">

@@ -188,14 +188,7 @@ h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: v
   .kd-summary { flex-direction: column; }
 }
 
-/* dostęp po zapisie do newslettera */
-.kd-gate { text-align: left; }
-.kd-gate h2, .kd-gate .kd-big { text-align: center; }
-.kd-gate input[type=email], .kd-gate .kd-code { width: 100%; border: 1px solid var(--kd-line); border-radius: 10px; padding: 12px; font: inherit; font-size: 16px; margin: 4px 0 12px; background: #fff; }
-.kd-gate .kd-code { font-size: 28px; letter-spacing: .4em; text-align: center; font-variant-numeric: tabular-nums; }
-.kd-gate .kd-accept { font-size: 14px; line-height: 1.4; }
-.kd-gate .kd-btn { margin-top: 12px; width: 100%; }
-.kd-logout { font-size: 13px; white-space: nowrap; }
+.kd-newsletter { font-size: 14px; line-height: 1.4; margin-bottom: 8px; }
 
 .kd-pick { width: min(760px, 100%); max-height: 90vh; overflow: auto; }
 .kd-pick-head { justify-content: space-between; align-items: center; }
