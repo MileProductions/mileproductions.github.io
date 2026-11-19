@@ -4,10 +4,10 @@
 /* eslint-disable no-restricted-globals */
 
 const SCOPE = new URL(self.registration.scope).pathname; // np. /krowki-test/
-const ADMIN = { email: 'grafik@test.pl', password: 'krowki-test', name: 'Grafik (test)' };
+const ADMIN = { email: 'produkcja@test.pl', password: 'krowki-test', name: 'Produkcja (test)' };
 const CONSENT = 'Zapisuję się do newslettera i chcę otrzymywać informacje o ofercie i promocjach. Wiem, że mogę się wypisać w każdej chwili. (wersja testowa)';
 const SHOP_URL = 'https://krowki24.pl/';
-const STATUSES = { submitted: 'Do akceptacji', accepted: 'Zaakceptowany', rejected: 'Do poprawy', ordered: 'Zamówiony', production: 'W produkcji', done: 'Zrealizowany', cancelled: 'Anulowany' };
+const STATUSES = { ready: 'Gotowy do druku', ordered: 'Zamówiony', production: 'W produkcji', done: 'Zrealizowany', cancelled: 'Anulowany' };
 const NO_CMYK = 'Wersja testowa: konwersja do CMYK (Ghostscript, FOGRA39) działa tylko na serwerze. Tu można pobrać PDF w RGB.';
 
 self.addEventListener('install', () => self.skipWaiting());
@@ -121,9 +121,9 @@ async function handle(req, path) {
     let customer = {}; try { customer = JSON.parse(f.get('customer') || '{}'); } catch { /* */ }
     const id = ++st.seq.design;
     const d = {
-      id, number: number(id), email, status: 'submitted', name: customer.name || null, phone: customer.phone || null, notes: customer.notes || null,
+      id, number: number(id), email, status: 'ready', name: customer.name || null, phone: customer.phone || null, notes: customer.notes || null,
       kg: Number(f.get('kg')) || 0, pcs: Number(f.get('pcs')) || 0, total: Number(f.get('total')) || 0, design, cmyk: 'error', shopOrder: null, rejectReason: null,
-      createdAt: now(), updatedAt: now(), events: [{ at: now(), actor: email, action: 'submitted', note: customer.notes || null }],
+      createdAt: now(), updatedAt: now(), events: [{ at: now(), actor: email, action: 'submitted', note: customer.notes || null }, { at: now(), actor: 'system', action: 'checked', note: 'Klient zaakceptował projekt w konfiguratorze.' }],
     };
     const add = async (kind, name, blob) => { const fid = ++st.seq.file; await putFile(fid, blob); st.files.push({ id: fid, designId: id, kind, name, mime: blob.type || 'application/octet-stream', size: blob.size, createdAt: now() }); };
     await add('pdf_rgb', `${d.number}-RGB.pdf`, new Blob([f.get('pdf')], { type: 'application/pdf' }));
@@ -131,16 +131,16 @@ async function handle(req, path) {
     for (const a of f.getAll('asset')) if (a instanceof Blob) await add('asset', a.name || 'zdjecie', a);
     d.events.push({ at: now(), actor: 'system', action: 'cmyk-error', note: NO_CMYK });
     st.designs.push(d);
-    mail(st, email, `Projekt ${d.number} przyjęty do sprawdzenia`, [`Dziękujemy! Twój projekt ma numer ${d.number}.`, 'Nasz grafik sprawdzi projekt przed drukiem.', `Aby zamówić krówki, dodaj produkt do koszyka w sklepie i wpisz numer projektu ${d.number}.`]);
-    mail(st, ADMIN.email, `Nowy projekt do akceptacji: ${d.number}`, [`Klient: ${email}`, d.kg ? `Ilość: ${d.kg} kg` : '', d.notes ? `Uwagi: ${d.notes}` : '']);
+    mail(st, email, `Projekt ${d.number} gotowy do druku`, [`Dziękujemy! Twój projekt ma numer ${d.number}.`, 'Projekt jest zapisany i gotowy do druku dokładnie tak, jak go zaakceptowałeś/aś w projektancie.', `Aby zamówić krówki, dodaj produkt do koszyka w sklepie i wpisz numer projektu ${d.number}.`]);
+    mail(st, ADMIN.email, `Nowy projekt: ${d.number}`, [`Klient: ${email}`, d.kg ? `Ilość: ${d.kg} kg` : '', d.notes ? `Uwagi: ${d.notes}` : '']);
     await save(st);
-    return json({ orderId: d.number, status: d.status, shopUrl: SHOP_URL, message: 'Projekt wysłany do sprawdzenia (wersja testowa: zapisany w tej przeglądarce). Zobacz go w panelu grafika.' }, 201);
+    return json({ orderId: d.number, status: d.status, shopUrl: SHOP_URL, message: 'Projekt zapisany i gotowy do druku (wersja testowa: zapisany w tej przeglądarce). Zobacz go w panelu produkcji.' }, 201);
   }
 
   // ——— panel ———
   if (path === 'api/admin/login' && m === 'POST') {
     const b = await body();
-    if (norm(b.email) !== ADMIN.email || b.password !== ADMIN.password) return fail('Nieprawidłowy e-mail lub hasło. W wersji testowej: grafik@test.pl / krowki-test', 401);
+    if (norm(b.email) !== ADMIN.email || b.password !== ADMIN.password) return fail('Nieprawidłowy e-mail lub hasło. W wersji testowej: produkcja@test.pl / krowki-test', 401);
     st.admin = { exp: Date.now() + 12 * 3600e3 }; await save(st);
     return json({ email: ADMIN.email, name: ADMIN.name });
   }
@@ -171,13 +171,11 @@ async function handle(req, path) {
       if (sub === '/status' && m === 'POST') {
         const b = await body();
         if (!STATUSES[b.status]) return fail('Nieznany status.');
-        if (b.status === 'rejected' && !String(b.note ?? '').trim()) return fail('Napisz klientowi, co trzeba poprawić.');
-        if (b.status === 'rejected') d.rejectReason = String(b.note).trim();
         if (b.shopOrder !== undefined) d.shopOrder = String(b.shopOrder).trim() || null;
+        const was = d.status;
         d.status = b.status; d.updatedAt = now();
         d.events.push({ at: now(), actor: ADMIN.email, action: 'status:' + b.status, note: [b.note, b.shopOrder ? `zamówienie w sklepie: ${b.shopOrder}` : ''].filter(Boolean).join(' · ') || null });
-        if (b.status === 'accepted') mail(st, d.email, `Projekt ${d.number} zaakceptowany`, ['Grafik sprawdził projekt i jest gotowy do druku.', b.note ? `Uwagi grafika: ${b.note}` : '']);
-        if (b.status === 'rejected') mail(st, d.email, `Projekt ${d.number} wymaga poprawki`, ['Grafik sprawdził projekt i prosi o poprawkę:', d.rejectReason, 'Otwórz konfigurator, popraw projekt i wyślij go ponownie.']);
+        if (b.status === 'production' && was !== 'production') mail(st, d.email, `Krówki z projektem ${d.number} są w produkcji`, [`Drukujemy papierki z projektu ${d.number}. Termin realizacji: 5–7 dni roboczych.`, b.note ? `Informacja od nas: ${b.note}` : '']);
         await save(st);
         return json(full(st, d));
       }

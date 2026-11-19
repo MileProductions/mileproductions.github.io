@@ -8,7 +8,7 @@ import './styles.css';
 
 // Strona samodzielna. Adres backendu: <meta name="krowka-api"> (wstawia go backend, który serwuje
 // konfigurator) albo ?api=https://…/api. Z backendem: dostęp po zapisie do newslettera i wysyłka
-// projektów do akceptacji. Bez backendu: tryb pokazowy (testowy klient, zapis tylko w przeglądarce).
+// projektów do druku. Bez backendu: tryb pokazowy (testowy klient, zapis tylko w przeglądarce).
 loadFonts();
 const api = new URLSearchParams(location.search).get('api') ?? document.querySelector<HTMLMetaElement>('meta[name="krowka-api"]')?.content ?? null;
 const auth = api ? newsletterAuth(api) : null;

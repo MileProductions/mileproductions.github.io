@@ -1,13 +1,13 @@
 // Projekty: zapis zgłoszenia z konfiguratora, kolejka konwersji CMYK, zmiany statusu, usuwanie.
+// Klient sam przygotowuje i akceptuje projekt. Po automatycznym sprawdzeniu (format siatki, plik CMYK)
+// projekt jest od razu „Gotowy do druku”; nikt go ręcznie nie zatwierdza.
 import { designNumber } from './db.js';
 import { mailBody } from './mail.js';
 import { checkPrintPdf, convertToCmyk, inspectPdf } from './pdf.js';
 import { safeName } from './storage.js';
 
 export const STATUSES = {
-  submitted: 'Do akceptacji',
-  accepted: 'Zaakceptowany',
-  rejected: 'Do poprawy',
+  ready: 'Gotowy do druku',
   ordered: 'Zamówiony',
   production: 'W produkcji',
   done: 'Zrealizowany',
@@ -54,6 +54,12 @@ export function createDesigns({ cfg, db, storage, mailer, log = console }) {
       db.run("UPDATE designs SET cmyk_status = 'error', cmyk_error = ?, updated_at = datetime('now') WHERE id = ?", msg, id);
       event(id, 'system', 'cmyk-error', msg);
       log.error?.(`[cmyk] projekt ${d.number}: ${msg}`);
+      if (cfg.notifyEmail.length) {
+        await mailer.send({
+          to: cfg.notifyEmail.join(','), subject: `Błąd pliku do druku: ${d.number}`,
+          ...mailBody(cfg, { title: `Nie powstał PDF w CMYK dla ${d.number}`, lines: ['Automatyczna konwersja do CMYK nie powiodła się. Sprawdź projekt w panelu i utwórz plik ponownie.', msg], button: { label: 'Otwórz w panelu', url: `${cfg.publicUrl}/panel/#/projekt/${d.number}` } }),
+        }).catch(() => undefined);
+      }
     }
   }
 
@@ -98,17 +104,18 @@ export function createDesigns({ cfg, db, storage, mailer, log = console }) {
       throw e;
     }
     event(id, email, 'submitted', d.notes);
+    event(id, 'system', 'checked', `Sprawdzono automatycznie: strona ${info.media.w} × ${info.media.h} mm, format netto ${info.trim.w} × ${info.trim.h} mm. Klient zaakceptował projekt w konfiguratorze.`);
     enqueueCmyk(id);
 
     const shop = cfg.shopProductUrl;
     const kgTxt = kg ? `${String(kg).replace('.', ',')} kg (ok. ${pcs} szt.)` : '';
     await mailer.send({
       to: email,
-      subject: `Projekt ${d.number} przyjęty do sprawdzenia`,
+      subject: `Projekt ${d.number} gotowy do druku`,
       ...mailBody(cfg, {
         title: `Dziękujemy! Twój projekt ma numer ${d.number}`,
         lines: [
-          'Nasz grafik sprawdzi projekt przed drukiem. Jeśli coś będzie wymagało poprawki, napiszemy do Ciebie.',
+          'Projekt jest zapisany i gotowy do druku dokładnie tak, jak go zaakceptowałeś/aś w projektancie.',
           kgTxt && `Wybrana ilość: ${kgTxt}.`,
           shop ? `Aby zamówić krówki, dodaj produkt do koszyka w sklepie i wpisz numer projektu ${d.number}.` : `Przy zamówieniu podaj numer projektu ${d.number}.`,
         ].filter(Boolean),
@@ -118,7 +125,7 @@ export function createDesigns({ cfg, db, storage, mailer, log = console }) {
     if (cfg.notifyEmail.length) {
       await mailer.send({
         to: cfg.notifyEmail.join(','),
-        subject: `Nowy projekt do akceptacji: ${d.number}`,
+        subject: `Nowy projekt: ${d.number}`,
         ...mailBody(cfg, { title: `Nowy projekt ${d.number}`, lines: [`Klient: ${email}`, kgTxt, d.notes ? `Uwagi: ${d.notes}` : ''].filter(Boolean), button: { label: 'Otwórz w panelu', url: `${cfg.publicUrl}/panel/#/projekt/${d.number}` } }),
       }).catch((e) => log.warn?.(`[mail] ${e.message}`));
     }
@@ -127,24 +134,15 @@ export function createDesigns({ cfg, db, storage, mailer, log = console }) {
 
   async function setStatus(d, status, { actor, note, shopOrder }) {
     if (!STATUSES[status]) throw new UserError('Nieznany status.');
-    if (status === 'rejected' && !String(note ?? '').trim()) throw new UserError('Napisz klientowi, co trzeba poprawić.');
-    const reason = status === 'rejected' ? String(note).trim().slice(0, 2000) : d.reject_reason;
     const order = shopOrder !== undefined ? (String(shopOrder).trim().slice(0, 60) || null) : d.shop_order;
-    db.run("UPDATE designs SET status = ?, reject_reason = ?, shop_order = ?, updated_at = datetime('now') WHERE id = ?", status, reason, order, d.id);
+    db.run("UPDATE designs SET status = ?, shop_order = ?, updated_at = datetime('now') WHERE id = ?", status, order, d.id);
     event(d.id, actor, 'status:' + status, [note, order && order !== d.shop_order ? `zamówienie w sklepie: ${order}` : ''].filter(Boolean).join(' · ') || null);
 
-    if (status === 'accepted' || status === 'rejected') {
-      const lines = status === 'accepted'
-        ? ['Grafik sprawdził projekt i jest gotowy do druku.', note ? `Uwagi grafika: ${note}` : '', cfg.shopProductUrl && !order ? `Jeśli jeszcze nie zamówiłeś/aś, dodaj krówki do koszyka i wpisz numer projektu ${d.number}.` : ''].filter(Boolean)
-        : ['Grafik sprawdził projekt i prosi o poprawkę:', String(note).trim(), 'Otwórz konfigurator, popraw projekt i wyślij go ponownie. Dostaniesz nowy numer projektu.'];
+    if (status === 'production' && d.status !== 'production') {
       await mailer.send({
         to: d.email,
-        subject: status === 'accepted' ? `Projekt ${d.number} zaakceptowany` : `Projekt ${d.number} wymaga poprawki`,
-        ...mailBody(cfg, {
-          title: status === 'accepted' ? `Projekt ${d.number} zaakceptowany` : `Projekt ${d.number}: potrzebna poprawka`,
-          lines,
-          button: status === 'accepted' ? (cfg.shopProductUrl && !order ? { label: 'Przejdź do sklepu', url: cfg.shopProductUrl } : undefined) : { label: 'Otwórz konfigurator', url: cfg.designerUrl },
-        }),
+        subject: `Krówki z projektem ${d.number} są w produkcji`,
+        ...mailBody(cfg, { title: 'Twoje krówki są w produkcji', lines: [`Drukujemy papierki z projektu ${d.number}. Termin realizacji: 5–7 dni roboczych.`, note ? `Informacja od nas: ${note}` : ''].filter(Boolean) }),
       }).catch((e) => log.warn?.(`[mail] ${e.message}`));
     }
   }

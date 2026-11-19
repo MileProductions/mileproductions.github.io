@@ -1,5 +1,5 @@
 // RODO: usuwa projekty (z plikami) starsze niż RETENTION_DAYS od ostatniej zmiany,
-// które są zrealizowane, anulowane, odrzucone albo nigdy nie zostały zamówione.
+// które są zrealizowane, anulowane albo nigdy nie zostały zamówione.
 // Uruchamiać np. raz dziennie z crona: npm run cleanup   (podgląd bez usuwania: npm run cleanup -- --dry-run)
 import { loadConfig } from '../src/config.js';
 import { openDb } from '../src/db.js';
@@ -10,7 +10,7 @@ const db = openDb(cfg.dataDir);
 const storage = createStorage(cfg.dataDir);
 const dry = process.argv.includes('--dry-run');
 const rows = db.all(`SELECT id, number, status FROM designs
-  WHERE status IN ('done', 'cancelled', 'rejected', 'submitted', 'accepted') AND updated_at < datetime('now', ?)`, `-${cfg.retentionDays} days`);
+  WHERE status IN ('done', 'cancelled', 'ready') AND updated_at < datetime('now', ?)`, `-${cfg.retentionDays} days`);
 for (const r of rows) {
   console.log(`${dry ? '[podgląd] ' : ''}usuwam ${r.number} (${r.status})`);
   if (!dry) { db.run('DELETE FROM designs WHERE id = ?', r.id); await storage.removeDir(String(r.id)); }
