@@ -23,16 +23,17 @@
       '<filter id="' + id + 's" x="-10%" y="-10%" width="120%" height="140%"><feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#160602" flood-opacity=".22"/></filter>' +
       "</defs>" +
       '<g filter="url(#' + id + 's)">' +
-      // skrzydełka: płaskie, trójkątne, przy podstawie (jak w podglądzie 3D konfiguratora)
-      '<path d="M51 52 L5 81 L48 98 Z" fill="#000" opacity=".16" transform="translate(0 2)"/>' +
-      '<path d="M149 52 L195 81 L152 98 Z" fill="#000" opacity=".16" transform="translate(0 2)"/>' +
-      '<path d="M51 52 L5 81 L48 98 Z" fill="' + bg + '"/>' +
-      '<path d="M149 52 L195 81 L152 98 Z" fill="' + bg + '"/>' +
-      '<path d="M51 52 L5 81 L48 98 Z M149 52 L195 81 L152 98 Z" fill="#000" opacity=".06"/>' +
-      '<path d="M5 81 L48 98 M195 81 L152 98" stroke="#000" stroke-opacity=".18" stroke-width=".8"/>' +
+      // skrzydełka: płaskie, w płaszczyźnie frontu (z grafiką), zwężają się do szpica na środku wysokości frontu
+      '<path d="M51 26 L8 49 L46 76 Z" fill="#000" opacity=".14" transform="translate(0 4)"/>' +
+      '<path d="M149 26 L192 49 L154 76 Z" fill="#000" opacity=".14" transform="translate(0 4)"/>' +
       // bok (ścianka przednia)
       '<path d="M46 76 L154 76 L152 97 L48 97 Z" fill="' + bg + '"/>' +
       '<path d="M46 76 L154 76 L152 97 L48 97 Z" fill="#000" opacity=".13"/>' +
+      '<path d="M51 26 L8 49 L46 76 Z" fill="' + bg + '"/>' +
+      '<path d="M149 26 L192 49 L154 76 Z" fill="' + bg + '"/>' +
+      '<path d="M51 26 L8 49 L46 76 Z M149 26 L192 49 L154 76 Z" fill="#000" opacity=".07"/>' +
+      '<path d="M8 49 L46 76 M192 49 L154 76" stroke="#000" stroke-opacity=".12" stroke-width=".7"/>' +
+      '<path d="M51 26 L46 76 M149 26 L154 76" stroke="#000" stroke-opacity=".10" stroke-width=".6"/>' +
       // front (góra cukierka)
       '<path d="M51 26 L149 26 L154 76 L46 76 Z" fill="' + bg + '"/>' +
       pattern +
