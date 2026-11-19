@@ -20,6 +20,15 @@ import type { User } from './adapters';
 const ACCEPT = 'image/jpeg,image/png,image/webp,image/gif,image/svg+xml,image/heic,image/heif,.heic,.heif,application/pdf,.pdf';
 const MAX_MB = 25;
 
+function loadTemplate(id: string | null, say: (t: string) => void) {
+  const t = TEMPLATES.find((x) => x.id === id);
+  if (!t) return false;
+  const st = useStore.getState();
+  st.replaceDesign(t.build()); st.select(null); st.set({ step: 2 });
+  say(`Wczytano wzór „${t.name}”. Podmień zdjęcie i teksty.`);
+  return true;
+}
+
 export default function App() {
   const host = useHost();
   const [user, setUser] = useState<User | null | undefined>(undefined);
@@ -35,11 +44,20 @@ export default function App() {
     if (!user) return;
     let stop: (() => void) | undefined;
     restore(user.id).then((ok) => {
-      if (ok) say('Wczytano Twój ostatni projekt.');
+      // ?wzor=<id> w adresie (link „Użyj jako punkt wyjścia” ze sklepu) ma pierwszeństwo przed zapisanym projektem
+      if (!loadTemplate(new URLSearchParams(location.search).get('wzor'), say) && ok) say('Wczytano Twój ostatni projekt.');
       stop = startAutosave(user.id, () => host.emit('design:saved', { at: Date.now() }));
     });
     return () => stop?.();
   }, [user, host, say]);
+
+  // Wzór wybrany na stronie sklepu, przekazany przez postMessage {type:'krowki:wzor', id}
+  useEffect(() => {
+    if (!user) return;
+    const onMsg = (e: MessageEvent) => { if (e.data && e.data.type === 'krowki:wzor') loadTemplate(String(e.data.id), say); };
+    window.addEventListener('message', onMsg);
+    return () => window.removeEventListener('message', onMsg);
+  }, [user, say]);
 
   const design = useStore((s) => s.design);
   useEffect(() => { host.emit('price:changed', { kg: useStore.getState().kg }); }, [host, design]);
@@ -265,6 +283,8 @@ function Edit({ say }: { say: (t: string) => void }) {
   const [textFocus, setTextFocus] = useState(0);
   const [tip, setTip] = useState(() => (localStorage.getItem('krowka-designer:tips') ? -1 : 0));
   const [big3d, setBig3d] = useState(false);
+  const [pick, setPick] = useState(false);
+  const [reset, setReset] = useState(false);
   const design = useStore((s) => s.design);
   const assets = useStore((s) => s.assets);
   const mode = useStore((s) => s.mode);
@@ -317,6 +337,9 @@ function Edit({ say }: { say: (t: string) => void }) {
         <button className="kd-icon kd-zoom" onClick={() => set({ zoom: Math.max(1, zoom / 1.25) })} disabled={zoom <= 1} title="Pomniejsz">−</button>
         <button className="kd-icon kd-zoom" onClick={() => set({ zoom: 1 })} title="Dopasuj do ekranu">{Math.round(zoom * 100)}%</button>
         <button className="kd-icon kd-zoom" onClick={() => set({ zoom: Math.min(4, zoom * 1.25) })} title="Powiększ">+</button>
+        <span className="kd-sep" />
+        <button className="kd-icon" onClick={() => setPick(true)} title="Wybierz gotowy wzór">▦ <span>Wzory</span></button>
+        <button className="kd-icon" onClick={() => setReset(true)} title="Wyczyść papierek i zacznij od początku">⟲ <span>Zacznij od nowa</span></button>
         <span className="kd-grow" />
         <div className="kd-switch" role="group" aria-label="Tryb edytora">
           <button className={mode === 'simple' ? 'kd-on' : ''} onClick={() => set({ mode: 'simple' })}>Prosty</button>
@@ -372,6 +395,29 @@ function Edit({ say }: { say: (t: string) => void }) {
         </aside>
       </div>
       {cropEl && <CropModal el={cropEl} onClose={() => setCropId(null)} />}
+      {reset && (
+        <div className="kd-modal" onClick={(e) => e.target === e.currentTarget && setReset(false)}>
+          <div className="kd-modal-box kd-confirm">
+            <h3>Zacząć od początku?</h3>
+            <p className="kd-muted">Wyczyścimy papierek. Możesz wgrać nowe zdjęcie albo wybrać inny wzór.</p>
+            <div className="kd-row kd-confirm-btns">
+              <button className="kd-btn" onClick={() => setReset(false)}>Anuluj</button>
+              <button className="kd-btn kd-primary" onClick={() => { commit(() => ({ ...EMPTY, elements: [] })); select(null); setReset(false); set({ step: 1 }); }}>Wyczyść i zacznij od nowa</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {pick && (
+        <div className="kd-modal" onClick={(e) => e.target === e.currentTarget && setPick(false)}>
+          <div className="kd-modal-box kd-pick">
+            <div className="kd-row kd-pick-head"><h3>Wybierz wzór</h3><button className="kd-close" onClick={() => setPick(false)} aria-label="Zamknij">×</button></div>
+            <p className="kd-muted">Wzór zastąpi obecny projekt. Możesz to cofnąć przyciskiem „Cofnij”.</p>
+            <div className="kd-templates">
+              {TEMPLATES.map((t) => <TemplateCard key={t.id} id={t.id} name={t.name} onClick={() => { commit(() => t.build()); select(null); setPick(false); say(`Wczytano wzór „${t.name}”.`); }} />)}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
