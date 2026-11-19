@@ -78,6 +78,6 @@ tests/                    testy Vitest
 
 ## Jeszcze nie zrobione (kolejne etapy)
 
-- Edycja szablonów i cen w panelu (backend, panel grafika i PDF w CMYK są już w `../server`, opis w `../README.md`).
+- Edycja szablonów i cen w panelu (backend, panel produkcji i PDF w CMYK są już w `../server`, opis w `../README.md`).
 - Usuwanie tła z logo.
 - Płatności – docelowo w koszyku sklepu.

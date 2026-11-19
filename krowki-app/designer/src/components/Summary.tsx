@@ -63,7 +63,7 @@ export function Summary({ user, onBack }: { user: User | null; onBack: () => voi
             <p><a className="kd-btn kd-primary kd-lg" href={done.shopUrl} target="_top">Przejdź do sklepu →</a></p>
           </>
         )}
-        <p>Termin realizacji: {PRICING.leadTime} od akceptacji projektu.</p>
+        <p>Termin realizacji: {PRICING.leadTime}.</p>
         <button className="kd-btn" onClick={pdf}>{busy === 'pdf' ? 'Przygotowuję…' : 'Pobierz plik PDF projektu'}</button>
       </div>
     );
@@ -113,7 +113,7 @@ export function Summary({ user, onBack }: { user: User | null; onBack: () => voi
         )}
         <label className="kd-accept">
           <input type="checkbox" checked={ok} onChange={(e) => setOk(e.target.checked)} />
-          Sprawdziłem/am pisownię, kolory i rozmieszczenie. Akceptuję projekt do druku.
+          Sprawdziłem/am pisownię, kolory i rozmieszczenie. Akceptuję projekt: pójdzie do druku dokładnie w tej postaci, bez dodatkowej korekty z naszej strony.
         </label>
         <p className="kd-hint">Kolory w druku mogą być nieco inne niż na ekranie.</p>
         {error && <p className="kd-error">{error}</p>}

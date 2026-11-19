@@ -42,9 +42,7 @@ tbody tr { cursor: pointer; }
 tbody tr:hover { background: #fbf4ea; }
 td.thumb img { width: 56px; height: 58px; object-fit: cover; border-radius: 4px; border: 1px solid var(--line); background: #fff; }
 .badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #eee; white-space: nowrap; }
-.s-submitted { background: #fff1d6; color: var(--warn); }
-.s-accepted { background: #e2f3e3; color: var(--ok); }
-.s-rejected { background: #fde4e1; color: var(--err); }
+.s-ready { background: #e2f3e3; color: var(--ok); }
 .s-ordered { background: #e1ecfa; color: var(--info); }
 .s-production { background: #ece3f7; color: #6a3ea1; }
 .s-done { background: #e7e7e7; color: #444; }

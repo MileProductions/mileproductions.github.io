@@ -24,7 +24,7 @@ const m = html.match(/<script type="module" crossorigin src="([^"]+)"><\/script>
 if (!m) throw new Error('Nie znaleziono skryptu aplikacji w index.html');
 html = html.replace(m[0], '')
   .replace('<head>', '<head>\n    <meta name="krowka-api" content="./api" />\n    <meta name="robots" content="noindex" />')
-  .replace('</body>', `${banner('<a href="./panel/" style="color:#ffd9a8">Panel grafika →</a>')}\n    ${loader(m[1])}\n  </body>`);
+  .replace('</body>', `${banner('<a href="./panel/" style="color:#ffd9a8">Panel produkcji →</a>')}\n    ${loader(m[1])}\n  </body>`);
 fs.writeFileSync(path.join(out, 'index.html'), html);
 
 // panel
@@ -32,6 +32,6 @@ const pIndex = path.join(out, 'panel', 'index.html');
 let p = fs.readFileSync(pIndex, 'utf8');
 p = p.replace('<script src="panel.js" type="module"></script>', loader('./panel.js').replace("'./boot.js'", "'../boot.js'"))
   .replace('<a href="#/newsletter">Newsletter</a>', '<a href="#/newsletter">Newsletter</a>\n      <a href="#/maile">Maile (test)</a>')
-  .replace('</body>', `${banner('Logowanie: <b>grafik@test.pl</b> / <b>krowki-test</b> · <a href="../" style="color:#ffd9a8">← Konfigurator</a>')}\n</body>`);
+  .replace('</body>', `${banner('Logowanie: <b>produkcja@test.pl</b> / <b>krowki-test</b> · <a href="../" style="color:#ffd9a8">← Konfigurator</a>')}\n</body>`);
 fs.writeFileSync(pIndex, p);
 console.log('Gotowe:', out);

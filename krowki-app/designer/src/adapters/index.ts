@@ -20,7 +20,7 @@ export interface NewsletterGate {
 
 export interface OrderPayload {
   designJson: string;
-  /** oryginały zdjęć użytych w projekcie – grafik może je wykorzystać przy poprawkach */
+  /** oryginały zdjęć użytych w projekcie – zostają przy zamówieniu na wypadek reklamacji lub ponownego druku */
   assets?: { id: string; name: string; blob: Blob }[];
   pdf: Blob;
   preview: Blob;
@@ -79,7 +79,7 @@ export const mockOrders: OrderProvider = {
 export function httpOrders(apiUrl: string, token: string | null | (() => string | null)): OrderProvider {
   const getToken = typeof token === 'function' ? token : () => token;
   return {
-    label: 'Wyślij projekt do akceptacji',
+    label: 'Zapisz projekt do druku',
     async submit(o) {
       const f = new FormData();
       f.set('design', o.designJson);

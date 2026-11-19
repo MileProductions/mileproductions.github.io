@@ -11,6 +11,6 @@ export const PRICING = {
     { fromKg: 5, discount: 0.05 },
     { fromKg: 10, discount: 0.1 },
   ],
-  leadTime: '5–7 dni roboczych od akceptacji projektu',
+  leadTime: '5–7 dni roboczych od zamówienia',
 };
 export type PricingConfig = typeof PRICING;
