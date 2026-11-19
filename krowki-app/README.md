@@ -4,7 +4,7 @@ Etap 1 z planu integracji ze sklepem krowki24.pl:
 
 - **backend** zapisuje projekty z konfiguratora (projekt, PDF, podgląd, oryginały zdjęć) i nadaje im numer, np. `KR-2611-0042`,
 - **PDF do druku w CMYK**: Ghostscript zamienia plik RGB z konfiguratora na PDF/X-3 w CMYK z profilem FOGRA39,
-- **dostęp przez newsletter** (wariant C): kto poda e-mail, zaznaczy zgodę i potwierdzi adres kodem albo linkiem z maila, może projektować. Konto w sklepie jest potrzebne dopiero przy zamówieniu,
+- **konfigurator dla wszystkich**: bez logowania i bez zapisu do newslettera. Klient podaje e-mail dopiero przy zapisie projektu (dostaje na niego numer projektu) i może dobrowolnie zapisać się do newslettera (potwierdzenie linkiem z maila, double opt-in). Konto w sklepie jest potrzebne dopiero przy zamówieniu,
 - **panel produkcji** pod `/panel/`: lista projektów gotowych do druku, podgląd, powiązanie z numerem zamówienia w Shoperze, statusy „W produkcji” (klient dostaje maila) i „Zrealizowany”, pobieranie PDF, lista zapisów do newslettera (CSV) i usuwanie danych klienta (RODO).
 
 Klient sam przygotowuje i akceptuje projekt. Nie ma ręcznej akceptacji przez grafika: po zapisaniu system automatycznie sprawdza plik (format siatki, spad, konwersja do CMYK) i projekt jest od razu „Gotowy do druku”. Jakość pilnuje konfigurator: blokuje zbyt małe zdjęcia i ostrzega przed tekstem przy krawędzi.
@@ -21,14 +21,14 @@ krowki-app/
 ## Wersja testowa na GitHub Pages
 
 `https://mileproductions.github.io/krowki-test/` (panel: `/krowki-test/panel/`, logowanie `produkcja@test.pl` / `krowki-test`).
-GitHub Pages nie uruchamia serwera, więc backend udaje tam service worker (`pages-test/sw.js`): to samo API, dane w IndexedDB przeglądarki. Maile nie wychodzą (kod pokazuje się na ekranie, „wysłane” maile są w panelu w zakładce „Maile (test)”), a PDF w CMYK powstaje tylko na prawdziwym serwerze. Konfigurator i panel to te same pliki co na serwerze.
+GitHub Pages nie uruchamia serwera, więc backend udaje tam service worker (`pages-test/sw.js`): to samo API, dane w IndexedDB przeglądarki. Maile nie wychodzą („wysłane” maile, także link potwierdzający newsletter, są w panelu w zakładce „Maile (test)”), a PDF w CMYK powstaje tylko na prawdziwym serwerze. Konfigurator i panel to te same pliki co na serwerze.
 Przebudowanie: `node pages-test/build.mjs` (z folderu `krowki-app/`).
 
 ## Jak to działa dla klienta
 
 1. Klient otwiera konfigurator, np. `https://projektuj.krowki24.pl/` albo ramkę na stronie sklepu.
-2. Podaje e-mail i zaznacza zgodę na newsletter. Dostaje maila z 6-cyfrowym kodem i przyciskiem. Wpisanie kodu albo kliknięcie przycisku potwierdza zapis (double opt-in) i otwiera projektanta. Przy kolejnej wizycie zgoda nie jest już potrzebna, wystarczy kod. Sesja trwa 90 dni.
-3. Projektuje, w kroku 3 sprawdza podgląd, zaznacza akceptację projektu i klika **„Zapisz projekt do druku”**. Dostaje numer projektu na ekranie i w mailu oraz przycisk „Przejdź do sklepu” (`SHOP_PRODUCT_URL`), gdzie zamawia produkt i wpisuje numer projektu.
+2. Projektuje od razu, bez logowania. Projekt zapisuje się w przeglądarce (autozapis).
+3. W kroku 3 sprawdza podgląd, podaje imię i e-mail, opcjonalnie zaznacza newsletter, akceptuje projekt i klika **„Zapisz projekt do druku”**. Dostaje numer projektu na ekranie i w mailu oraz przycisk „Przejdź do sklepu” (`SHOP_PRODUCT_URL`), gdzie zamawia produkt i wpisuje numer projektu. Jeśli zaznaczył newsletter, dostaje osobny mail z linkiem potwierdzającym.
 4. Serwer automatycznie sprawdza plik i robi PDF w CMYK. Projekt ma od razu status „Gotowy do druku”. Produkcja dostaje powiadomienie (`NOTIFY_EMAIL`), także gdy konwersja do CMYK się nie uda.
 5. W panelu produkcja wpisuje numer zamówienia z Shopera („Zamówiony…”), potem „W produkcji” (mail do klienta) i „Zrealizowany”. Automatyczne powiązanie przez webhook Shopera to etap 2.
 
@@ -45,7 +45,7 @@ npm start                                              # http://localhost:8080 i
 npm test                                               # testy API (z konwersją CMYK, jeśli jest Ghostscript)
 ```
 
-Bez `SMTP_URL` maile nie wychodzą, tylko trafiają do logu i do `data/outbox/`, skąd można przepisać kod.
+Bez `SMTP_URL` maile nie wychodzą, tylko trafiają do logu i do `data/outbox/`.
 
 ## Wdrożenie
 
@@ -70,7 +70,7 @@ Wszystkie ustawienia są opisane w [`server/.env.example`](server/.env.example).
 <iframe src="https://projektuj.krowki24.pl/" style="width:100%;height:900px;border:0" allow="camera"></iframe>
 ```
 
-W ramce klient potwierdza dostęp kodem z maila. Link z maila otwiera konfigurator w nowej karcie.
+Konfigurator w ramce działa od razu, bez logowania.
 
 **Komponent (jeśli szablon sklepu pozwala na własne skrypty):**
 
@@ -86,15 +86,11 @@ Domena sklepu musi być wtedy w `ALLOWED_ORIGINS`.
 | Metoda i adres | Kto | Co robi |
 | --- | --- | --- |
 | `GET /api/config` | wszyscy | treść zgody, link do polityki prywatności, adres produktu |
-| `POST /api/auth/request` `{email, consent}` | wszyscy | wysyła kod i link (zgoda wymagana przy pierwszym zapisie) |
-| `POST /api/auth/verify` `{email, code}` | wszyscy | potwierdza zapis i zwraca token sesji |
-| `GET /potwierdz?t=…` | link z maila | potwierdza i wraca do konfiguratora z sesją |
-| `GET /api/me`, `POST /api/auth/logout` | klient | sesja |
-| `POST /api/designs` (multipart: `design`, `pdf`, `preview`, `asset`…, `kg`, `pcs`, `total`, `customer`) | klient | zapis projektu, automatyczne sprawdzenie, numer, maile, kolejka CMYK |
-| `GET /api/designs`, `GET /api/designs/:numer` | klient | własne projekty i ich status |
+| `POST /api/designs` (multipart: `design`, `pdf`, `preview`, `asset`…, `kg`, `pcs`, `total`, `customer` = JSON z `email`, `name`, `phone`, `notes`, `newsletter`) | wszyscy | zapis projektu, automatyczne sprawdzenie, numer, maile, kolejka CMYK; `newsletter: true` wysyła link potwierdzający |
+| `GET /potwierdz?t=…` | link z maila | potwierdza zapis do newslettera |
 | `/api/admin/*` | produkcja (cookie) | lista, szczegóły, status, pliki, newsletter CSV, usuwanie danych |
 
-Klient widzi tylko swoje projekty. Hasła kont panelu są haszowane (scrypt), sesje panelu w ciasteczku `HttpOnly; SameSite=Strict`, zapytania zmieniające dane w panelu sprawdzają nagłówek `Origin`. Limity prób: kody, logowanie, wysyłki.
+Hasła kont panelu są haszowane (scrypt), sesje panelu w ciasteczku `HttpOnly; SameSite=Strict`, zapytania zmieniające dane w panelu sprawdzają nagłówek `Origin`. Limity prób: logowanie do panelu i liczba zapisów projektów z jednego adresu IP.
 
 ## Plik do druku
 
@@ -105,6 +101,6 @@ Klient widzi tylko swoje projekty. Hasła kont panelu są haszowane (scrypt), se
 ## Czego jeszcze nie ma (etap 2)
 
 - Webhook zamówień Shopera i automatyczne „Zamówiony”, dodawanie do koszyka z numerem projektu.
-- „Moje projekty” w konfiguratorze (API `GET /api/designs` już jest) i zapis szkicu na serwerze przed wysłaniem.
+- „Moje projekty” (np. po zalogowaniu kontem sklepu) i zapis szkicu na serwerze przed wysłaniem.
 - Bezpośredni zapis do listy newslettera w Shoperze. Dziś: webhook `NEWSLETTER_WEBHOOK_URL` (np. Make/Zapier, MailerLite, Brevo) albo eksport CSV z panelu.
 - Przechowywanie plików w S3 zamiast na dysku serwera (`server/src/storage.js` ma do tego mały interfejs).

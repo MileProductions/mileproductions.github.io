@@ -5,7 +5,7 @@
 
 const SCOPE = new URL(self.registration.scope).pathname; // np. /krowki-test/
 const ADMIN = { email: 'produkcja@test.pl', password: 'krowki-test', name: 'Produkcja (test)' };
-const CONSENT = 'Zapisuję się do newslettera i chcę otrzymywać informacje o ofercie i promocjach. Wiem, że mogę się wypisać w każdej chwili. (wersja testowa)';
+const CONSENT = 'Chcę dostawać newsletter z nowościami i promocjami. Mogę się wypisać w każdej chwili.';
 const SHOP_URL = 'https://krowki24.pl/';
 const STATUSES = { ready: 'Gotowy do druku', ordered: 'Zamówiony', production: 'W produkcji', done: 'Zrealizowany', cancelled: 'Anulowany' };
 const NO_CMYK = 'Wersja testowa: konwersja do CMYK (Ghostscript, FOGRA39) działa tylko na serwerze. Tu można pobrać PDF w RGB.';
@@ -46,13 +46,10 @@ const now = () => new Date().toISOString().replace('T', ' ').slice(0, 19);
 const json = (data, status = 200, headers = {}) => new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json; charset=utf-8', ...headers } });
 const fail = (msg, status = 400) => json({ error: msg }, status);
 const rnd = (n = 24) => [...crypto.getRandomValues(new Uint8Array(n))].map((b) => b.toString(16).padStart(2, '0')).join('');
-const code6 = () => String(crypto.getRandomValues(new Uint32Array(1))[0] % 1000000).padStart(6, '0');
 const norm = (e) => String(e ?? '').trim().toLowerCase();
 const okEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e);
 const number = (id) => { const d = new Date(); return `KR-${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, '0')}-${String(id).padStart(4, '0')}`; };
-const bearer = (req) => (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '') || null;
 const mail = (st, to, subject, lines) => st.outbox.unshift({ at: now(), to, subject, text: lines.filter(Boolean).join('\n') });
-const customerOf = (st, req) => { const s = st.sessions[bearer(req)]; return s ? s.email : null; };
 
 const listRow = (st, d) => ({ number: d.number, email: d.email, name: d.name, status: d.status, kg: d.kg, pcs: d.pcs, total: d.total, cmyk: d.cmyk, shopOrder: d.shopOrder, createdAt: d.createdAt, updatedAt: d.updatedAt, previewId: st.files.filter((f) => f.designId === d.id && f.kind === 'preview').at(-1)?.id ?? null });
 const full = (st, d) => ({
@@ -76,49 +73,23 @@ async function handle(req, path) {
   if (path === 'potwierdz') {
     const t = new URL(req.url).searchParams.get('t');
     const c = Object.values(st.codes).find((x) => x.link === t && !x.used && x.exp > Date.now());
-    if (!c) return new Response('<p>Link wygasł.</p>', { status: 400, headers: { 'content-type': 'text/html; charset=utf-8' } });
-    const token = confirm(st, c);
+    const page = (title, text) => new Response(`<!doctype html><meta charset="utf-8"><body style="font-family:system-ui,sans-serif;padding:40px"><h1>${title}</h1><p>${text}</p><p><a href="${self.registration.scope}">Wróć do projektanta</a></p>`, { status: c ? 200 : 400, headers: { 'content-type': 'text/html; charset=utf-8' } });
+    if (!c) return page('Link wygasł', 'Ten link był już użyty albo wygasł.');
+    c.used = true;
+    const s0 = st.subscribers[c.email];
+    st.subscribers[c.email] = { ...s0, email: c.email, status: 'confirmed', confirmedAt: s0?.confirmedAt ?? now() };
     await save(st);
-    return Response.redirect(`${self.registration.scope}#kd-session=${token}`, 303);
+    return page('Zapis potwierdzony', 'Dziękujemy! Będziemy wysyłać Ci informacje o nowościach i promocjach.');
   }
   if (path === 'api/config') return json({ consentText: CONSENT, privacyUrl: null, shopProductUrl: SHOP_URL, brand: 'Krówki (test)' });
 
-  if (path === 'api/auth/request' && m === 'POST') {
-    const b = await body();
-    const email = norm(b.email);
-    if (!okEmail(email)) return fail('Podaj poprawny adres e-mail.');
-    const sub = st.subscribers[email];
-    if (sub?.status !== 'confirmed' && b.consent !== true) return fail('Zaznacz zgodę na zapis do newslettera – daje ona dostęp do projektanta.');
-    if (b.consent === true) st.subscribers[email] = { email, status: sub?.status === 'confirmed' ? 'confirmed' : 'pending', consentAt: now(), confirmedAt: sub?.confirmedAt ?? null, createdAt: sub?.createdAt ?? now() };
-    const code = code6(); const link = rnd();
-    st.codes[email] = { email, code, link, exp: Date.now() + 30 * 60000, attempts: 0, used: false };
-    mail(st, email, sub?.status === 'confirmed' ? `Kod logowania: ${code}` : `Potwierdź zapis – kod ${code}`,
-      [`Kod: ${code}`, 'Wpisz go w projektancie albo kliknij przycisk w mailu. Kod jest ważny 30 minut.', `Przycisk: ${self.registration.scope}potwierdz?t=${link}`]);
-    await save(st);
-    return json({ ok: true, minutes: 30, demoCode: code });
-  }
-  if (path === 'api/auth/verify' && m === 'POST') {
-    const b = await body();
-    const email = norm(b.email);
-    const c = st.codes[email];
-    if (!c || c.used || c.exp < Date.now()) return fail('Kod wygasł. Poproś o nowy.');
-    if (c.attempts >= 5) return fail('Za dużo błędnych prób. Poproś o nowy kod.', 429);
-    if (String(b.code ?? '').replace(/\D/g, '') !== c.code) { c.attempts++; await save(st); return fail('Nieprawidłowy kod.'); }
-    const token = confirm(st, c);
-    await save(st);
-    return json({ token, email });
-  }
-  if (path === 'api/me') { const e = customerOf(st, req); return e ? json({ email: e }) : fail('Zaloguj się adresem e-mail.', 401); }
-  if (path === 'api/auth/logout') { delete st.sessions[bearer(req)]; await save(st); return json({ ok: true }); }
-
-  if (path === 'api/designs') {
-    const email = customerOf(st, req);
-    if (!email) return fail('Zaloguj się adresem e-mail.', 401);
-    if (m === 'GET') return json(st.designs.filter((d) => d.email === email).reverse().map((d) => ({ number: d.number, status: d.status, statusLabel: STATUSES[d.status], kg: d.kg, createdAt: d.createdAt })));
+  if (path === 'api/designs' && m === 'POST') {
     const f = await req.formData();
     let design; try { design = JSON.parse(f.get('design')); } catch { return fail('Brak lub uszkodzony projekt.'); }
     if (!(f.get('pdf') instanceof Blob) || !(f.get('preview') instanceof Blob)) return fail('Brak pliku PDF lub podglądu.');
     let customer = {}; try { customer = JSON.parse(f.get('customer') || '{}'); } catch { /* */ }
+    const email = norm(customer.email);
+    if (!okEmail(email)) return fail('Podaj poprawny adres e-mail – wyślemy na niego numer projektu.');
     const id = ++st.seq.design;
     const d = {
       id, number: number(id), email, status: 'ready', name: customer.name || null, phone: customer.phone || null, notes: customer.notes || null,
@@ -133,6 +104,12 @@ async function handle(req, path) {
     st.designs.push(d);
     mail(st, email, `Projekt ${d.number} gotowy do druku`, [`Dziękujemy! Twój projekt ma numer ${d.number}.`, 'Projekt jest zapisany i gotowy do druku dokładnie tak, jak go zaakceptowałeś/aś w projektancie.', `Aby zamówić krówki, dodaj produkt do koszyka w sklepie i wpisz numer projektu ${d.number}.`]);
     mail(st, ADMIN.email, `Nowy projekt: ${d.number}`, [`Klient: ${email}`, d.kg ? `Ilość: ${d.kg} kg` : '', d.notes ? `Uwagi: ${d.notes}` : '']);
+    if (customer.newsletter === true && st.subscribers[email]?.status !== 'confirmed') {
+      const link = rnd();
+      st.subscribers[email] = { email, status: 'pending', consentAt: now(), confirmedAt: null, createdAt: st.subscribers[email]?.createdAt ?? now() };
+      st.codes[email] = { email, link, exp: Date.now() + 7 * 864e5, used: false };
+      mail(st, email, 'Potwierdź zapis do newslettera', ['Kliknij przycisk, aby potwierdzić zapis. Link jest ważny 7 dni.', `Przycisk: ${self.registration.scope}potwierdz?t=${link}`]);
+    }
     await save(st);
     return json({ orderId: d.number, status: d.status, shopUrl: SHOP_URL, message: 'Projekt zapisany i gotowy do druku (wersja testowa: zapisany w tej przeglądarce). Zobacz go w panelu produkcji.' }, 201);
   }
@@ -206,15 +183,6 @@ async function handle(req, path) {
     }
   }
   return fail('Nie ma takiego adresu.', 404);
-}
-
-function confirm(st, c) {
-  c.used = true;
-  const s = st.subscribers[c.email] ?? { email: c.email, createdAt: now(), consentAt: null };
-  st.subscribers[c.email] = { ...s, status: 'confirmed', confirmedAt: s.confirmedAt ?? now() };
-  const token = rnd();
-  st.sessions[token] = { email: c.email, exp: Date.now() + 90 * 864e5 };
-  return token;
 }
 
 self.addEventListener('fetch', (e) => {

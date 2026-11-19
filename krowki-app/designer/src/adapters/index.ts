@@ -6,16 +6,6 @@ export interface User { id: string; name: string; email: string }
 export interface AuthProvider {
   getUser(): Promise<User | null>;
   loginUrl?: string;
-  /** dostęp po zapisie do newslettera (kod z maila) – gdy jest, zamiast „Zaloguj się” pokazujemy formularz e-mail */
-  newsletter?: NewsletterGate;
-  logout?(): Promise<void>;
-}
-
-export interface NewsletterGate {
-  config(): Promise<{ consentText: string; privacyUrl: string | null }>;
-  /** wysyła kod i link na e-mail; consent = zgoda na newsletter (wymagana przy pierwszym zapisie) */
-  request(email: string, consent: boolean): Promise<{ demoCode?: string }>;
-  verify(email: string, code: string): Promise<User>;
 }
 
 export interface OrderPayload {
@@ -27,13 +17,16 @@ export interface OrderPayload {
   kg: number;
   pcs: number;
   total: number;
-  customer: { name: string; email: string; phone: string; notes: string };
+  /** newsletter = dobrowolny zapis (backend wysyła link potwierdzający) */
+  customer: { name: string; email: string; phone: string; notes: string; newsletter?: boolean };
 }
 
 export interface OrderProvider {
   /** tekst przycisku, np. „Złóż zamówienie” albo „Dodaj do koszyka” */
   label: string;
   submit(o: OrderPayload): Promise<OrderResult>;
+  /** gdy jest: przy zapisie projektu pokazujemy dobrowolną zgodę na newsletter */
+  newsletter?: { config(): Promise<{ consentText: string; privacyUrl: string | null }> };
 }
 
 export interface OrderResult {
@@ -43,7 +36,12 @@ export interface OrderResult {
   shopUrl?: string | null;
 }
 
-/** Tryb samodzielny: testowy klient, bez prawdziwego logowania. */
+/** Konfigurator dla wszystkich: bez logowania. E-mail klient podaje dopiero przy zapisie projektu. */
+export const guestAuth: AuthProvider = {
+  async getUser() { return { id: 'gosc', name: '', email: '' }; },
+};
+
+/** Tryb pokazowy: testowy klient, bez prawdziwego logowania. */
 export const mockAuth: AuthProvider = {
   async getUser() { return { id: 'demo', name: 'Klient testowy', email: 'klient@example.com' }; },
 };
@@ -75,11 +73,16 @@ export const mockOrders: OrderProvider = {
   },
 };
 
-/** Z backendem: POST multipart na {apiUrl}/designs (projekt, PDF, podgląd, oryginały zdjęć) z tokenem klienta. */
-export function httpOrders(apiUrl: string, token: string | null | (() => string | null)): OrderProvider {
+/** Z backendem: POST multipart na {apiUrl}/designs (projekt, PDF, podgląd, oryginały zdjęć). Token jest opcjonalny. */
+export function httpOrders(apiUrl: string, token: string | null | (() => string | null) = null): OrderProvider {
   const getToken = typeof token === 'function' ? token : () => token;
+  const base = apiUrl.replace(/\/$/, '');
+  let cfg: Promise<{ consentText: string; privacyUrl: string | null }> | undefined;
   return {
     label: 'Zapisz projekt do druku',
+    newsletter: {
+      config: () => (cfg ??= fetch(base + '/config').then((r) => r.json()).catch(() => ({ consentText: 'Chcę dostawać newsletter z nowościami i promocjami.', privacyUrl: null }))),
+    },
     async submit(o) {
       const f = new FormData();
       f.set('design', o.designJson);
@@ -91,68 +94,12 @@ export function httpOrders(apiUrl: string, token: string | null | (() => string 
       f.set('total', String(o.total));
       f.set('customer', JSON.stringify(o.customer));
       const t = getToken();
-      const r = await fetch(`${apiUrl.replace(/\/$/, '')}/designs`, {
+      const r = await fetch(`${base}/designs`, {
         method: 'POST', body: f, headers: t ? { Authorization: `Bearer ${t}` } : {},
       });
       const j = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(j.error ?? `Serwer odrzucił projekt (${r.status})`);
       return { orderId: j.orderId, message: j.message ?? 'Projekt przyjęty.', shopUrl: j.shopUrl };
-    },
-  };
-}
-
-const SESSION_KEY = 'krowka-designer:session';
-
-/** Token sesji z linku w mailu (#kd-session=…) – zapisujemy i czyścimy adres. */
-function takeSessionFromUrl() {
-  if (typeof location === 'undefined') return;
-  const m = /[#&]kd-session=([\w-]+)/.exec(location.hash);
-  if (!m) return;
-  try { localStorage.setItem(SESSION_KEY, m[1]); } catch { /* prywatny tryb */ }
-  history.replaceState(null, '', location.pathname + location.search);
-}
-
-/**
- * Wariant C: dostęp dla każdego, kto zapisze się do newslettera i potwierdzi adres
- * kodem albo linkiem z maila. Sesja (token) trzymana w localStorage.
- */
-export function newsletterAuth(apiUrl: string): AuthProvider & { token(): string | null } {
-  const base = apiUrl.replace(/\/$/, '');
-  takeSessionFromUrl();
-  const token = () => { try { return localStorage.getItem(SESSION_KEY); } catch { return null; } };
-  const call = async (path: string, body?: unknown) => {
-    const t = token();
-    const r = await fetch(base + path, {
-      method: body === undefined ? 'GET' : 'POST',
-      headers: { ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}), ...(t ? { Authorization: `Bearer ${t}` } : {}) },
-      body: body === undefined ? undefined : JSON.stringify(body),
-    });
-    const j = await r.json().catch(() => ({}));
-    if (!r.ok) throw Object.assign(new Error(j.error ?? `Błąd serwera (${r.status})`), { status: r.status });
-    return j;
-  };
-  const asUser = (email: string): User => ({ id: email, name: '', email });
-  return {
-    token,
-    async getUser() {
-      if (!token()) return null;
-      try { return asUser((await call('/me')).email); } catch (e) {
-        if ((e as { status?: number }).status === 401) localStorage.removeItem(SESSION_KEY);
-        return null;
-      }
-    },
-    async logout() {
-      await call('/auth/logout', {}).catch(() => undefined);
-      localStorage.removeItem(SESSION_KEY);
-    },
-    newsletter: {
-      config: () => call('/config'),
-      async request(email, consent) { const j = await call('/auth/request', { email, consent }); return { demoCode: j.demoCode }; },
-      async verify(email, code) {
-        const j = await call('/auth/verify', { email, code });
-        localStorage.setItem(SESSION_KEY, j.token);
-        return asUser(j.email);
-      },
     },
   };
 }

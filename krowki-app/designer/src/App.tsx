@@ -64,7 +64,6 @@ export default function App() {
 
   if (user === undefined) return <div className="kd-app kd-center"><p>Ładowanie…</p></div>;
   if (user === null) {
-    if (host.auth.newsletter) return <AccessGate onUser={setUser} />;
     return (
       <div className="kd-app kd-center">
         <div className="kd-card">
@@ -90,75 +89,11 @@ export default function App() {
           ))}
         </ol>
         <PriceBox compact />
-        {host.auth.logout && (
-          <button className="kd-link kd-logout" title={user.email} onClick={async () => { await host.auth.logout!(); setUser(null); }}>Wyloguj</button>
-        )}
       </header>
       {step === 1 && <Start say={say} />}
       {step === 2 && <Edit say={say} />}
       {step === 3 && <Summary user={user} onBack={() => set({ step: 2 })} />}
       {toast && <div className="kd-toast" role="status">{toast}</div>}
-    </div>
-  );
-}
-
-/** Wariant C: dostęp po zapisie do newslettera. Krok 1: e-mail + zgoda, krok 2: kod z maila. */
-function AccessGate({ onUser }: { onUser: (u: User) => void }) {
-  const gate = useHost().auth.newsletter!;
-  const [cfg, setCfg] = useState<{ consentText: string; privacyUrl: string | null } | null>(null);
-  const [email, setEmail] = useState('');
-  const [consent, setConsent] = useState(false);
-  const [code, setCode] = useState('');
-  const [sent, setSent] = useState(false);
-  const [demoCode, setDemoCode] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  useEffect(() => { gate.config().then(setCfg).catch(() => setCfg({ consentText: 'Zapisuję się do newslettera.', privacyUrl: null })); }, [gate]);
-
-  const go = async (fn: () => Promise<void>) => {
-    setBusy(true); setError(null);
-    try { await fn(); } catch (e) { setError(e instanceof Error ? e.message : 'Coś poszło nie tak. Spróbuj ponownie.'); } finally { setBusy(false); }
-  };
-  const request = () => go(async () => {
-    const r = await gate.request(email.trim(), consent);
-    setSent(true); setDemoCode(r?.demoCode ?? null); setCode(r?.demoCode ?? '');
-  });
-  const verify = () => go(async () => { onUser(await gate.verify(email.trim(), code)); });
-
-  return (
-    <div className="kd-app kd-center">
-      <form className="kd-card kd-gate" onSubmit={(e) => { e.preventDefault(); if (!busy) (sent ? verify() : request()); }}>
-        <div className="kd-big">🍬</div>
-        {!sent ? (
-          <>
-            <h2>Zaprojektuj własne krówki</h2>
-            <p>Projektant jest bezpłatny dla subskrybentów naszego newslettera. Podaj e-mail, a wyślemy Ci kod dostępu. Twoje projekty zapiszemy pod tym adresem.</p>
-            <input type="email" required autoComplete="email" placeholder="Twój e-mail" value={email} onChange={(e) => setEmail(e.target.value)} />
-            <label className="kd-accept">
-              <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
-              <span>{cfg?.consentText ?? '…'}{cfg?.privacyUrl && <> <a href={cfg.privacyUrl} target="_blank" rel="noopener">Polityka prywatności</a></>}</span>
-            </label>
-            <p className="kd-hint">Masz już dostęp? Wpisz e-mail, zgoda nie jest potrzebna drugi raz.</p>
-            {error && <p className="kd-error">{error}</p>}
-            <button className="kd-btn kd-primary kd-block kd-lg" disabled={busy || !/.+@.+\..+/.test(email)}>{busy ? 'Wysyłam…' : 'Wyślij kod'}</button>
-          </>
-        ) : (
-          <>
-            <h2>Sprawdź skrzynkę</h2>
-            <p>Wysłaliśmy kod na <b>{email}</b>. Wpisz go poniżej albo kliknij przycisk w mailu.</p>
-            {demoCode && <p className="kd-tip"><span>🧪 Wersja testowa: maile nie wychodzą. Twój kod to <b>{demoCode}</b>, już jest wpisany.</span></p>}
-            <input className="kd-code" inputMode="numeric" autoComplete="one-time-code" maxLength={6} placeholder="000000" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} autoFocus />
-            {error && <p className="kd-error">{error}</p>}
-            <button className="kd-btn kd-primary kd-block kd-lg" disabled={busy || code.length !== 6}>{busy ? 'Sprawdzam…' : 'Zaczynam projektować'}</button>
-            <p className="kd-hint">
-              Nie ma maila? Zajrzyj do spamu albo{' '}
-              <button type="button" className="kd-link" onClick={request} disabled={busy}>wyślij kod ponownie</button>
-              {' · '}
-              <button type="button" className="kd-link" onClick={() => { setSent(false); setError(null); }}>zmień adres</button>
-            </p>
-          </>
-        )}
-      </form>
     </div>
   );
 }

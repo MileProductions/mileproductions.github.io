@@ -1,6 +1,6 @@
 import { createRoot, type Root } from 'react-dom/client';
 import App from './App';
-import { hostCartOrders, httpOrders, mockAuth, newsletterAuth, tokenAuth, type AuthProvider } from './adapters';
+import { guestAuth, hostCartOrders, httpOrders, mockAuth, tokenAuth, type AuthProvider } from './adapters';
 import { HostContext, type HostConfig } from './host';
 import { loadFonts } from './fonts';
 import cropCss from 'react-easy-crop/react-easy-crop.css?inline';
@@ -10,10 +10,10 @@ import css from './styles.css?inline';
  * <krowka-designer> – moduł do osadzenia na stronie sklepu.
  *
  * Atrybuty:
- *  api-url      – backend konfiguratora (np. https://projektuj.krowki24.pl/api). Bez atrybutu token: dostęp po zapisie
- *                 do newslettera (kod z maila), projekt zapisuje się do druku przez POST {api-url}/designs
- *  token        – (później) podpisany token zalogowanego klienta wydany przez sklep; brak tokenu i api-url = prośba o zalogowanie
- *  login-url    – adres logowania w sklepie
+ *  api-url      – backend konfiguratora (np. https://projektuj.krowki24.pl/api): projekt zapisuje się do druku
+ *                 przez POST {api-url}/designs, klient podaje e-mail i może zapisać się do newslettera
+ *  token        – (opcjonalnie) podpisany token klienta wydany przez sklep
+ *  login-url    – (opcjonalnie) wymaga logowania w sklepie; bez tego konfigurator jest dostępny dla wszystkich
  *  bez api-url  – projekt idzie do koszyka sklepu (zdarzenie cart:add)
  *  demo         – tryb pokazowy z testowym klientem (bez tokenu)
  *  primary-color, font-family – dopasowanie do wyglądu sklepu
@@ -26,7 +26,6 @@ class KrowkaDesigner extends HTMLElement {
   static observedAttributes = ['token', 'api-url', 'login-url', 'demo', 'primary-color', 'font-family'];
   private root?: Root;
   private mount?: HTMLDivElement;
-  private gate?: { api: string; auth: ReturnType<typeof newsletterAuth> };
 
   connectedCallback() {
     loadFonts();
@@ -60,20 +59,15 @@ class KrowkaDesigner extends HTMLElement {
     const font = this.getAttribute('font-family');
     if (color) this.style.setProperty('--kd-primary', color);
     if (font) this.style.setProperty('--kd-font', font);
-    let auth: AuthProvider;
-    let getToken: () => string | null = () => token;
-    if (this.hasAttribute('demo')) auth = mockAuth;
-    else if (api && !token) {
-      if (this.gate?.api !== api) this.gate = { api, auth: newsletterAuth(api) };
-      auth = this.gate.auth;
-      getToken = this.gate.auth.token;
-    } else auth = tokenAuth(token, this.getAttribute('login-url') ?? undefined);
+    // konfigurator dla wszystkich; token (konto sklepu) tylko gdy sklep go poda albo wymaga logowania (login-url)
+    const auth: AuthProvider = this.hasAttribute('demo') ? mockAuth
+      : token || this.hasAttribute('login-url') ? tokenAuth(token, this.getAttribute('login-url') ?? undefined) : guestAuth;
     const host: HostConfig = {
       auth,
-      orders: api ? httpOrders(api, getToken) : hostCartOrders(this.emit),
+      orders: api ? httpOrders(api, token) : hostCartOrders(this.emit),
       emit: this.emit,
       portalRoot: this.mount,
-      showCustomerForm: false,
+      showCustomerForm: !!api,
     };
     this.root!.render(
       <HostContext.Provider value={host}>

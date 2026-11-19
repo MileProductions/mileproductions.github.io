@@ -35,45 +35,9 @@ before(async () => {
 after(() => { srv?.close(); ctx?.close(); fs.rmSync(dataDir, { recursive: true, force: true }); });
 
 const post = (p, body, headers = {}) => fetch(base + p, { method: 'POST', headers: { 'content-type': 'application/json', ...headers }, body: JSON.stringify(body) });
-const lastCode = () => /Kod: (\d{6})/.exec(ctx.mailer.outbox.at(-1).text)[1];
-
-let token;
-
-test('dostęp wymaga zgody na newsletter', async () => {
-  const r = await post('/api/auth/request', { email: 'Klient@Example.com' });
-  assert.equal(r.status, 400);
-  assert.match((await r.json()).error, /zgod/i);
-});
-
-test('zapis do newslettera: kod z maila daje dostęp i potwierdza zapis', async () => {
-  let r = await post('/api/auth/request', { email: 'Klient@Example.com', consent: true });
-  assert.equal(r.status, 200);
-  assert.equal(ctx.db.get('SELECT status FROM subscribers WHERE email = ?', 'klient@example.com').status, 'pending');
-  const mail = ctx.mailer.outbox.at(-1);
-  assert.equal(mail.to, 'klient@example.com');
-  assert.match(mail.text, /http:\/\/localhost\/potwierdz\?t=/);
-  r = await post('/api/auth/verify', { email: 'klient@example.com', code: '000000' === lastCode() ? '111111' : '000000' });
-  assert.equal(r.status, 400);
-  r = await post('/api/auth/verify', { email: 'klient@example.com', code: lastCode() });
-  assert.equal(r.status, 200);
-  token = (await r.json()).token;
-  assert.ok(token);
-  assert.equal(ctx.db.get('SELECT status FROM subscribers WHERE email = ?', 'klient@example.com').status, 'confirmed');
-  r = await fetch(base + '/api/me', { headers: { authorization: `Bearer ${token}` } });
-  assert.deepEqual(await r.json(), { email: 'klient@example.com' });
-  // ponowne logowanie: bez zgody, bo zapis już potwierdzony
-  r = await post('/api/auth/request', { email: 'klient@example.com' });
-  assert.equal(r.status, 200);
-});
-
-test('link z maila loguje i wraca do konfiguratora z tokenem', async () => {
-  await post('/api/auth/request', { email: 'drugi@example.com', consent: true });
-  const link = /(http:\/\/localhost\/potwierdz\?t=\S+)/.exec(ctx.mailer.outbox.at(-1).text)[1].replace('http://localhost', base);
-  let r = await fetch(link, { redirect: 'manual' });
-  assert.equal(r.status, 303);
-  assert.match(r.headers.get('location'), /^http:\/\/localhost\/projektant\/#kd-session=/);
-  r = await fetch(link, { redirect: 'manual' });
-  assert.equal(r.status, 400, 'link działa tylko raz');
+test('konfigurator bez logowania: stare endpointy dostępu nie istnieją', async () => {
+  const r = await post('/api/auth/request', { email: 'klient@example.com', consent: true });
+  assert.equal(r.status, 404);
 });
 
 test('CORS tylko dla dozwolonych domen', async () => {
@@ -93,16 +57,26 @@ test('wysłanie projektu: zapis, numer, maile, PDF w CMYK', async () => {
   f.set('kg', '2'); f.set('pcs', '190'); f.set('total', '158');
   f.set('customer', JSON.stringify({ name: 'Jan Test', phone: '600100200', notes: 'Na wesele' }));
   let r = await fetch(base + '/api/designs', { method: 'POST', body: f });
-  assert.equal(r.status, 401, 'bez logowania nie wolno');
-  r = await fetch(base + '/api/designs', { method: 'POST', body: f, headers: { authorization: `Bearer ${token}` } });
+  assert.equal(r.status, 400, 'bez e-maila nie wolno');
+  assert.match((await r.json()).error, /e-mail/);
+  f.set('customer', JSON.stringify({ name: 'Jan Test', email: 'Klient@Example.com', phone: '600100200', notes: 'Na wesele', newsletter: true }));
+  r = await fetch(base + '/api/designs', { method: 'POST', body: f });
   const j = await r.json();
   assert.equal(r.status, 201, JSON.stringify(j));
   number = j.orderId;
   assert.match(number, /^KR-\d{4}-0001$/);
   assert.equal(j.shopUrl, 'https://sklep.example/krowki');
-  const mails = ctx.mailer.outbox.slice(-2);
+  const mails = ctx.mailer.outbox.slice(-3);
   assert.ok(mails.some((m) => m.to === 'klient@example.com' && m.subject === `Projekt ${number} gotowy do druku`));
   assert.ok(mails.some((m) => m.to === 'grafik@example.com'));
+  // dobrowolny newsletter: double opt-in
+  assert.equal(ctx.db.get('SELECT status FROM subscribers WHERE email = ?', 'klient@example.com').status, 'pending');
+  const link = /(http:\/\/localhost\/potwierdz\?t=\S+)/.exec(ctx.mailer.outbox.at(-1).text)[1].replace('http://localhost', base);
+  r = await fetch(link);
+  assert.equal(r.status, 200);
+  assert.match(await r.text(), /Zapis potwierdzony/);
+  assert.equal(ctx.db.get('SELECT status FROM subscribers WHERE email = ?', 'klient@example.com').status, 'confirmed');
+  assert.equal((await fetch(link)).status, 400, 'link działa tylko raz');
   await ctx.designs.idle();
   const d = ctx.db.get('SELECT * FROM designs WHERE number = ?', number);
   assert.equal(d.status, 'ready');
@@ -110,8 +84,6 @@ test('wysłanie projektu: zapis, numer, maile, PDF w CMYK', async () => {
   const kinds = ctx.db.all('SELECT kind FROM files WHERE design_id = ?', d.id).map((x) => x.kind).sort();
   assert.equal(ctx.db.get("SELECT name FROM files WHERE kind = 'asset'").name, 'x1__zdjęcie ślubne.png');
   assert.deepEqual(kinds, ['asset', 'pdf_rgb', 'preview', ...(d.cmyk_status === 'ok' ? ['pdf_cmyk'] : [])].sort());
-  r = await fetch(base + '/api/designs', { headers: { authorization: `Bearer ${token}` } });
-  assert.equal((await r.json())[0].number, number);
 });
 
 test('PDF w złym formacie jest odrzucany', async () => {
@@ -119,7 +91,8 @@ test('PDF w złym formacie jest odrzucany', async () => {
   f.set('design', JSON.stringify({ elements: [] }));
   f.set('pdf', new Blob([await printPdf(100, 100)]), 'a.pdf');
   f.set('preview', new Blob([PNG(5, 5)]), 'p.png');
-  const r = await fetch(base + '/api/designs', { method: 'POST', body: f, headers: { authorization: `Bearer ${token}` } });
+  f.set('customer', JSON.stringify({ email: 'klient@example.com' }));
+  const r = await fetch(base + '/api/designs', { method: 'POST', body: f });
   assert.equal(r.status, 400);
   assert.match((await r.json()).error, /siatki/);
 });
@@ -169,6 +142,5 @@ test('RODO: usunięcie danych klienta', async () => {
   assert.deepEqual(await r.json(), { ok: true, designs: 1 });
   assert.equal(ctx.db.get('SELECT COUNT(*) AS n FROM designs').n, 0);
   assert.equal(fs.readdirSync(path.join(dataDir, 'files')).length, 0);
-  r = await fetch(base + '/api/me', { headers: { authorization: `Bearer ${token}` } });
-  assert.equal(r.status, 401);
+  assert.equal(ctx.db.get('SELECT COUNT(*) AS n FROM subscribers WHERE email = ?', 'klient@example.com').n, 0);
 });

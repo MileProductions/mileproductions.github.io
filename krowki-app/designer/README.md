@@ -37,8 +37,6 @@ Wymagany Node.js 18+. Fonty ładują się z Google Fonts (potrzebny internet).
 ```html
 <script type="module" src="https://twoj-serwer/krowka-designer.js"></script>
 <krowka-designer
-  token="PODPISANY_TOKEN_KLIENTA"
-  login-url="/logowanie"
   primary-color="#8e3b16"></krowka-designer>
 <script>
   document.querySelector('krowka-designer')
@@ -50,8 +48,8 @@ Wymagany Node.js 18+. Fonty ładują się z Google Fonts (potrzebny internet).
 ```
 
 - Moduł to **Web Component z Shadow DOM** – style sklepu i modułu się nie mieszają.
-- **Logowanie:** bez `token` moduł prosi o zalogowanie (link z `login-url`). Token (JWT) wydaje sklep; moduł odczytuje z niego `sub`, `name`, `email`, a podpis musi zweryfikować backend. Atrybut `demo` = testowy klient.
-- **Backend:** z `api-url` (bez `token`) moduł prosi o e-mail i kod z maila (dostęp po zapisie do newslettera), a projekt wysyła do akceptacji: `POST {api-url}/designs` (multipart: design, pdf, preview, asset, kg, pcs, total, customer). Strona samodzielna bierze adres z `?api=` albo z `<meta name="krowka-api">`, który wstawia backend. Szczegóły: `../README.md`.
+- **Dostęp:** konfigurator jest dostępny dla wszystkich, bez logowania. Opcjonalnie: `token` (JWT wydany przez sklep, moduł odczytuje `sub`, `name`, `email`, podpis weryfikuje backend) albo `login-url`, jeśli sklep chce wymagać logowania. Atrybut `demo` = testowy klient.
+- **Backend:** z `api-url` moduł przy zapisie prosi o imię i e-mail (plus dobrowolny newsletter) i wysyła projekt do druku: `POST {api-url}/designs` (multipart: design, pdf, preview, asset, kg, pcs, total, customer). Strona samodzielna bierze adres z `?api=` albo z `<meta name="krowka-api">`, który wstawia backend. Szczegóły: `../README.md`.
 - **Bez backendu:** moduł wysyła zdarzenie `krowka:cart:add` (płatność i wysyłka zostają w sklepie).
 - **Zdarzenia:** `krowka:design:saved`, `krowka:design:approved`, `krowka:cart:add`, `krowka:price:changed`, `krowka:auth:required` (w iframe także przez `postMessage`).
 - Adaptery: `src/adapters/index.ts` (`AuthProvider`, `OrderProvider`).
