@@ -3,6 +3,32 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Google Consent Mode v2: domyślnie brak zgody, do czasu wyboru w banerze cookies -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', {
+      ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied',
+      analytics_storage: 'denied', functionality_storage: 'granted', security_storage: 'granted',
+      wait_for_update: 500
+    });
+    gtag('set', 'ads_data_redaction', true);
+    try {
+      var kc = JSON.parse(localStorage.getItem('krowki_cookie_consent') || 'null');
+      if (kc && kc.v === 1) {
+        var kcm = kc.marketing ? 'granted' : 'denied';
+        gtag('consent', 'update', { analytics_storage: kc.analytics ? 'granted' : 'denied', ad_storage: kcm, ad_user_data: kcm, ad_personalization: kcm });
+      }
+    } catch (e) {}
+  </script>
+  <!-- Google Tag Manager (nie ładujemy w ramce, żeby konfigurator w sklepie nie liczył odsłon podwójnie) -->
+  <script>if (window.self === window.top) (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-PHKXZVDN');</script>
+  <!-- End Google Tag Manager -->
+  <script src="./cookie-consent.js" defer></script>
   <title>Krówki personalizowane – zaprojektuj własny papierek | Krowki24.pl</title>
   <meta name="description" content="Zaprojektuj własny papierek krówki: wgraj zdjęcie lub logo, dopisz imiona i datę, zobacz krówkę w 3D i zamów. Krówki z Milanówka od 1921 roku.">
   <meta name="robots" content="noindex">
@@ -12,6 +38,10 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PHKXZVDN"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
   <div class="topbar">Zapisz się do newslettera i odbierz <b>5% rabatu</b> na pierwsze zakupy · <a href="./">Wróć na krowki.pl</a></div>
 
   <header class="site shop-header">
@@ -184,7 +214,7 @@
       </div>
       <div class="foot-bottom">
         <span>© 2026 Krowki.pl Sp. z o.o. · Przykładowa strona sklepu (koncepcja)</span>
-        <span>Sklep docelowo na platformie Shoper</span>
+        <span>Sklep docelowo na platformie Shoper · <a href="#ustawienia-cookies" data-cookie-settings>Ustawienia cookies</a></span>
       </div>
     </div>
   </footer>
