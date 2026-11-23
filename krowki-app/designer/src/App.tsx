@@ -16,6 +16,7 @@ import { Candy3D, usePreviewTextures } from './components/Preview3D';
 import { PriceBox } from './components/Price';
 import { Summary } from './components/Summary';
 import type { User } from './adapters';
+import { stepName, track } from './lib/analytics';
 
 const ACCEPT = 'image/jpeg,image/png,image/webp,image/gif,image/svg+xml,image/heic,image/heif,.heic,.heif,application/pdf,.pdf';
 const MAX_MB = 25;
@@ -25,6 +26,7 @@ function loadTemplate(id: string | null, say: (t: string) => void) {
   if (!t) return false;
   const st = useStore.getState();
   st.replaceDesign(t.build()); st.select(null); st.set({ step: 2 });
+  track('design_template', { template_name: t.name, source: 'sklep' });
   say(`Wczytano wzór „${t.name}”. Podmień zdjęcie i teksty.`);
   return true;
 }
@@ -58,6 +60,14 @@ export default function App() {
     window.addEventListener('message', onMsg);
     return () => window.removeEventListener('message', onMsg);
   }, [user, say]);
+
+  useEffect(() => { if (user) track('designer_open'); }, [user]);
+  const lastStep = useRef<Step | null>(null);
+  useEffect(() => {
+    if (!user || lastStep.current === step) return;
+    lastStep.current = step;
+    track('designer_step', { step_number: step, step_name: stepName(step) });
+  }, [user, step]);
 
   const design = useStore((s) => s.design);
   useEffect(() => { host.emit('price:changed', { kg: useStore.getState().kg }); }, [host, design]);
@@ -142,6 +152,7 @@ function useUpload(say: (t: string) => void) {
         }
         target.current = null;
         added++;
+        track('design_upload', { file_type: isPdf(file) ? 'pdf' : isHeic(file) ? 'heic' : (file.type.split('/')[1] || 'inny') });
       }
       if (added) useStore.getState().set({ step: 2 });
     } finally { setBusy(false); }
@@ -159,7 +170,7 @@ function Start({ say }: { say: (t: string) => void }) {
   const replaceDesign = useStore((s) => s.replaceDesign);
   const hasDesign = useStore((s) => s.design.elements.length > 0);
   const set = useStore((s) => s.set);
-  const choose = (d: Design) => { replaceDesign(d); useStore.getState().select(null); set({ step: 2 }); };
+  const choose = (d: Design, name: string) => { track('design_template', { template_name: name, source: 'start' }); replaceDesign(d); useStore.getState().select(null); set({ step: 2 }); };
   return (
     <div className="kd-start">
       {up.el}
@@ -174,8 +185,8 @@ function Start({ say }: { say: (t: string) => void }) {
       </div>
       <h3 className="kd-or">…albo zacznij od gotowego wzoru</h3>
       <div className="kd-templates">
-        {TEMPLATES.map((t) => <TemplateCard key={t.id} id={t.id} name={t.name} onClick={() => choose(t.build())} />)}
-        <button className="kd-template kd-blank" onClick={() => choose({ ...EMPTY, elements: [] })}><span className="kd-big">＋</span>Pusty papierek</button>
+        {TEMPLATES.map((t) => <TemplateCard key={t.id} id={t.id} name={t.name} onClick={() => choose(t.build(), t.name)} />)}
+        <button className="kd-template kd-blank" onClick={() => choose({ ...EMPTY, elements: [] }, 'Pusty papierek')}><span className="kd-big">＋</span>Pusty papierek</button>
       </div>
       {hasDesign && <button className="kd-link" onClick={() => set({ step: 2 })}>Wróć do swojego projektu →</button>}
     </div>
@@ -348,7 +359,7 @@ function Edit({ say }: { say: (t: string) => void }) {
             <div className="kd-row kd-pick-head"><h3>Wybierz wzór</h3><button className="kd-close" onClick={() => setPick(false)} aria-label="Zamknij">×</button></div>
             <p className="kd-muted">Wzór zastąpi obecny projekt. Możesz to cofnąć przyciskiem „Cofnij”.</p>
             <div className="kd-templates">
-              {TEMPLATES.map((t) => <TemplateCard key={t.id} id={t.id} name={t.name} onClick={() => { commit(() => t.build()); select(null); setPick(false); say(`Wczytano wzór „${t.name}”.`); }} />)}
+              {TEMPLATES.map((t) => <TemplateCard key={t.id} id={t.id} name={t.name} onClick={() => { track('design_template', { template_name: t.name, source: 'edytor' }); commit(() => t.build()); select(null); setPick(false); say(`Wczytano wzór „${t.name}”.`); }} />)}
             </div>
           </div>
         </div>
