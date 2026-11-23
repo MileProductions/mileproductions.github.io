@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { track } from '../lib/analytics';
 import { PRICING } from '../config/pricing';
 import { checkDesign } from '../lib/checks';
 import { formatPrice, quote } from '../lib/pricing';
@@ -32,6 +33,7 @@ export function Summary({ user, onBack }: { user: User | null; onBack: () => voi
   const pdf = async () => {
     setBusy('pdf');
     const { download, exportPdf } = await import('../lib/pdf');
+    track('design_pdf_download');
     try { download(await exportPdf(design, assets), 'papierek-krowki.pdf'); } finally { setBusy(null); }
   };
 
@@ -47,6 +49,7 @@ export function Summary({ user, onBack }: { user: User | null; onBack: () => voi
         designJson: JSON.stringify(design), assets: files, pdf: pdfBlob, preview, kg: q.kg, pcs: q.pcs, total: q.total, customer: cust,
       });
       host.emit('design:approved', { orderId: res.orderId, kg: q.kg, total: q.total });
+      track('design_order', { order_id: res.orderId, kg: q.kg, pcs: q.pcs, value: q.individual ? undefined : q.total, currency: 'PLN', individual_quote: !!q.individual });
       setDone(res);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Nie udało się złożyć zamówienia.');
