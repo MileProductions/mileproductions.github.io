@@ -3,6 +3,32 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Google Consent Mode v2: domyślnie brak zgody, do czasu wyboru w banerze cookies -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', {
+      ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied',
+      analytics_storage: 'denied', functionality_storage: 'granted', security_storage: 'granted',
+      wait_for_update: 500
+    });
+    gtag('set', 'ads_data_redaction', true);
+    try {
+      var kc = JSON.parse(localStorage.getItem('krowki_cookie_consent') || 'null');
+      if (kc && kc.v === 1) {
+        var kcm = kc.marketing ? 'granted' : 'denied';
+        gtag('consent', 'update', { analytics_storage: kc.analytics ? 'granted' : 'denied', ad_storage: kcm, ad_user_data: kcm, ad_personalization: kcm });
+      }
+    } catch (e) {}
+  </script>
+  <!-- Google Tag Manager (nie ładujemy w ramce, żeby konfigurator w sklepie nie liczył odsłon podwójnie) -->
+  <script>if (window.self === window.top) (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-T3H4W9Z4');</script>
+  <!-- End Google Tag Manager -->
+  <script src="./cookie-consent.js" defer></script>
   <title>Krówki z Milanówka od 1921 roku | Krówki reklamowe z logo | Krowki.pl</title>
   <meta name="description" content="Rodzinna manufaktura z Milanówka. Tradycyjne krówki ciągutki według receptury z 1921 roku, ręcznie zawijane. Krówki reklamowe z logo, krówki na wesele i podziękowania dla gości.">
   <meta name="robots" content="noindex">
@@ -15,6 +41,10 @@
   </script>
 </head>
 <body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T3H4W9Z4"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
   <a class="btn btn-primary" href="#main" style="position:absolute;left:-9999px" onfocus="this.style.left='1rem'">Przejdź do treści</a>
 
   <div class="topbar">Darmowe pudełko degustacyjne dla firm · <a href="#probka">Zamów próbkę</a></div>
@@ -438,7 +468,7 @@
       </div>
       <div class="foot-bottom">
         <span>© 2026 Krowki.pl Sp. z o.o. · Koncepcja nowej strony</span>
-        <span><a href="#polityka-prywatnosci" data-modal="legal" data-title="Polityka prywatności">Polityka prywatności</a> · <a href="#polityka-cookies" data-modal="legal" data-title="Polityka cookies">Polityka cookies</a> · <a href="#regulamin-wspolpracy" data-modal="legal" data-title="Regulamin współpracy">Regulamin współpracy</a> · <a href="#obowiazek-informacyjny" data-modal="legal" data-title="Obowiązek informacyjny">Obowiązek informacyjny</a></span>
+        <span><a href="#polityka-prywatnosci" data-modal="legal" data-title="Polityka prywatności">Polityka prywatności</a> · <a href="#polityka-cookies" data-modal="legal" data-title="Polityka cookies">Polityka cookies</a> · <a href="#ustawienia-cookies" data-cookie-settings>Ustawienia cookies</a> · <a href="#regulamin-wspolpracy" data-modal="legal" data-title="Regulamin współpracy">Regulamin współpracy</a> · <a href="#obowiazek-informacyjny" data-modal="legal" data-title="Obowiązek informacyjny">Obowiązek informacyjny</a></span>
       </div>
     </div>
   </footer>
