@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MileProductions – lista projektów</title>
+  <meta name="description" content="Lista projektów MileProductions opublikowanych na GitHub Pages.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#F3F1EC" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="../assets/sygnet-kolor.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap">
+  <style>
+    :root {
+      --red: #FF2E4D;      /* On-Air Red */
+      --black: #121212;    /* Studio Black */
+      --paper: #F3F1EC;    /* Nordic Paper */
+      --bg: var(--paper);
+      --fg: var(--black);
+      --muted: #5c5a56;
+      --line: rgba(18, 18, 18, .14);
+      --card: #fff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: var(--black);
+        --fg: #fff;
+        --muted: #b3b0a9;
+        --line: rgba(255, 255, 255, .18);
+        --card: #1c1c1c;
+      }
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 20px;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: "Outfit", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      font-size: 18px;
+      line-height: 1.5;
+    }
+    main { width: 100%; max-width: 560px; }
+    header { text-align: center; margin-bottom: 40px; }
+    .logo { display: block; width: 100%; max-width: 220px; height: auto; margin: 0 auto 28px; }
+    h1 { margin: 0; font-size: 1.8rem; line-height: 1.2; }
+    h1::after {
+      content: "";
+      display: block;
+      width: 10px;
+      height: 10px;
+      margin: 18px auto 0;
+      border-radius: 50%;
+      background: var(--red);
+    }
+    h2 {
+      margin: 36px 0 12px;
+      font-size: .85rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    ul { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    a.item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      background: var(--card);
+      color: var(--fg);
+      text-decoration: none;
+      transition: transform .15s ease, border-color .15s ease;
+    }
+    a.item:hover { transform: translateY(-2px); border-color: var(--fg); }
+    a.item:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+    .text { flex: 1; min-width: 0; }
+    .name { display: block; font-weight: 700; }
+    .desc { display: block; font-size: .92rem; color: var(--muted); }
+    .path { display: block; font-size: .8rem; color: var(--muted); opacity: .8; word-break: break-all; }
+    .arrow { font-weight: 700; color: var(--red); font-size: 1.2rem; }
+    footer { margin-top: 48px; font-size: .85rem; color: var(--muted); text-align: center; }
+    footer a { color: inherit; }
+    @media (prefers-reduced-motion: reduce) { a.item { transition: none; } a.item:hover { transform: none; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <a href="../" aria-label="MileProductions – strona główna">
+        <picture>
+          <source srcset="../assets/logo-pionowe-negatyw.svg" media="(prefers-color-scheme: dark)">
+          <img class="logo" src="../assets/logo-pionowe-kolor.svg" alt="MileProductions" width="782" height="414">
+        </picture>
+      </a>
+      <h1>Lista projektów</h1>
+    </header>
+
+    <h2>Narzędzia</h2>
+    <ul>
+      <li>
+        <a class="item" href="../skaner/">
+          <span class="text">
+            <span class="name">Skaner AI</span>
+            <span class="desc">Cyfryzacja rękopisów ze zdjęć</span>
+            <span class="path">/skaner/</span>
+          </span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </li>
+    </ul>
+
+    <h2>Krówki</h2>
+    <ul>
+      <li>
+        <a class="item" href="../stronakrowki/">
+          <span class="text">
+            <span class="name">Krówki z Milanówka – strona</span>
+            <span class="desc">Strona manufaktury: krówki reklamowe, na wesele i podziękowania</span>
+            <span class="path">/stronakrowki/</span>
+          </span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </li>
+      <li>
+        <a class="item" href="../stronakrowki/sklep.html">
+          <span class="text">
+            <span class="name">Krówki personalizowane – sklep</span>
+            <span class="desc">Zaprojektuj własny papierek krówki</span>
+            <span class="path">/stronakrowki/sklep.html</span>
+          </span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </li>
+      <li>
+        <a class="item" href="../kr%C3%B3wki/">
+          <span class="text">
+            <span class="name">Konfigurator krówek 3D</span>
+            <span class="desc">Zdjęcie lub logo, imiona i data – podgląd krówki w 3D</span>
+            <span class="path">/krówki/</span>
+          </span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </li>
+      <li>
+        <a class="item" href="../krowki-test/">
+          <span class="text">
+            <span class="name">Konfigurator krówek – wersja testowa</span>
+            <span class="desc">Środowisko testowe konfiguratora</span>
+            <span class="path">/krowki-test/</span>
+          </span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </li>
+    </ul>
+
+    <h2>Gry dla dzieci</h2>
+    <ul>
+      <li>
+        <a class="item" href="../Roch.html">
+          <span class="text">
+            <span class="name">Kotkowy Domek</span>
+            <span class="desc">Gra dla najmłodszych</span>
+            <span class="path">/Roch.html</span>
+          </span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </li>
+      <li>
+        <a class="item" href="../Gra.html">
+          <span class="text">
+            <span class="name">Sówka i literka Ó</span>
+            <span class="desc">Gra edukacyjna</span>
+            <span class="path">/Gra.html</span>
+          </span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </li>
+    </ul>
+
+    <h2>Kontakt</h2>
+    <ul>
+      <li>
+        <a class="item" href="../">
+          <span class="text">
+            <span class="name">MileProductions – kontakt (PL)</span>
+            <span class="path">/</span>
+          </span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </li>
+      <li>
+        <a class="item" href="../en/">
+          <span class="text">
+            <span class="name">MileProductions – contact (EN)</span>
+            <span class="path">/en/</span>
+          </span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </li>
+    </ul>
+  </main>
+
+  <footer>
+    © MileProductions · <a href="https://github.com/MileProductions/mileproductions.github.io">GitHub</a>
+  </footer>
+</body>
+</html>
