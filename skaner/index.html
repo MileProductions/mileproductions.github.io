@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src https://generativelanguage.googleapis.com; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Skaner AI</title>
+<meta name="description" content="Cyfryzacja rękopisów ze zdjęć – Mile Productions">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Skaner AI">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#121212">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="ikona-180.png">
+<link rel="icon" href="ikona-192.png">
+<style>
+  :root {
+    /* Kolory marki Mile Productions: On-Air Red #FF2E4D, Studio Black #121212, Nordic Paper #F3F1EC */
+    --tlo: #f3f1ec; --karta: #ffffff; --tekst: #121212; --drugi: #6b6a66; --linia: #e2dfd8;
+    --akcent: #ff2e4d; --akcent-tekst: #ffffff; --przycisk: #ebe8e1; --ok: #248a3d; --blad: #c4001d; --info: #0a64c8;
+    --cien: 0 1px 2px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --tlo: #121212; --karta: #1e1e1e; --tekst: #f3f1ec; --drugi: #9d9b96; --linia: #333331;
+      --akcent: #ff2e4d; --akcent-tekst: #ffffff; --przycisk: #2b2b2a; --ok: #30d158; --blad: #ff6b7f; --info: #64a8ff;
+      --cien: none; }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--tlo); color: var(--tekst);
+    font: 16px/1.4 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    padding: env(safe-area-inset-top) 0 calc(96px + env(safe-area-inset-bottom)); }
+  main { max-width: 560px; margin: 0 auto; padding: 0 16px; }
+  header { display: flex; align-items: center; gap: 12px; padding: 18px 0 10px; }
+  header img { width: 44px; height: 44px; border-radius: 10px; }
+  header h1 { font-size: 24px; margin: 0; letter-spacing: -.01em; }
+  header p { margin: 0; color: var(--drugi); font-size: 13px; }
+  .karta { background: var(--karta); border-radius: 14px; padding: 16px; margin: 14px 0; box-shadow: var(--cien); }
+  .karta h2 { font-size: 17px; margin: 0 0 10px; display: flex; align-items: baseline; gap: 8px; }
+  .karta h2 .licznik { color: var(--drugi); font-weight: 400; font-size: 15px; }
+  .pomoc { color: var(--drugi); font-size: 13px; margin: 6px 0 0; }
+  button, .przycisk { font: inherit; border: 0; border-radius: 11px; padding: 12px 14px; min-height: 44px;
+    background: var(--przycisk); color: var(--tekst); cursor: pointer; text-decoration: none; display: inline-flex;
+    align-items: center; justify-content: center; gap: 6px; }
+  button:disabled { opacity: .45; cursor: default; }
+  .glowny { background: var(--akcent); color: var(--akcent-tekst); font-weight: 700; font-size: 17px; }
+  .stop { background: var(--blad); color: #fff; font-weight: 600; }
+  .rzad { display: flex; gap: 10px; flex-wrap: wrap; }
+  .rzad > * { flex: 1 1 140px; }
+  .maly { padding: 6px 10px; min-height: 36px; font-size: 14px; }
+  input[type=text], input[type=password], input[type=number], select {
+    font: inherit; font-size: 16px; width: 100%; padding: 11px 12px; border-radius: 10px;
+    border: 1px solid var(--linia); background: var(--tlo); color: var(--tekst); min-height: 44px; }
+  select { -webkit-appearance: none; appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--drugi) 50%), linear-gradient(135deg, var(--drugi) 50%, transparent 50%);
+    background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%; background-size: 6px 6px; background-repeat: no-repeat; padding-right: 32px; }
+  label.pole { display: block; margin: 12px 0 0; }
+  label.pole > span { display: block; font-size: 13px; color: var(--drugi); margin-bottom: 4px; }
+  .przelacznik { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-top: 1px solid var(--linia); }
+  .przelacznik:first-child { border-top: 0; }
+  .przelacznik input { width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--akcent); flex: none; }
+  .przelacznik b { font-weight: 500; display: block; }
+  .przelacznik small { color: var(--drugi); display: block; font-size: 13px; }
+  .wciecie { padding-left: 34px; }
+  details > summary { cursor: pointer; color: var(--info); padding: 8px 0 2px; list-style: none; }
+  details > summary::-webkit-details-marker { display: none; }
+  details > summary::before { content: "▸ "; } details[open] > summary::before { content: "▾ "; }
+  ol.strony { list-style: none; margin: 10px 0 0; padding: 0; }
+  ol.strony li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--linia); }
+  ol.strony li:first-child { border-top: 0; }
+  ol.strony .nr { width: 26px; text-align: right; color: var(--drugi); font-variant-numeric: tabular-nums; flex: none; }
+  ol.strony img, ol.strony .bez-podgladu { width: 48px; height: 64px; object-fit: cover; border-radius: 6px; background: var(--przycisk); flex: none; }
+  ol.strony .opis { flex: 1; min-width: 0; font-size: 14px; }
+  ol.strony .opis span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  ol.strony .opis small { color: var(--drugi); }
+  ol.strony .akcje { display: flex; gap: 4px; flex: none; }
+  ol.strony .akcje button { width: 40px; height: 40px; min-height: 40px; padding: 0; font-size: 17px; }
+  .pusto { color: var(--drugi); text-align: center; padding: 14px 0 4px; font-size: 14px; }
+  progress { width: 100%; height: 8px; -webkit-appearance: none; appearance: none; border: 0; border-radius: 4px; background: var(--przycisk); overflow: hidden; }
+  progress::-webkit-progress-bar { background: var(--przycisk); }
+  progress::-webkit-progress-value { background: var(--akcent); }
+  progress::-moz-progress-bar { background: var(--akcent); }
+  .status { font-weight: 600; margin: 10px 0 0; }
+  .status.ok { color: var(--ok); } .status.blad { color: var(--blad); } .status.praca { color: var(--info); }
+  pre.log { white-space: pre-wrap; word-break: break-word; font: 13px/1.45 ui-monospace, "SF Mono", Menlo, monospace;
+    background: var(--tlo); border-radius: 10px; padding: 10px; max-height: 260px; overflow: auto; margin: 8px 0 0; }
+  ul.wyniki { list-style: none; margin: 0; padding: 0; }
+  ul.wyniki li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--linia); }
+  ul.wyniki li:first-child { border-top: 0; }
+  ul.wyniki .opis { flex: 1; min-width: 0; }
+  ul.wyniki .opis span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+  ul.wyniki .opis small { color: var(--drugi); }
+  .podglad { white-space: pre-wrap; font-family: Georgia, "Times New Roman", serif; font-size: 15px; line-height: 1.55;
+    max-height: 320px; overflow: auto; background: var(--tlo); border-radius: 10px; padding: 12px; margin-top: 8px; }
+  .pasek { position: fixed; left: 0; right: 0; bottom: 0; padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    background: color-mix(in srgb, var(--tlo) 82%, transparent); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+    border-top: 1px solid var(--linia); }
+  .pasek .wnetrze { max-width: 560px; margin: 0 auto; display: flex; gap: 10px; }
+  .pasek button { flex: 1; min-height: 50px; font-size: 17px; }
+  .ostrzezenie { background: color-mix(in srgb, var(--blad) 12%, transparent); color: var(--tekst); border-radius: 10px; padding: 10px 12px; font-size: 14px; margin-top: 10px; }
+  .logo-firmy { display: block; margin: 0 auto 10px; height: 28px; width: auto; }
+  footer { color: var(--drugi); font-size: 13px; text-align: center; padding: 10px 0 24px; }
+  footer button { background: none; color: var(--info); padding: 6px 8px; min-height: 36px; font-size: 13px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="ikona-180.png" alt="">
+    <div><h1>Skaner AI</h1><p>Rękopisy ze zdjęć do RTF · Mile Productions</p></div>
+  </header>
+
+  <section class="karta" id="karta-klucz" hidden>
+    <h2>Klucz API Gemini</h2>
+    <input type="password" id="pole-klucz" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Wklej klucz API">
+    <div class="rzad" style="margin-top:10px"><button class="glowny" id="btn-zapisz-klucz">Zapisz na tym telefonie</button></div>
+    <p class="pomoc">Klucz zostaje wyłącznie w tej przeglądarce na tym urządzeniu i jest wysyłany tylko do Google razem ze zdjęciami.</p>
+  </section>
+
+  <section class="karta">
+    <h2>1. Zdjęcia stron <span class="licznik" id="licznik"></span></h2>
+    <div class="rzad">
+      <button class="glowny" id="btn-aparat">📷 Zrób zdjęcie</button>
+      <button id="btn-galeria">🖼️ Z galerii lub Plików</button>
+    </div>
+    <input type="file" id="in-aparat" accept="image/*" capture="environment" hidden>
+    <input type="file" id="in-galeria" accept="image/*" multiple hidden>
+    <ol class="strony" id="lista-stron"></ol>
+    <p class="pusto" id="brak-stron">Dodaj zdjęcia stron w kolejności czytania.<br>Kolejność zmienisz strzałkami.</p>
+    <div class="rzad" id="akcje-listy" hidden style="margin-top:10px">
+      <button class="maly" id="btn-sortuj">Sortuj wg nazwy pliku</button>
+      <button class="maly" id="btn-wyczysc">Usuń wszystkie</button>
+    </div>
+  </section>
+
+  <section class="karta">
+    <h2>2. Ustawienia</h2>
+    <label class="pole"><span>Nazwa pliku wynikowego</span><input type="text" id="pole-nazwa" value="Notatki" autocomplete="off"></label>
+    <label class="pole"><span>Model AI</span><select id="pole-model"></select></label>
+    <div style="margin-top:12px">
+      <label class="przelacznik"><input type="checkbox" id="op-scal" checked><span><b>Połącz strony w jeden plik</b><small>Inaczej każda strona trafi do osobnego pliku.</small></span></label>
+      <label class="przelacznik"><input type="checkbox" id="op-laczenie" checked><span><b>Łącz zdania i przecięte słowa między stronami</b></span></label>
+      <label class="przelacznik"><input type="checkbox" id="op-pro" checked><span><b>Trudne strony: ponów odczyt</b><small>Strona z wieloma dopiskami lub nieczytelna zostanie odczytana ponownie, w wyższej rozdzielczości, modelem wybranym poniżej.</small></span></label>
+      <div class="wciecie"><select id="pole-model-pro"></select></div>
+    </div>
+    <label class="pole"><span>Orientacja stron</span><select id="pole-orientacja"></select></label>
+    <p class="pomoc">Zdjęcia zrobione „na boku” zostaną obrócone przed odczytem. W trybie oszczędnym telefon sam rozpoznaje stronę leżącą na boku, a o kierunek obrotu pyta najtańszy model (kilkaset tokenów, tylko gdy trzeba).</p>
+    <details id="wiecej">
+      <summary>Więcej opcji</summary>
+      <label class="przelacznik"><input type="checkbox" id="op-redakcja" checked><span><b>Wersja redakcyjna</b><small>Kolorowe dopiski z miejscem pochodzenia, niepewne odczyty, początki stron, uwagi AI.</small></span></label>
+      <label class="przelacznik"><input type="checkbox" id="op-czytelna" checked><span><b>Wersja do czytania</b><small>Czysty, ciągły tekst.</small></span></label>
+      <label class="przelacznik"><input type="checkbox" id="op-numery"><span><b>Dodaj numerację stron</b><small>Tylko przy łączeniu stron w jeden plik.</small></span></label>
+      <div class="wciecie">
+        <label class="przelacznik"><input type="checkbox" id="op-numery-auto" checked><span><b>Według numerów z rękopisu</b></span></label>
+        <label class="pole" id="wiersz-start"><span>Od numeru</span><input type="number" id="pole-start" value="1" inputmode="numeric"></label>
+      </div>
+      <label class="przelacznik"><input type="checkbox" id="op-uwagi" checked><span><b>Osobny plik z uwagami AI</b></span></label>
+      <label class="przelacznik"><input type="checkbox" id="op-czysty"><span><b>Nie generuj uwag AI</b></span></label>
+    </details>
+  </section>
+
+  <section class="karta" id="karta-postep" hidden>
+    <h2>Postęp</h2>
+    <progress id="postep" value="0" max="1"></progress>
+    <p class="status" id="status"></p>
+    <p class="pomoc" id="uwaga-ekran">Nie blokuj telefonu i nie przełączaj aplikacji, dopóki odczyt trwa.</p>
+    <details id="szczegoly"><summary>Szczegóły</summary><pre class="log" id="log"></pre></details>
+  </section>
+
+  <section class="karta" id="karta-wyniki" hidden>
+    <h2>3. Wyniki</h2>
+    <ul class="wyniki" id="lista-wynikow"></ul>
+    <div class="rzad" style="margin-top:10px"><button class="glowny" id="btn-udostepnij-wszystko">Udostępnij wszystkie pliki</button></div>
+    <p class="pomoc">„Udostępnij” pozwala zapisać pliki w aplikacji Pliki, otworzyć w Pages lub wysłać pocztą.</p>
+    <details><summary>Podgląd tekstu</summary><div class="podglad" id="podglad"></div></details>
+  </section>
+
+  <footer>
+    <picture>
+      <source srcset="logo-poziome-negatyw.png" media="(prefers-color-scheme: dark)">
+      <img class="logo-firmy" src="logo-poziome-kolor.png" alt="mile productions">
+    </picture>
+    <div><button id="btn-zmien-klucz">Zmień klucz API</button> · <button id="btn-usun-klucz">Usuń klucz z telefonu</button></div>
+    <div>Zdjęcia trafiają bezpośrednio do Google Gemini. Nic nie jest zapisywane na żadnym innym serwerze.</div>
+    <div id="wersja"></div>
+  </footer>
+</main>
+
+<div class="pasek"><div class="wnetrze">
+  <button class="glowny" id="btn-start" disabled>Odczytaj</button>
+  <button class="stop" id="btn-stop" hidden>Zatrzymaj i zapisz</button>
+</div></div>
+
+<script src="silnik.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
